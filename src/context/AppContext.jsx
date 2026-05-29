@@ -1,0 +1,59 @@
+import { createContext, useContext, useState } from "react";
+
+// ─── MOCK DATA ───────────────────────────────────────
+import { CURRENT_USER, MY_SESSIONS } from "../data/mockData";
+
+const AppCtx = createContext(null);
+function useApp() { return useContext(AppCtx); }
+
+function AppProvider({ children }) {
+  const [tab, setTab] = useState("feed");
+  const [feedFilter, setFeedFilter] = useState("teach");
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [activeSession, setActiveSession] = useState(null);
+  const [activeView, setActiveView] = useState(null); // "waitingRoom"|"chatroom"|"scheduled"|"completed"
+  const [mySessions, setMySessions] = useState(MY_SESSIONS);
+  const [profile, setProfile] = useState(CURRENT_USER);
+  const [darkMode, setDarkMode] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [modal, setModal] = useState(null);
+
+  function showToast(msg, type = "success") {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  }
+
+  function joinSession(session) {
+    const already = mySessions.find(s => s.id === session.id);
+    if (already) { showToast("Already joined!"); return; }
+    const myRole = session.type === "meetup" ? "participant" : "learner";
+    setMySessions(prev => [...prev, { ...session, status: "waiting_room", myRole }]);
+    showToast(`Joined ${session.skill || session.activity}! You're in the waiting room.`);
+  }
+
+  function openSession(session, view = "waitingRoom") {
+    setActiveSession(session);
+    setActiveView(view);
+    setTab("session");
+  }
+
+  return (
+    <AppCtx.Provider value={{
+      tab, setTab, feedFilter, setFeedFilter,
+      expandedCard, setExpandedCard,
+      activeSession, setActiveSession,
+      activeView, setActiveView,
+      mySessions, setMySessions,
+      profile, setProfile,
+      darkMode, setDarkMode,
+      toast, showToast,
+      modal, setModal,
+      joinSession, openSession,
+    }}>
+      {children}
+    </AppCtx.Provider>
+  );
+}
+
+
+export { AppProvider, useApp };
