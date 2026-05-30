@@ -35,4 +35,11 @@ export const T = {
 
   // ── Button shadows ─────────────────────────────────────────
   btnPrimaryShadow: "0 2px 8px rgba(109,40,217,0.30)",
+
+  // ── Session type badges ────────────────────────────────────
+  sessionTypes: {
+    teach:  { badge: "#7C3AED", bg: "#EDE8FF", label: "Teach",   icon: "🎓" },
+    learn:  { badge: "#1D4ED8", bg: "#DBEAFE", label: "Learn",   icon: "📖" },
+    meetup: { badge: "#059669", bg: "#D1FAE5", label: "Meet Up", icon: "🤝" },
+  },
 };

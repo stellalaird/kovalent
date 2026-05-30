@@ -9,6 +9,7 @@ import { T } from "../styles/theme";
 // ─── UTILITY COMPONENTS ──────────────────────────────────────
 import Badge from "../components/Badge";
 import Card from "../components/Card";
+import PageHeader from "../components/PageHeader";
 import Section from "../components/Section";
 
 export default function SettingsPage() {
@@ -52,21 +53,11 @@ export default function SettingsPage() {
 
   return (
     <div>
-      {/* Header — matches other page headers */}
-      <div style={{
-        padding: "14px 16px 14px",
-        background: "rgba(246,244,253,0.92)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-        borderBottom: `1px solid ${T.border}`,
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-      }}>
-        <div style={{ fontSize: 22, fontWeight: 800, color: T.text, letterSpacing: "-0.03em" }}>
+      <PageHeader>
+        <div style={{ fontSize: 22, fontWeight: 800, color: T.text, letterSpacing: "-0.03em", paddingBottom: 14 }}>
           Settings
         </div>
-      </div>
+      </PageHeader>
 
       <div style={{ padding: 16 }}>
         <Section title="Notifications">

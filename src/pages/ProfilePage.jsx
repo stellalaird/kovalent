@@ -73,11 +73,17 @@ export default function ProfilePage() {
         {/* Stats grid */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
           {stats.map(({ icon, label, value }) => (
-            <Card key={label}>
+            <Card key={label} style={{ borderTop: `3px solid ${T.purple}` }}>
               <div style={{ padding: "14px 14px 12px" }}>
                 <div style={{ fontSize: 18, marginBottom: 6 }}>{icon}</div>
-                <div style={{ fontWeight: 800, fontSize: 20, color: T.purple, letterSpacing: "-0.02em" }}>{value}</div>
-                <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{label}</div>
+                <div style={{
+                  fontWeight: 800, fontSize: 22, letterSpacing: "-0.03em",
+                  background: T.purpleGradient,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}>{value}</div>
+                <div style={{ fontSize: 12, color: T.muted, fontWeight: 500, marginTop: 2 }}>{label}</div>
               </div>
             </Card>
           ))}

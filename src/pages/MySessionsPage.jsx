@@ -9,6 +9,7 @@ import { T } from "../styles/theme";
 // ─── UTILITY COMPONENTS ──────────────────────────────────────
 import Avatar from "../components/Avatar";
 import Card from "../components/Card";
+import PageHeader from "../components/PageHeader";
 import Pill from "../components/Pill";
 import Section from "../components/Section";
 
@@ -59,17 +60,7 @@ export default function MySessionsPage() {
 
   return (
     <div>
-      {/* Sticky header — matches FeedPage style */}
-      <div style={{
-        padding: "14px 16px 0",
-        background: "rgba(246,244,253,0.92)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-        borderBottom: `1px solid ${T.border}`,
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-      }}>
+      <PageHeader>
         <div style={{
           fontSize: 22, fontWeight: 800, color: T.text,
           letterSpacing: "-0.03em", marginBottom: 10,
@@ -81,7 +72,7 @@ export default function MySessionsPage() {
             </Pill>
           ))}
         </div>
-      </div>
+      </PageHeader>
 
       <div style={{ padding: 16 }}>
         {grouped.waiting_room.length > 0 && (

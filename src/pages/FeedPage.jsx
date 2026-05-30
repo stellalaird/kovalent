@@ -8,6 +8,7 @@ import { AppProvider, useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
 
 // ─── UTILITY COMPONENTS ──────────────────────────────────────
+import PageHeader from "../components/PageHeader";
 import Pill from "../components/Pill";
 import TokenBadge from "../components/TokenBadge";
 
@@ -18,31 +19,22 @@ import SessionCard from "../components/SessionCard";
 import TopicsPageContent from "../pages/TopicsPage";
 
 export default function FeedPage() {
-  const { feedView, setFeedView, activeTopic } = useApp();
+  const { feedView, setFeedView, activeTopic, sessionTypeFilter, setSessionTypeFilter } = useApp();
 
   const activityRank = { high: 0, medium: 1, low: 2 };
 
   const feedSessions = MOCK_SESSIONS.filter((s) => s.status === "feed");
 
-  const sorted = [...feedSessions].sort(
-    (a, b) =>
-      (activityRank[a.activityLevel] ?? 2) -
-      (activityRank[b.activityLevel] ?? 2)
-  );
+  const sorted = [...feedSessions]
+    .sort(
+      (a, b) =>
+        (activityRank[a.activityLevel] ?? 2) -
+        (activityRank[b.activityLevel] ?? 2)
+    )
+    .filter((s) => sessionTypeFilter === "all" || s.type === sessionTypeFilter);
 
   const header = (
-    <div
-      style={{
-        padding: "14px 16px 0",
-        background: "rgba(246,244,253,0.92)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
-        borderBottom: `1px solid ${T.border}`,
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-      }}
-    >
+    <PageHeader>
       <div
         style={{
           display: "flex",
@@ -88,7 +80,7 @@ export default function FeedPage() {
       </div>
 
       {!activeTopic && (
-        <div style={{ display: "flex", gap: 6, paddingBottom: 12 }}>
+        <div style={{ display: "flex", gap: 6, paddingBottom: feedView === "sessions" ? 8 : 12 }}>
           <Pill active={feedView === "sessions"} onClick={() => setFeedView("sessions")}>
             Sessions
           </Pill>
@@ -97,7 +89,26 @@ export default function FeedPage() {
           </Pill>
         </div>
       )}
-    </div>
+      {!activeTopic && feedView === "sessions" && (
+        <div style={{ display: "flex", gap: 5, paddingBottom: 10, overflowX: "auto" }}>
+          {[
+            { id: "all", label: "All" },
+            { id: "teach", label: "Teach" },
+            { id: "learn", label: "Learn" },
+            { id: "meetup", label: "Meet Up" },
+          ].map(({ id, label }) => (
+            <Pill
+              key={id}
+              small
+              active={sessionTypeFilter === id}
+              onClick={() => setSessionTypeFilter(id)}
+            >
+              {label}
+            </Pill>
+          ))}
+        </div>
+      )}
+    </PageHeader>
   );
 
   if (feedView === "topics") {
