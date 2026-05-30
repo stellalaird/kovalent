@@ -6,10 +6,10 @@ export default function BottomNav() {
   const waitingCount = mySessions.filter(s => s.status === "waiting_room").length;
 
   const tabs = [
-    { id: "feed", icon: "🏠", label: "Feed" },
-    { id: "mySessions", icon: "📋", label: "Sessions", badge: waitingCount },
-    { id: "profile", icon: "👤", label: "Profile" },
-    { id: "settings", icon: "⚙️", label: "Settings" },
+  { id: "feed", icon: "🏠", label: "Feed" },
+  { id: "mySessions", icon: "📋", label: "Sessions", badge: waitingCount },
+  { id: "profile", icon: "👤", label: "Profile" },
+  { id: "settings", icon: "⚙️", label: "Settings" },
   ];
 
   return (

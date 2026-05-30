@@ -3,8 +3,6 @@
 // Frameworks: React, Tailwind (CDN), React Router (CDN)
 // ============================================================
 
-// import { useState, useContext, createContext, useEffect, useRef } from "react";
-
 // ─── DESIGN TOKENS ──────────────────────────────────────────
 const PURPLE = {
   50: "#f3f0ff", 100: "#e0d9ff", 200: "#c4b5fd",
@@ -17,6 +15,8 @@ const COLORS = {
   accent: "#f59e0b", success: "#10b981", danger: "#ef4444",
   warm: "#fef3c7",
 };
+
+// import { useState, useContext, createContext, useEffect, useRef } from "react";
 
 // ─── MOCK DATA ───────────────────────────────────────
 import { MOCK_USERS, CURRENT_USER, MOCK_SESSIONS, MY_SESSIONS } from "./data/mockData";
@@ -40,6 +40,7 @@ import Toast from "./components/Toast";
 // import ActivityBadge from "./components/ActivityBadge";
 // import LearnCard from "./components/LearnCard";
 // import MeetupCard from "./components/MeetupCard";
+//import SessionCard from "../components/SessionCard";
 // import TeachCard from "./components/TeachCard";
 
 // ─── PAGES ───────────────────────────────────────────────────
@@ -49,6 +50,7 @@ import BottomNav from "./pages/BottomNav";
 import FeedPage from "./pages/FeedPage";
 import MySessionsPage from "./pages/MySessionsPage";
 import ProfilePage from "./pages/ProfilePage";
+// import TopicsPage from "./pages/TopicsPage";
 // import ScheduledPage from "./pages/ScheduledPage";
 import SessionPage from "./pages/SessionPage";
 import SettingsPage from "./pages/SettingsPage";

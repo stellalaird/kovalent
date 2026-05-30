@@ -8,7 +8,9 @@ function useApp() { return useContext(AppCtx); }
 
 function AppProvider({ children }) {
   const [tab, setTab] = useState("feed");
-  const [feedFilter, setFeedFilter] = useState("teach");
+  const [feedView, setFeedView] = useState("sessions");
+  const [sessionTypeFilter, setSessionTypeFilter] = useState("all");
+  const [activeTopic, setActiveTopic] = useState(null);
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeSession, setActiveSession] = useState(null);
   const [activeView, setActiveView] = useState(null); // "waitingRoom"|"chatroom"|"scheduled"|"completed"
@@ -39,7 +41,10 @@ function AppProvider({ children }) {
 
   return (
     <AppCtx.Provider value={{
-      tab, setTab, feedFilter, setFeedFilter,
+      tab, setTab,
+      feedView, setFeedView,
+      sessionTypeFilter, setSessionTypeFilter,
+      activeTopic, setActiveTopic,
       expandedCard, setExpandedCard,
       activeSession, setActiveSession,
       activeView, setActiveView,
