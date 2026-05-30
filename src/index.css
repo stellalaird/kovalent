@@ -54,6 +54,11 @@ body {
   margin: 0;
 }
 
+button:active {
+  transform: scale(0.97);
+  transition: transform 0.08s;
+}
+
 #root {
   width: 1126px;
   max-width: 100%;

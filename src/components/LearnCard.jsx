@@ -1,5 +1,8 @@
 // ─── APP STATE CONTEXT ───────────────────────────────────────
-import { AppProvider, useApp } from "../context/AppContext";
+import { useApp } from "../context/AppContext";
+
+// ─── STYLES ──────────────────────────────────────────────────
+import { T } from "../styles/theme";
 
 // ─── UTILITY COMPONENTS ──────────────────────────────────────
 import Avatar from "./Avatar";
@@ -7,50 +10,60 @@ import Badge from "./Badge";
 import Button from "./Button";
 import Card from "./Card";
 
-// ─── FEED CARD COMPONENTS ────────────────────────────────────
-import ActivityBadge from "./ActivityBadge";
-
 export default function LearnCard({ session }) {
   const { expandedCard, setExpandedCard, showToast } = useApp();
   const isExpanded = expandedCard === session.id;
 
   return (
-    <Card style={{ marginBottom: 12 }}>
-      <div style={{ padding: "14px 16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-              <span style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>Wanted: {session.skill}</span>
-              <ActivityBadge level={session.activityLevel} />
+    <Card style={{ marginBottom: 8 }}>
+      <div style={{ padding: "10px 12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Line 1: title · badge · interested */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+              <span style={{
+                fontWeight: 700, fontSize: 14, color: T.text,
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, minWidth: 0,
+              }}>{session.skill}</span>
+              <Badge color="#0369a1" bg="#dbeafe">Learn</Badge>
+              <span style={{ fontSize: 12, color: T.muted, flexShrink: 0, whiteSpace: "nowrap" }}>
+                {session.interested} interested
+              </span>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Avatar user={session.requester} size={24} />
-              <span style={{ fontSize: 13, color: "#6b7280" }}>{session.requester.name}</span>
-              <Badge color="#0369a1" bg="#e0f2fe">{session.level}</Badge>
+            {/* Line 2: avatar · name · year · level */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <Avatar user={session.requester} size={20} />
+              <span style={{
+                fontSize: 12, color: T.textMid, fontWeight: 600,
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              }}>{session.requester.name}</span>
+              {session.requester.year && (
+                <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>· {session.requester.year}</span>
+              )}
+              {session.level && (
+                <span style={{ fontSize: 12, color: T.muted, whiteSpace: "nowrap" }}>· {session.level}</span>
+              )}
             </div>
           </div>
           <button onClick={() => setExpandedCard(isExpanded ? null : session.id)} style={{
             background: "none", border: "none", cursor: "pointer",
-            color: "#6b7280", fontSize: 20, padding: 4,
+            color: T.muted, fontSize: 16, padding: "2px 4px", flexShrink: 0,
           }}>
             {isExpanded ? "▲" : "▼"}
           </button>
         </div>
-        <div style={{ marginTop: 8, fontSize: 12, color: "#6b7280" }}>
-          <span>🙋 {session.interested} learners waiting</span>
-        </div>
       </div>
 
       {isExpanded && (
-        <div style={{ borderTop: "1px solid #f3f4f6", padding: "14px 16px", background: "#fafaf9" }}>
+        <div style={{ borderTop: `1px solid ${T.border}`, padding: "14px 16px", background: T.purpleFaint }}>
           <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
             <Avatar user={session.requester} size={48} />
             <div>
-              <div style={{ fontWeight: 700, fontSize: 14 }}>{session.requester.name}</div>
-              <div style={{ fontSize: 12, color: "#6b7280" }}>{session.requester.year} · {session.requester.major}</div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: T.text }}>{session.requester.name}</div>
+              <div style={{ fontSize: 12, color: T.muted }}>{session.requester.year} · {session.requester.major}</div>
             </div>
           </div>
-          <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.6, margin: "0 0 14px" }}>{session.description}</p>
+          <p style={{ fontSize: 14, color: T.textMid, lineHeight: 1.6, margin: "0 0 14px" }}>{session.description}</p>
           <div style={{ display: "flex", gap: 8 }}>
             <Button small onClick={() => showToast("Teaching offer sent! ✓")}>
               🎓 Offer to Teach

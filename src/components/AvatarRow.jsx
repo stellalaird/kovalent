@@ -1,4 +1,4 @@
-// ─── UTILITY COMPONENTS ──────────────────────────────────────
+import { T } from "../styles/theme";
 import Avatar from "./Avatar";
 
 export default function AvatarRow({ users, max = 4, size = 28 }) {
@@ -7,16 +7,18 @@ export default function AvatarRow({ users, max = 4, size = 28 }) {
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       {shown.map((u, i) => (
-        <div key={u.id} style={{ marginLeft: i === 0 ? 0 : -8, zIndex: max - i }}>
+        <div key={u.id} style={{ marginLeft: i === 0 ? 0 : -Math.round(size * 0.28), zIndex: max - i }}>
           <Avatar user={u} size={size} />
         </div>
       ))}
       {extra > 0 && (
         <div style={{
           width: size, height: size, borderRadius: "50%",
-          background: "#e5e7eb", display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#6b7280",
-          marginLeft: -8, zIndex: 0
+          background: T.purpleLight,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: size < 24 ? 9 : 11, fontWeight: 700, color: T.purple,
+          marginLeft: -Math.round(size * 0.28), zIndex: 0,
+          flexShrink: 0,
         }}>+{extra}</div>
       )}
     </div>

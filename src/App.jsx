@@ -18,7 +18,11 @@ const COLORS = {
 
 // import { useState, useContext, createContext, useEffect, useRef } from "react";
 
-// ─── MOCK DATA ───────────────────────────────────────
+// ─── STYLES ──────────────────────────────────────────────────
+import { T } from "./styles/theme";
+
+
+// ─── MOCK DATA ───────────────────────────────────────────────
 import { MOCK_USERS, CURRENT_USER, MOCK_SESSIONS, MY_SESSIONS } from "./data/mockData";
 
 // ─── APP STATE CONTEXT ───────────────────────────────────────
@@ -59,32 +63,26 @@ import SettingsPage from "./pages/SettingsPage";
 // ─── ROOT APP ─────────────────────────────────────────────────
 
 function AppInner() {
-  const { tab, toast, darkMode } = useApp();
+  const { tab, toast } = useApp();
 
   return (
-    <div style={{
-      maxWidth: 480, margin: "0 auto",
-      minHeight: "100vh",
-      background: darkMode ? "#0f0f1a" : "#f9fafb",
-      fontFamily: "'Nunito', system-ui, sans-serif",
-      paddingBottom: 80,
-      position: "relative",
-    }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
-        * { box-sizing: border-box; }
-        @keyframes slideUp { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
-        ::-webkit-scrollbar { width: 0; }
-        input:focus, select:focus { border-color: #6c4fc2 !important; outline: none !important; }
-      `}</style>
-
-      <div style={{ minHeight: "calc(100vh - 80px)", overflowY: "auto" }}>
-        {tab === "feed" && <FeedPage />}
-        {tab === "mySessions" && <MySessionsPage />}
-        {tab === "profile" && <ProfilePage />}
-        {tab === "settings" && <SettingsPage />}
-        {tab === "session" && <SessionPage />}
-      </div>
+    <div
+      style={{
+        width: "100%",
+        maxWidth: 430,
+        minHeight: "100vh",
+        background: T.appBg,
+        position: "relative",
+        overflowX: "hidden",
+        paddingBottom: tab === "session" ? 0 : 76,
+        boxShadow: "0 0 60px rgba(109,40,217,0.22), 0 0 120px rgba(0,0,0,0.55)",
+      }}
+    >
+      {tab === "feed" && <FeedPage />}
+      {tab === "mySessions" && <MySessionsPage />}
+      {tab === "session" && <SessionPage />}
+      {tab === "profile" && <ProfilePage />}
+      {tab === "settings" && <SettingsPage />}
 
       {tab !== "session" && <BottomNav />}
       {toast && <Toast msg={toast.msg} type={toast.type} />}
@@ -95,7 +93,16 @@ function AppInner() {
 export default function App() {
   return (
     <AppProvider>
-      <AppInner />
+      <div
+        style={{
+          minHeight: "100vh",
+          background: T.desktopBg,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <AppInner />
+      </div>
     </AppProvider>
   );
 }

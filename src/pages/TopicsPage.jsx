@@ -4,6 +4,9 @@ import { MOCK_USERS, CURRENT_USER, MOCK_SESSIONS, MY_SESSIONS } from "../data/mo
 // ─── APP STATE CONTEXT ───────────────────────────────────────
 import { AppProvider, useApp } from "../context/AppContext";
 
+// ─── STYLES ──────────────────────────────────────────────────
+import { T } from "../styles/theme";
+
 // ─── UTILITY COMPONENTS ──────────────────────────────────────
 import Badge from "../components/Badge";
 import Card from "../components/Card";
@@ -14,21 +17,37 @@ import LearnCard from "../components/LearnCard";
 import MeetupCard from "../components/MeetupCard";
 import TeachCard from "../components/TeachCard";
 
+// ── Per-topic accent colors ──────────────────────────────────
+const TOPIC_ACCENT = {
+  music:       { bg: "#FEF3C7", color: "#D97706" },
+  guitar:      { bg: "#FEF3C7", color: "#D97706" },
+  art:         { bg: "#FCE7F3", color: "#DB2777" },
+  creative:    { bg: "#FCE7F3", color: "#DB2777" },
+  coding:      { bg: "#DBEAFE", color: "#1D4ED8" },
+  tech:        { bg: "#DBEAFE", color: "#1D4ED8" },
+  language:    { bg: "#D1FAE5", color: "#065F46" },
+  photography: { bg: "#F1F5F9", color: "#475569" },
+  games:       { bg: T.purpleLight, color: T.purpleDeep },
+  strategy:    { bg: T.purpleLight, color: T.purpleDeep },
+  fitness:     { bg: "#ECFDF5", color: "#047857" },
+  outdoors:    { bg: "#ECFDF5", color: "#047857" },
+  social:      { bg: "#FFF7ED", color: "#C2410C" },
+};
 
 const TOPIC_DEFS = [
-  { tag: "music", label: "Music", emoji: "🎵" },
-  { tag: "guitar", label: "Guitar", emoji: "🎸" },
-  { tag: "art", label: "Art", emoji: "🎨" },
-  { tag: "creative", label: "Creative", emoji: "✏️" },
-  { tag: "coding", label: "Coding", emoji: "💻" },
-  { tag: "tech", label: "Tech", emoji: "🔧" },
-  { tag: "language", label: "Language", emoji: "🌐" },
+  { tag: "music",       label: "Music",       emoji: "🎵" },
+  { tag: "guitar",      label: "Guitar",      emoji: "🎸" },
+  { tag: "art",         label: "Art",         emoji: "🎨" },
+  { tag: "creative",    label: "Creative",    emoji: "✏️" },
+  { tag: "coding",      label: "Coding",      emoji: "💻" },
+  { tag: "tech",        label: "Tech",        emoji: "🔧" },
+  { tag: "language",    label: "Language",    emoji: "🌐" },
   { tag: "photography", label: "Photography", emoji: "📷" },
-  { tag: "games", label: "Games", emoji: "🎲" },
-  { tag: "strategy", label: "Strategy", emoji: "♟️" },
-  { tag: "fitness", label: "Fitness", emoji: "🏃" },
-  { tag: "outdoors", label: "Outdoors", emoji: "🌿" },
-  { tag: "social", label: "Social", emoji: "🤝" },
+  { tag: "games",       label: "Games",       emoji: "🎲" },
+  { tag: "strategy",    label: "Strategy",    emoji: "♟️" },
+  { tag: "fitness",     label: "Fitness",     emoji: "🏃" },
+  { tag: "outdoors",    label: "Outdoors",    emoji: "🌿" },
+  { tag: "social",      label: "Social",      emoji: "🤝" },
 ];
 
 const ALL_SESSIONS = [
@@ -56,62 +75,57 @@ const ALL_SESSIONS = [
 ];
 
 function TopicDetailPage({ tag, onBack }) {
-  const topicDef = TOPIC_DEFS.find((t) => t.tag === tag) || {
-    label: tag,
-    emoji: "🏷️",
-  };
+  const topicDef = TOPIC_DEFS.find((t) => t.tag === tag) || { label: tag, emoji: "🏷️" };
+  const accent = TOPIC_ACCENT[tag] || { bg: T.purpleLight, color: T.purple };
 
-  const tagged = ALL_SESSIONS.filter((session) =>
-    (session.tags || []).includes(tag)
-  );
-
-  const upcoming = tagged.filter((session) =>
-    ["feed", "waiting_room", "scheduled"].includes(session.status)
-  );
-
+  const tagged = ALL_SESSIONS.filter((session) => (session.tags || []).includes(tag));
+  const upcoming = tagged.filter((session) => ["feed", "waiting_room", "scheduled"].includes(session.status));
   const completed = tagged.filter((session) => session.status === "completed");
 
   return (
     <div>
-      <div style={{ background: "#6c4fc2", padding: "20px 16px" }}>
+      {/* Topic detail header — gradient banner */}
+      <div style={{
+        background: T.purpleGradient,
+        padding: "18px 16px 22px",
+      }}>
         <button
           onClick={onBack}
           style={{
-            background: "rgba(255,255,255,0.2)",
-            border: "none",
+            background: "rgba(255,255,255,0.18)",
+            border: "1px solid rgba(255,255,255,0.25)",
             color: "#fff",
-            borderRadius: 8,
-            padding: "6px 12px",
+            borderRadius: 10,
+            padding: "5px 12px",
             fontWeight: 600,
             cursor: "pointer",
             fontSize: 13,
-            marginBottom: 14,
+            marginBottom: 16,
+            backdropFilter: "blur(6px)",
           }}
         >
           ← Topics
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 14,
-              background: "rgba(255,255,255,0.2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 26,
-            }}
-          >
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{
+            width: 52,
+            height: 52,
+            borderRadius: 16,
+            background: "rgba(255,255,255,0.18)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 28,
+          }}>
             {topicDef.emoji}
           </div>
-
           <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: "#fff" }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>
               {topicDef.label}
             </div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.72)", marginTop: 2 }}>
               {tagged.length} session{tagged.length !== 1 ? "s" : ""}
             </div>
           </div>
@@ -122,14 +136,8 @@ function TopicDetailPage({ tag, onBack }) {
         {upcoming.length > 0 && (
           <Section title={`Upcoming (${upcoming.length})`}>
             {upcoming.map((session) => {
-              if (session.type === "teach") {
-                return <TeachCard key={session.id} session={session} />;
-              }
-
-              if (session.type === "learn") {
-                return <LearnCard key={session.id} session={session} />;
-              }
-
+              if (session.type === "teach") return <TeachCard key={session.id} session={session} />;
+              if (session.type === "learn") return <LearnCard key={session.id} session={session} />;
               return <MeetupCard key={session.id} session={session} />;
             })}
           </Section>
@@ -139,53 +147,24 @@ function TopicDetailPage({ tag, onBack }) {
           <Section title={`Completed (${completed.length})`}>
             {completed.map((session) => (
               <Card key={session.id} style={{ marginBottom: 10 }}>
-                <div
-                  style={{
-                    padding: "12px 16px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 38,
-                      height: 38,
-                      borderRadius: 10,
-                      background: "#f0fdf4",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 18,
-                    }}
-                  >
+                <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: 12,
+                    background: T.successBg,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 18, flexShrink: 0,
+                  }}>
                     ✅
                   </div>
-
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontWeight: 700,
-                        fontSize: 14,
-                        color: "#1a1a2e",
-                      }}
-                    >
+                    <div style={{ fontWeight: 700, fontSize: 14, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {session.skill || session.activity}
                     </div>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        color: "#6b7280",
-                        marginTop: 2,
-                      }}
-                    >
+                    <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>
                       {session.scheduledTime || "Past session"}
                     </div>
                   </div>
-
-                  <Badge color="#065f46" bg="#d1fae5">
-                    Done
-                  </Badge>
+                  <Badge color={T.success} bg={T.successBg}>Done</Badge>
                 </div>
               </Card>
             ))}
@@ -195,12 +174,8 @@ function TopicDetailPage({ tag, onBack }) {
         {tagged.length === 0 && (
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: "#374151" }}>
-              No sessions yet
-            </div>
-            <div style={{ fontSize: 14, color: "#6b7280", marginTop: 4 }}>
-              Be the first to create one!
-            </div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: T.text }}>No sessions yet</div>
+            <div style={{ fontSize: 14, color: T.muted, marginTop: 4 }}>Be the first to create one!</div>
           </div>
         )}
       </div>
@@ -212,16 +187,10 @@ export default function TopicsPageContent() {
   const { activeTopic, setActiveTopic } = useApp();
 
   if (activeTopic) {
-    return (
-      <TopicDetailPage
-        tag={activeTopic}
-        onBack={() => setActiveTopic(null)}
-      />
-    );
+    return <TopicDetailPage tag={activeTopic} onBack={() => setActiveTopic(null)} />;
   }
 
   const tagCounts = {};
-
   ALL_SESSIONS.forEach((session) => {
     (session.tags || []).forEach((tag) => {
       tagCounts[tag] = (tagCounts[tag] || 0) + 1;
@@ -231,73 +200,54 @@ export default function TopicsPageContent() {
   const visibleTopics = TOPIC_DEFS.filter((topic) => tagCounts[topic.tag] > 0);
 
   return (
-    <div style={{ padding: 16 }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 10,
-        }}
-      >
+    <div style={{ padding: "16px 16px 8px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {visibleTopics.map((topic) => {
           const count = tagCounts[topic.tag] || 0;
+          const accent = TOPIC_ACCENT[topic.tag] || { bg: T.purpleLight, color: T.purple };
 
           return (
             <div
               key={topic.tag}
               onClick={() => setActiveTopic(topic.tag)}
               style={{
-                background: "#fff",
-                borderRadius: 14,
-                border: "1px solid #e5e7eb",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-                padding: "14px 16px",
+                background: T.card,
+                borderRadius: T.cardRadius,
+                border: `1px solid ${T.cardBorder}`,
+                boxShadow: T.cardShadow,
+                padding: "14px 14px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
+                transition: "transform 0.12s, box-shadow 0.12s",
               }}
             >
-              <div
-                style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 12,
-                  background: "#ede9ff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 22,
-                  flexShrink: 0,
-                }}
-              >
+              {/* Accent icon bubble */}
+              <div style={{
+                width: 44,
+                height: 44,
+                borderRadius: 13,
+                background: accent.bg,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 22,
+                flexShrink: 0,
+              }}>
                 {topic.emoji}
               </div>
 
               <div style={{ minWidth: 0 }}>
-                <div
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 14,
-                    color: "#1a1a2e",
-                  }}
-                >
+                <div style={{ fontWeight: 700, fontSize: 14, color: T.text }}>
                   {topic.label}
                 </div>
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "#9ca3af",
-                    marginTop: 2,
-                  }}
-                >
+                <div style={{ fontSize: 12, color: accent.color, fontWeight: 600, marginTop: 2 }}>
                   {count} session{count !== 1 ? "s" : ""}
                 </div>
               </div>
 
-              <span style={{ marginLeft: "auto", color: "#c4b5fd", fontSize: 18 }}>
-                ›
-              </span>
+              <span style={{ marginLeft: "auto", color: T.muted, fontSize: 16, flexShrink: 0 }}>›</span>
             </div>
           );
         })}

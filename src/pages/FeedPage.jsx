@@ -4,6 +4,9 @@ import { MOCK_USERS, CURRENT_USER, MOCK_SESSIONS, MY_SESSIONS } from "../data/mo
 // ─── APP STATE CONTEXT ───────────────────────────────────────
 import { AppProvider, useApp } from "../context/AppContext";
 
+// ─── STYLES ──────────────────────────────────────────────────
+import { T } from "../styles/theme";
+
 // ─── UTILITY COMPONENTS ──────────────────────────────────────
 import Pill from "../components/Pill";
 import TokenBadge from "../components/TokenBadge";
@@ -30,9 +33,11 @@ export default function FeedPage() {
   const header = (
     <div
       style={{
-        padding: "16px 16px 0",
-        background: "#fff",
-        borderBottom: "1px solid #f3f4f6",
+        padding: "14px 16px 0",
+        background: "rgba(246,244,253,0.92)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        borderBottom: `1px solid ${T.border}`,
         position: "sticky",
         top: 0,
         zIndex: 10,
@@ -43,21 +48,38 @@ export default function FeedPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: 12,
+          marginBottom: 10,
         }}
       >
         <div>
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 800,
-              color: "#1a1a2e",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            <span style={{ color: "#6c4fc2" }}>Kovalent</span>
+          {/* Gradient wordmark */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Bond / hexagon glyph */}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L21 7V17L12 22L3 17V7L12 2Z" stroke="url(#kv-grad)" strokeWidth="2" strokeLinejoin="round" fill="none"/>
+              <circle cx="12" cy="12" r="2.5" fill="url(#kv-grad)"/>
+              <defs>
+                <linearGradient id="kv-grad" x1="3" y1="2" x2="21" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#7C3AED"/>
+                  <stop offset="1" stopColor="#5B21B6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span
+              style={{
+                fontSize: 24,
+                fontWeight: 900,
+                letterSpacing: "-0.04em",
+                background: T.purpleGradient,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Kovalent
+            </span>
           </div>
-          <div style={{ fontSize: 12, color: "#9ca3af" }}>
+          <div style={{ fontSize: 12, color: T.muted, marginTop: 1 }}>
             Northwestern's skill-share community
           </div>
         </div>
@@ -67,18 +89,11 @@ export default function FeedPage() {
 
       {!activeTopic && (
         <div style={{ display: "flex", gap: 6, paddingBottom: 12 }}>
-          <Pill
-            active={feedView === "sessions"}
-            onClick={() => setFeedView("sessions")}
-          >
+          <Pill active={feedView === "sessions"} onClick={() => setFeedView("sessions")}>
             Sessions
           </Pill>
-
-          <Pill
-            active={feedView === "topics"}
-            onClick={() => setFeedView("topics")}
-          >
-            🏷️ Topics
+          <Pill active={feedView === "topics"} onClick={() => setFeedView("topics")}>
+            Topics
           </Pill>
         </div>
       )}
@@ -106,7 +121,7 @@ export default function FeedPage() {
               style={{
                 fontWeight: 700,
                 fontSize: 16,
-                color: "#374151",
+                color: T.text,
               }}
             >
               Nothing here yet
