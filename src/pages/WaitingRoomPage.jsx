@@ -135,7 +135,12 @@ export default function WaitingRoomPage({ session }) {
             </Button>
           )}
 
-          {/* Chat — available after joining, for teach and collab sessions */}
+          {/* Propose Meetup — collab sessions, after joining */}
+          {alreadyJoined && isMeetup && (
+            <Button variant="secondary" onClick={() => {}}>📅 Propose Meetup</Button>
+          )}
+
+          {/* Chat — available after joining, for learn and collab sessions */}
           {alreadyJoined && (isTeach || isMeetup) && (
             <Button onClick={() => setActiveView("chatroom")}>💬 Group Chat</Button>
           )}
@@ -214,6 +219,58 @@ export default function WaitingRoomPage({ session }) {
                 <Badge color={T.purple} bg={T.purpleLight}>Host</Badge>
               </div>
             </Card>
+          </Section>
+        )}
+
+        {/* Proposed meetups — collab sessions only, above participants */}
+        {isMeetup && session.proposals && session.proposals.length > 0 && (
+          <Section title={`Proposed Meetups (${session.proposals.length})`}>
+            {session.proposals.map(p => {
+              const propId = `${session.id}__${p.id}`;
+              const registeredForThis = mySessions.some(s => s.id === propId);
+              return (
+                <Card key={p.id} style={{ marginBottom: 10 }}>
+                  <div style={{ padding: "12px 14px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <Avatar user={p.proposer} size={28} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, fontSize: 13, color: T.text }}>{p.proposer.name}</div>
+                        <div style={{ fontSize: 12, color: T.muted }}>
+                          {p.time}{p.location ? ` · ${p.location}` : ""}
+                        </div>
+                      </div>
+                    </div>
+                    {p.note && (
+                      <div style={{ fontSize: 12, color: T.textMid, marginBottom: 10 }}>{p.note}</div>
+                    )}
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <Button variant="secondary" small onClick={() => {}}>View Details</Button>
+                      {registeredForThis ? (
+                        <Button variant="success" small style={{ cursor: "default" }} onClick={() => {}}>
+                          ✓ Registered
+                        </Button>
+                      ) : (
+                        <Button small onClick={() => {
+                          setMySessions(prev => {
+                            if (prev.some(s => s.id === propId)) return prev;
+                            return [...prev, {
+                              ...session,
+                              id: propId,
+                              status: "scheduled",
+                              scheduledTime: p.time,
+                              location: p.location,
+                              myRole: "participant",
+                            }];
+                          });
+                        }}>
+                          Register
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
           </Section>
         )}
 

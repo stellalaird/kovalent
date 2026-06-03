@@ -233,6 +233,11 @@ const MOCK_SESSIONS = [
     activityLevel: "high", status: "feed", interested: 7, maxGroup: 12,
     description: "Casual chess games, any skill level welcome. We meet at Norris weekly and do blitz + analysis.",
     tags: ["games", "strategy"],
+    proposals: [
+      { id: "prop-s8-1", proposer: MOCK_USERS[0], time: "Saturday, June 7 · 2:00 PM", location: "Norris Game Room", note: "Works perfectly for weekly games!" },
+      { id: "prop-s8-2", proposer: MOCK_USERS[1], time: "Friday, June 6 · 5:00 PM",   location: "Tech Atrium",     note: "Right after classes, easy for everyone" },
+      { id: "prop-s8-3", proposer: MOCK_USERS[4], time: "Sunday, June 8 · 1:00 PM",   location: "Norris Student Center", note: "Sunday afternoons are chill" },
+    ],
     messages: [
       { user: MOCK_USERS[0], text: "Anyone up for a blitz tourney this weekend?", time: "1:15 PM" },
       { user: MOCK_USERS[1], text: "Absolutely! Saturday works for me", time: "1:20 PM" },
@@ -244,6 +249,10 @@ const MOCK_SESSIONS = [
     activityLevel: "medium", status: "feed", interested: 4, maxGroup: 10,
     description: "5K loops around the lakefront, Tues/Thurs 7am. All paces welcome, we stick together.",
     tags: ["fitness", "outdoors"],
+    proposals: [
+      { id: "prop-s9-1", proposer: MOCK_USERS[2],  time: "Tuesday, June 10 · 7:00 AM", location: "Lakefront Trail, start at Foster Beach", note: "Classic Tues/Thurs schedule 🏃" },
+      { id: "prop-s9-2", proposer: MOCK_USERS[15], time: "Saturday, June 7 · 8:00 AM", location: "Sheridan Rd start point",               note: "Weekend run for those who can't do weekdays" },
+    ],
     messages: [],
   },
   // ── Additional teach sessions ──────────────────────────────

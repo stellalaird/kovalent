@@ -39,8 +39,8 @@ export default function ChatroomPage({ session }) {
         <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 12 }}>Group Chat</div>
       </div>
 
-      {/* Pinned logistics */}
-      <div style={{ background: "#fefce8", borderBottom: "1px solid #fde68a", padding: "12px 16px", flexShrink: 0 }}>
+      {/* Pinned logistics — hidden for collab sessions */}
+      {session.type !== "collab" && <div style={{ background: "#fefce8", borderBottom: "1px solid #fde68a", padding: "12px 16px", flexShrink: 0 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
           <span style={{ fontWeight: 700, fontSize: 13, color: "#92400e" }}>📌 Session Logistics</span>
           {session.myRole === "teacher" && (
@@ -63,7 +63,7 @@ export default function ChatroomPage({ session }) {
             <span>🎒 {logistics.materials}</span>
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: "12px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
