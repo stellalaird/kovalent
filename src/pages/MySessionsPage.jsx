@@ -1,23 +1,36 @@
 import { useState } from "react";
-
-// ─── APP STATE CONTEXT ───────────────────────────────────────
 import { useApp } from "../context/AppContext";
-
-// ─── STYLES ──────────────────────────────────────────────────
 import { T } from "../styles/theme";
-
-// ─── UTILITY COMPONENTS ──────────────────────────────────────
-import Avatar from "../components/Avatar";
+import Badge from "../components/Badge";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
 import Pill from "../components/Pill";
 import Section from "../components/Section";
 
+// Derive icon / badge config from a session's type + myRole
+function sessionConfig(s) {
+  if (s.type === "meetup") {
+    return { icon: "🤝", iconBg: T.successBg,  badgeColor: T.success,  badgeBg: T.successBg,  label: "Collab" };
+  }
+  if (s.myRole === "teacher") {
+    return { icon: "🎓", iconBg: T.purpleLight, badgeColor: T.purple,   badgeBg: T.purpleLight, label: "Teach"  };
+  }
+  // learner in a teach session
+  return     { icon: "📖", iconBg: "#DBEAFE",   badgeColor: "#1D4ED8",  badgeBg: "#DBEAFE",     label: "Learn"  };
+}
+
 export default function MySessionsPage() {
   const { mySessions, openSession } = useApp();
   const [filter, setFilter] = useState("all");
 
-  const filtered = mySessions.filter(s => filter === "all" || s.type === filter);
+  const filtered = mySessions.filter(s => {
+    if (filter === "all") return true;
+    const { label } = sessionConfig(s);
+    if (filter === "teach")  return label === "Teach";
+    if (filter === "learn")  return label === "Learn";
+    if (filter === "meetup") return label === "Collab";
+    return true;
+  });
   const grouped = {
     waiting_room: filtered.filter(s => s.status === "waiting_room"),
     scheduled:    filtered.filter(s => s.status === "scheduled"),
@@ -26,32 +39,51 @@ export default function MySessionsPage() {
 
   function SessionMiniCard({ s }) {
     const label = s.skill || s.activity || "Session";
-    const partner = s.teacher || (s.participants && s.participants[0]);
+    const cfg   = sessionConfig(s);
     const statusViews = { waiting_room: "waitingRoom", scheduled: "waitingRoom", completed: "completed" };
 
+    const timeStr = s.scheduledTime || (s.status === "waiting_room" ? "Waiting for schedule" : s.status === "completed" ? "Completed" : "");
+    const locStr  = s.location || "";
+
     return (
-      <Card style={{ marginBottom: 10, cursor: "pointer" }} onClick={() => openSession(s, statusViews[s.status] || "waitingRoom")}>
+      <Card
+        style={{ marginBottom: 10, cursor: "pointer" }}
+        onClick={() => openSession(s, statusViews[s.status] || "waitingRoom")}
+      >
         <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>
-          {partner
-            ? <Avatar user={partner} size={40} />
-            : <div style={{
-                width: 40, height: 40, borderRadius: "50%",
-                background: T.purpleLight,
-                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
-              }}>🤝</div>
-          }
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{
-              fontWeight: 700, fontSize: 14, color: T.text,
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>{label}</div>
-            <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>
-              {s.type === "teach"
-                ? (s.myRole === "teacher" ? "Teaching" : "Learning")
-                : s.type === "learn" ? "Requested" : "Meetup"}
-              {s.scheduledTime && ` · ${s.scheduledTime}`}
-            </div>
+          {/* Type icon */}
+          <div style={{
+            width: 38, height: 38, borderRadius: 12,
+            background: cfg.iconBg, flexShrink: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 19,
+          }}>
+            {cfg.icon}
           </div>
+
+          {/* Text */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Line 1: title + badge */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+              <span style={{
+                fontWeight: 700, fontSize: 14, color: T.text,
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                flex: 1, minWidth: 0,
+              }}>
+                {label}
+              </span>
+              <Badge color={cfg.badgeColor} bg={cfg.badgeBg}>{cfg.label}</Badge>
+            </div>
+            {/* Line 2: time */}
+            {timeStr && (
+              <div style={{ fontSize: 12, color: T.muted }}>{timeStr}</div>
+            )}
+            {/* Line 3: location */}
+            {locStr && (
+              <div style={{ fontSize: 12, color: T.muted, marginTop: 1 }}>{locStr}</div>
+            )}
+          </div>
+
           <div style={{ fontSize: 18, color: T.purple, fontWeight: 300, flexShrink: 0 }}>›</div>
         </div>
       </Card>
@@ -64,11 +96,18 @@ export default function MySessionsPage() {
         <div style={{
           fontSize: 22, fontWeight: 800, color: T.text,
           letterSpacing: "-0.03em", marginBottom: 10,
-        }}>My Sessions</div>
+        }}>
+          My Sessions
+        </div>
         <div style={{ display: "flex", gap: 8, paddingBottom: 12, overflowX: "auto" }}>
-          {["all", "teach", "learn", "meetup"].map(f => (
-            <Pill key={f} active={filter === f} onClick={() => setFilter(f)}>
-              {f === "all" ? "All" : f === "teach" ? "Teach" : f === "learn" ? "Learn" : "Meet Up"}
+          {[
+            { id: "all",    label: "All"    },
+            { id: "teach",  label: "Teach"  },
+            { id: "learn",  label: "Learn"  },
+            { id: "meetup", label: "Collab" },
+          ].map(({ id, label }) => (
+            <Pill key={id} active={filter === id} onClick={() => setFilter(id)}>
+              {label}
             </Pill>
           ))}
         </div>

@@ -79,7 +79,7 @@ export default function WaitingRoomPage({ session }) {
             letterSpacing: "0.1em",
           }}
         >
-          {isTeach ? "Teaching Session" : isMeetup ? "Group Meetup" : "Learning Session"}
+          {isMeetup ? "Group Collab" : session.myRole === "learner" ? "Learning Session" : "Teaching Session"}
         </div>
         <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", marginTop: 4 }}>{label}</div>
 
@@ -108,6 +108,65 @@ export default function WaitingRoomPage({ session }) {
       </div>
 
       <div style={{ padding: 16 }}>
+        {/* Action buttons — at the top */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+          {/* Join — shown until the user has joined */}
+          {!alreadyJoined && (
+            <Button onClick={() => joinSession(session)}>✓ Join</Button>
+          )}
+
+          {/* Register — shown when joined, teach, meeting details set, not yet registered */}
+          {alreadyJoined && isTeach && session.scheduledTime && !alreadyRegistered && (
+            <Button
+              onClick={() => {
+                setMySessions(prev =>
+                  prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s)
+                );
+              }}
+            >
+              ✓ Register
+            </Button>
+          )}
+
+          {/* Registered state */}
+          {alreadyRegistered && isTeach && (
+            <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>
+              ✓ Registered
+            </Button>
+          )}
+
+          {/* Chat — available after joining, for teach and collab sessions */}
+          {alreadyJoined && (isTeach || isMeetup) && (
+            <Button onClick={() => setActiveView("chatroom")}>💬 Group Chat</Button>
+          )}
+
+          {/* Cancel Registration (if registered) or Leave */}
+          {alreadyRegistered ? (
+            <Button
+              variant="danger"
+              small
+              onClick={() => {
+                setMySessions(prev =>
+                  prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s)
+                );
+              }}
+            >
+              Cancel Registration
+            </Button>
+          ) : (
+            <Button
+              variant="danger"
+              small
+              onClick={() => {
+                setMySessions(prev => prev.filter(s => s.id !== session.id));
+                setTab("feed");
+              }}
+            >
+              Leave
+            </Button>
+          )}
+        </div>
+
         {/* Meeting details — teach sessions only */}
         {isTeach && (
           <Section title="Meeting Details">
@@ -188,63 +247,6 @@ export default function WaitingRoomPage({ session }) {
           ))}
         </Section>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {/* Join — shown until the user has joined */}
-          {!alreadyJoined && (
-            <Button onClick={() => joinSession(session)}>✓ Join</Button>
-          )}
-
-          {/* Register — shown when joined, teach, meeting details set, not yet registered */}
-          {alreadyJoined && isTeach && session.scheduledTime && !alreadyRegistered && (
-            <Button
-              onClick={() => {
-                setMySessions(prev =>
-                  prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s)
-                );
-              }}
-            >
-              ✓ Register
-            </Button>
-          )}
-
-          {/* Registered state */}
-          {alreadyRegistered && isTeach && (
-            <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>
-              ✓ Registered
-            </Button>
-          )}
-
-          {/* Chat — available after joining, for teach and collab sessions */}
-          {alreadyJoined && (isTeach || isMeetup) && (
-            <Button onClick={() => setActiveView("chatroom")}>💬 Group Chat</Button>
-          )}
-
-          {/* Cancel Registration (if registered) or Leave */}
-          {alreadyRegistered ? (
-            <Button
-              variant="danger"
-              small
-              onClick={() => {
-                setMySessions(prev =>
-                  prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s)
-                );
-              }}
-            >
-              Cancel Registration
-            </Button>
-          ) : (
-            <Button
-              variant="danger"
-              small
-              onClick={() => {
-                setMySessions(prev => prev.filter(s => s.id !== session.id));
-                setTab("feed");
-              }}
-            >
-              Leave
-            </Button>
-          )}
-        </div>
       </div>
     </div>
   );
