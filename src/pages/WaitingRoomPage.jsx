@@ -8,7 +8,7 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
-  const { setTab, setActiveView, mySessions, setMySessions, joinSession, showToast, setViewingUser } = useApp();
+  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser } = useApp();
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
   const isTeach = session.type === "learn";
@@ -17,182 +17,143 @@ export default function WaitingRoomPage({ session }) {
   const label = session.skill || session.activity || "Session";
   const host = session.teacher || null;
 
-  // ── Build participant lists ──────────────────────────────
-  // Registered = confirmed attendance (teach sessions only for now)
   const registeredList = isTeach ? (session.participants || []) : [];
   const registeredIds = new Set(registeredList.map((u) => u.id));
-
-  // Known real users who are interested
   const knownInterested = [
     ...(alreadyJoined ? [CURRENT_USER] : []),
     ...(session.waitingRoom || []),
     ...(!isTeach ? (session.participants || []) : []),
-  ]
-    .filter((u, i, arr) => arr.findIndex((x) => x.id === u.id) === i)
-    .filter((u) => !registeredIds.has(u.id));
+  ].filter((u, i, arr) => arr.findIndex((x) => x.id === u.id) === i).filter((u) => !registeredIds.has(u.id));
 
-  // Target interested count from mock data
   const targetInterested = isTeach
     ? (session.interested ?? knownInterested.length)
     : (session.participants?.length ?? 0) + (session.interested ?? 0);
-
-  // Fill the gap with real users from the pool
-  const usedIds = new Set([
-    ...knownInterested.map((u) => u.id),
-    ...registeredList.map((u) => u.id),
-    ...(host ? [host.id] : []),
-  ]);
-  const pool = MOCK_USERS.filter((u) => !usedIds.has(u.id));
-  const needed = Math.max(0, targetInterested - knownInterested.length);
-  const extras = pool.slice(0, needed);
-
-  const interestedList = [...knownInterested, ...extras];
-  // Registered users sorted to the top
-  const allParticipants = [...registeredList, ...interestedList];
+  const usedIds = new Set([...knownInterested.map(u => u.id), ...registeredList.map(u => u.id), ...(host ? [host.id] : [])]);
+  const extras = MOCK_USERS.filter(u => !usedIds.has(u.id)).slice(0, Math.max(0, targetInterested - knownInterested.length));
+  const allParticipants = [...registeredList, ...knownInterested, ...extras];
   const totalCount = allParticipants.length;
+
+  const tc = T.sessionTypes[session.type] ?? T.sessionTypes.learn;
+  const sessionKind = isMeetup ? "Group Collab" : session.myRole === "learner" ? "Learning Session" : "Teaching Session";
 
   return (
     <div>
-      <div style={{ background: T.purpleGradient, padding: "20px 16px 16px" }}>
+      {/* Hero — dark with radial glow bloom */}
+      <div style={{
+        background: T.appBg,
+        padding: "22px 18px 24px",
+        position: "relative",
+        overflow: "hidden",
+        borderBottom: `1px solid ${T.border}`,
+      }}>
+        {/* Radial glow bloom */}
+        <div style={{
+          position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)",
+          width: 320, height: 200, borderRadius: "50%",
+          background: `radial-gradient(ellipse, ${tc.glow}28 0%, transparent 70%)`,
+          pointerEvents: "none",
+        }} />
+
         <button
           onClick={() => setTab("mySessions")}
           style={{
-            background: "rgba(255,255,255,0.2)",
-            border: "none",
-            color: "#fff",
-            borderRadius: 8,
-            padding: "6px 12px",
-            fontWeight: 600,
-            cursor: "pointer",
-            fontSize: 13,
-            marginBottom: 14,
+            background: T.surface, border: `1px solid ${T.border}`,
+            color: T.textMid, borderRadius: 10, padding: "6px 14px",
+            fontWeight: 600, cursor: "pointer", fontSize: 13,
+            marginBottom: 18, letterSpacing: "-0.01em",
+            position: "relative",
           }}
         >
           ← Back
         </button>
-        <div
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: "rgba(255,255,255,0.7)",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-          }}
-        >
-          {isMeetup ? "Group Collab" : session.myRole === "learner" ? "Learning Session" : "Teaching Session"}
-        </div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", marginTop: 4 }}>{label}</div>
 
-        {/* Info chips */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
-          {/* Joined count — always shown */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
-            <span style={{ width: 7, height: 7, borderRadius: "50%", background: T.success, display: "inline-block" }} />
+        <div style={{
+          fontSize: 10, fontWeight: 700, color: T.muted,
+          textTransform: "uppercase", letterSpacing: "0.14em",
+          marginBottom: 8, fontFamily: T.fontBody, position: "relative",
+        }}>
+          {sessionKind}
+        </div>
+        <div style={{
+          fontFamily: T.fontDisplay, fontSize: 28, fontWeight: 900,
+          color: T.text, letterSpacing: "-0.035em", lineHeight: 1.15,
+          marginBottom: 16, position: "relative",
+        }}>
+          {label}
+        </div>
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative" }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            background: T.successBg, border: `1px solid ${T.successBorder}`,
+            borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.success, fontWeight: 600,
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.success, display: "inline-block", boxShadow: `0 0 6px ${T.success}` }} />
             {totalCount} joined
           </div>
-
-          {/* Capacity — teach sessions only */}
           {isTeach && session.minGroup && session.maxGroup && (
-            <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.textMid, fontWeight: 500 }}>
               capacity: {session.minGroup}–{session.maxGroup}
             </div>
           )}
-
-          {/* Registered count — teach sessions, only if > 0 */}
           {isTeach && registeredList.length > 0 && (
-            <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.textMid, fontWeight: 500 }}>
               {registeredList.length} registered
             </div>
           )}
         </div>
       </div>
 
-      <div style={{ padding: 16 }}>
-        {/* Action buttons — at the top */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
-          {/* Join — shown until the user has joined */}
-          {!alreadyJoined && (
-            <Button onClick={() => joinSession(session)}>✓ Join</Button>
-          )}
-
-          {/* Register — shown when joined, teach, meeting details set, not yet registered */}
+      <div style={{ padding: "18px 16px" }}>
+        {/* Actions */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+          {!alreadyJoined && <Button onClick={() => joinSession(session)}>✓ Join</Button>}
           {alreadyJoined && isTeach && session.scheduledTime && !alreadyRegistered && (
-            <Button
-              onClick={() => {
-                setMySessions(prev =>
-                  prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s)
-                );
-              }}
-            >
+            <Button onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s))}>
               ✓ Register
             </Button>
           )}
-
-          {/* Registered state */}
           {alreadyRegistered && isTeach && (
-            <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>
-              ✓ Registered
-            </Button>
+            <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>✓ Registered</Button>
           )}
-
-          {/* Propose Meetup — collab sessions, after joining */}
           {alreadyJoined && isMeetup && (
             <Button variant="secondary" onClick={() => {}}>📅 Propose Meetup</Button>
           )}
-
-          {/* Chat — available after joining, for learn and collab sessions */}
           {alreadyJoined && (isTeach || isMeetup) && (
             <Button onClick={() => setActiveView("chatroom")}>💬 Group Chat</Button>
           )}
-
-          {/* Cancel Registration (if registered) or Leave */}
           {alreadyRegistered ? (
-            <Button
-              variant="danger"
-              small
-              onClick={() => {
-                setMySessions(prev =>
-                  prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s)
-                );
-              }}
-            >
+            <Button variant="danger" small onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s))}>
               Cancel Registration
             </Button>
           ) : (
-            <Button
-              variant="danger"
-              small
-              onClick={() => {
-                setMySessions(prev => prev.filter(s => s.id !== session.id));
-                setTab("feed");
-              }}
-            >
+            <Button variant="danger" small onClick={() => { setMySessions(prev => prev.filter(s => s.id !== session.id)); setTab("feed"); }}>
               Leave
             </Button>
           )}
         </div>
 
-        {/* Meeting details — teach sessions only */}
+        {/* Meeting details */}
         {isTeach && (
           <Section title="Meeting Details">
             <Card style={{ marginBottom: 16 }}>
-              <div style={{ padding: 14 }}>
+              <div style={{ padding: 16 }}>
                 {!session.scheduledTime && (session.interested ?? 0) < (session.minGroup ?? 0) && (
-                  <div style={{ fontSize: 12, color: T.muted, fontStyle: "italic", marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, color: T.muted, fontStyle: "italic", marginBottom: 14, lineHeight: 1.6 }}>
                     Need {(session.minGroup ?? 0) - (session.interested ?? 0)} more interested before the teacher can schedule.
                   </div>
                 )}
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {[
-                    ["🕐", "When",      session.scheduledTime || "TBD"],
-                    ["📍", "Where",     session.location      || "TBD"],
-                    ["🎒", "Materials", session.materials     || "TBD"],
+                    ["🕐", "When", session.scheduledTime || "TBD"],
+                    ["📍", "Where", session.location || "TBD"],
+                    ["🎒", "Materials", session.materials || "TBD"],
                   ].map(([icon, lbl, val]) => (
-                    <div key={lbl} style={{ display: "flex", gap: 10 }}>
-                      <span style={{ fontSize: 18 }}>{icon}</span>
+                    <div key={lbl} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                      <span style={{ fontSize: 17, lineHeight: 1, marginTop: 2 }}>{icon}</span>
                       <div>
-                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>{lbl}</div>
-                        <div style={{ fontSize: 14, fontWeight: val === "TBD" ? 400 : 600, color: val === "TBD" ? T.muted : T.text, marginTop: 1 }}>{val}</div>
+                        <div style={{ fontSize: 10, color: T.muted, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 3 }}>{lbl}</div>
+                        <div style={{ fontSize: 14, fontWeight: val === "TBD" ? 400 : 600, color: val === "TBD" ? T.muted : T.text, letterSpacing: "-0.01em" }}>{val}</div>
                       </div>
                     </div>
                   ))}
@@ -208,13 +169,9 @@ export default function WaitingRoomPage({ session }) {
               <div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
                 <Avatar user={host} size={48} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: T.text }}>{host.name}</div>
-                  <div style={{ fontSize: 13, color: T.muted }}>
-                    {host.year} · {host.major}
-                  </div>
-                  <div style={{ fontSize: 12, color: T.muted, marginTop: 4 }}>
-                    {host.taught} sessions taught
-                  </div>
+                  <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 15, color: T.text, letterSpacing: "-0.02em" }}>{host.name}</div>
+                  <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{host.year} · {host.major}</div>
+                  <div style={{ fontSize: 12, color: T.muted, marginTop: 3 }}>{host.taught} sessions taught</div>
                 </div>
                 <Badge color={T.purple} bg={T.purpleLight}>Host</Badge>
               </div>
@@ -222,50 +179,31 @@ export default function WaitingRoomPage({ session }) {
           </Section>
         )}
 
-        {/* Proposed meetups — collab sessions only, above participants */}
-        {isMeetup && session.proposals && session.proposals.length > 0 && (
+        {isMeetup && session.proposals?.length > 0 && (
           <Section title={`Proposed Meetups (${session.proposals.length})`}>
             {session.proposals.map(p => {
               const propId = `${session.id}__${p.id}`;
               const registeredForThis = mySessions.some(s => s.id === propId);
               return (
                 <Card key={p.id} style={{ marginBottom: 10 }}>
-                  <div style={{ padding: "12px 14px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <div style={{ padding: "14px 16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                       <Avatar user={p.proposer} size={28} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 600, fontSize: 13, color: T.text }}>{p.proposer.name}</div>
-                        <div style={{ fontSize: 12, color: T.muted }}>
-                          {p.time}{p.location ? ` · ${p.location}` : ""}
-                        </div>
+                        <div style={{ fontWeight: 700, fontSize: 13, color: T.text }}>{p.proposer.name}</div>
+                        <div style={{ fontSize: 12, color: T.muted, marginTop: 1 }}>{p.time}{p.location ? ` · ${p.location}` : ""}</div>
                       </div>
                     </div>
-                    {p.note && (
-                      <div style={{ fontSize: 12, color: T.textMid, marginBottom: 10 }}>{p.note}</div>
-                    )}
+                    {p.note && <div style={{ fontSize: 13, color: T.textMid, marginBottom: 12, lineHeight: 1.6 }}>{p.note}</div>}
                     <div style={{ display: "flex", gap: 8 }}>
                       <Button variant="secondary" small onClick={() => {}}>View Details</Button>
-                      {registeredForThis ? (
-                        <Button variant="success" small style={{ cursor: "default" }} onClick={() => {}}>
-                          ✓ Registered
-                        </Button>
-                      ) : (
-                        <Button small onClick={() => {
-                          setMySessions(prev => {
+                      {registeredForThis
+                        ? <Button variant="success" small style={{ cursor: "default" }} onClick={() => {}}>✓ Registered</Button>
+                        : <Button small onClick={() => setMySessions(prev => {
                             if (prev.some(s => s.id === propId)) return prev;
-                            return [...prev, {
-                              ...session,
-                              id: propId,
-                              status: "scheduled",
-                              scheduledTime: p.time,
-                              location: p.location,
-                              myRole: "participant",
-                            }];
-                          });
-                        }}>
-                          Register
-                        </Button>
-                      )}
+                            return [...prev, { ...session, id: propId, status: "scheduled", scheduledTime: p.time, location: p.location, myRole: "participant" }];
+                          })}>Register</Button>
+                      }
                     </div>
                   </div>
                 </Card>
@@ -276,34 +214,21 @@ export default function WaitingRoomPage({ session }) {
 
         <Section title={`Participants (${totalCount})`}>
           {allParticipants.map((u) => (
-            <Card
-              key={u.id}
-              style={{ marginBottom: 8, cursor: u.id !== "me" ? "pointer" : "default" }}
-              onClick={u.id !== "me" ? () => setViewingUser(u) : undefined}
-            >
-              <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+            <Card key={u.id} style={{ marginBottom: 8, cursor: u.id !== "me" ? "pointer" : "default" }} onClick={u.id !== "me" ? () => setViewingUser(u) : undefined}>
+              <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>
                 <Avatar user={u} size={38} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14, color: T.text, display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
+                  <div style={{ fontWeight: 600, fontSize: 14, color: T.text, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", letterSpacing: "-0.01em" }}>
                     {u.name}
-                    {u.id === "me" && (
-                      <Badge color={T.purple} bg={T.purpleLight}>You</Badge>
-                    )}
+                    {u.id === "me" && <Badge color={T.purple} bg={T.purpleLight}>You</Badge>}
                   </div>
-                  {u.year && (
-                    <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>
-                      {u.year}{u.major ? ` · ${u.major}` : ""}
-                    </div>
-                  )}
+                  {u.year && <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{u.year}{u.major ? ` · ${u.major}` : ""}</div>}
                 </div>
-                {registeredIds.has(u.id) && (
-                  <Badge color={T.success} bg={T.successBg}>Registered</Badge>
-                )}
+                {registeredIds.has(u.id) && <Badge color={T.success} bg={T.successBg}>Registered</Badge>}
               </div>
             </Card>
           ))}
         </Section>
-
       </div>
     </div>
   );

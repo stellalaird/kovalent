@@ -14,9 +14,10 @@ export default function AvatarRow({ users, max = 4, size = 28 }) {
       {extra > 0 && (
         <div style={{
           width: size, height: size, borderRadius: "50%",
-          background: T.purpleLight,
+          background: T.surface,
+          border: `1px solid ${T.cardBorder}`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: size < 24 ? 9 : 11, fontWeight: 700, color: T.purple,
+          fontSize: size < 24 ? 9 : 11, fontWeight: 700, color: T.textMid,
           marginLeft: -Math.round(size * 0.28), zIndex: 0,
           flexShrink: 0,
         }}>+{extra}</div>

@@ -40,27 +40,25 @@ export default function CompletedPage({ session }) {
   return (
     <div>
       {/* Header — matches WaitingRoomPage style */}
-      <div style={{ background: T.purpleGradient, padding: "20px 16px 16px" }}>
-        <button
-          onClick={() => setTab("mySessions")}
-          style={{
-            background: "rgba(255,255,255,0.2)", border: "none", color: "#fff",
-            borderRadius: 8, padding: "6px 12px", fontWeight: 600,
-            cursor: "pointer", fontSize: 13, marginBottom: 14,
-          }}
-        >
+      <div style={{ background: T.appBg, padding: "22px 18px 24px", position: "relative", overflow: "hidden", borderBottom: `1px solid ${T.border}` }}>
+        <div style={{ position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)", width: 300, height: 180, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(52,211,153,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <button onClick={() => setTab("mySessions")} style={{
+          background: T.surface, border: `1px solid ${T.border}`, color: T.textMid,
+          borderRadius: 10, padding: "6px 14px", fontWeight: 600,
+          cursor: "pointer", fontSize: 13, marginBottom: 18, letterSpacing: "-0.01em", position: "relative",
+        }}>
           ← Back
         </button>
-        <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 8, fontFamily: T.fontBody, position: "relative" }}>
           {session.type === "collab" ? "Group Collab" : session.myRole === "learner" ? "Learning Session" : "Teaching Session"}
         </div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", marginTop: 4 }}>{label}</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+        <div style={{ fontFamily: T.fontDisplay, fontSize: 28, fontWeight: 900, color: T.text, letterSpacing: "-0.035em", lineHeight: 1.15, marginBottom: 16, position: "relative" }}>{label}</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: T.successBg, border: `1px solid ${T.successBorder}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.success, fontWeight: 600 }}>
             ✓ Completed
           </div>
           {session.scheduledTime && (
-            <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.textMid, fontWeight: 500 }}>
               {session.scheduledTime}
             </div>
           )}
@@ -75,7 +73,7 @@ export default function CompletedPage({ session }) {
             {/* 1. Tipping */}
             <Card style={{ marginBottom: 16 }}>
               <div style={{ padding: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 15, color: T.text, marginBottom: 10 }}>
+                <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
                   Tip the Teacher
                 </div>
 
@@ -133,7 +131,7 @@ export default function CompletedPage({ session }) {
             {/* 2. Rating */}
             <Card style={{ marginBottom: 16 }}>
               <div style={{ padding: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 15, color: T.text, marginBottom: 10 }}>
+                <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
                   Rate this session
                 </div>
                 {!ratingDone ? (
@@ -168,19 +166,19 @@ export default function CompletedPage({ session }) {
             {/* 3. Group photo */}
             <Card style={{ marginBottom: 16 }}>
               <div style={{ padding: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: T.text, marginBottom: 10 }}>
+                <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
                   📸 Group Photo
                 </div>
                 <div
                   style={{
-                    background: T.purpleFaint, borderRadius: 12, height: 140,
+                    background: T.purpleFaint, borderRadius: 14, height: 140,
                     display: "flex", flexDirection: "column", alignItems: "center",
                     justifyContent: "center", cursor: "pointer",
                     border: `1.5px dashed ${T.border}`,
                   }}
                 >
-                  <span style={{ fontSize: 36, marginBottom: 6 }}>🖼️</span>
-                  <span style={{ fontSize: 13, color: T.muted }}>Tap to upload group photo</span>
+                  <span style={{ fontSize: 36, marginBottom: 8 }}>🖼️</span>
+                  <span style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>Tap to upload group photo</span>
                 </div>
               </div>
             </Card>
@@ -195,7 +193,7 @@ export default function CompletedPage({ session }) {
                   <div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
                     <Avatar user={host} size={48} />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: 15, color: T.text }}>{host.name}</div>
+                      <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 15, color: T.text, letterSpacing: "-0.02em" }}>{host.name}</div>
                       <div style={{ fontSize: 13, color: T.muted }}>{host.year} · {host.major}</div>
                       <div style={{ fontSize: 12, color: T.muted, marginTop: 3 }}>
                         {host.taught} sessions taught
@@ -242,19 +240,19 @@ export default function CompletedPage({ session }) {
             {/* Photo */}
             <Card style={{ marginBottom: 16 }}>
               <div style={{ padding: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: T.text, marginBottom: 10 }}>
+                <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
                   📸 Group Photo
                 </div>
                 <div
                   style={{
-                    background: T.purpleFaint, borderRadius: 12, height: 140,
+                    background: T.purpleFaint, borderRadius: 14, height: 140,
                     display: "flex", flexDirection: "column", alignItems: "center",
                     justifyContent: "center", cursor: "pointer",
                     border: `1.5px dashed ${T.border}`,
                   }}
                 >
-                  <span style={{ fontSize: 36, marginBottom: 6 }}>🖼️</span>
-                  <span style={{ fontSize: 13, color: T.muted }}>Tap to upload group photo</span>
+                  <span style={{ fontSize: 36, marginBottom: 8 }}>🖼️</span>
+                  <span style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>Tap to upload group photo</span>
                 </div>
               </div>
             </Card>
@@ -289,7 +287,7 @@ export default function CompletedPage({ session }) {
             {/* Rating */}
             <Card style={{ marginBottom: 16 }}>
               <div style={{ padding: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 15, color: T.text, marginBottom: 10 }}>
+                <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
                   Rate this session
                 </div>
                 {!ratingDone ? (
@@ -323,11 +321,11 @@ export default function CompletedPage({ session }) {
 
             {/* Tokens earned */}
             <Card style={{ marginBottom: 16, background: "#fffbeb", border: `1px solid #fde68a` }}>
-              <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 14 }}>
                 <span style={{ fontSize: 32 }}>✦</span>
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: 16, color: T.gold }}>+5 Tokens Earned!</div>
-                  <div style={{ fontSize: 13, color: T.gold }}>For teaching this session.</div>
+                  <div style={{ fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 17, color: T.gold, letterSpacing: "-0.02em" }}>+5 Tokens Earned!</div>
+                  <div style={{ fontSize: 13, color: T.gold, marginTop: 2 }}>For teaching this session.</div>
                 </div>
               </div>
             </Card>

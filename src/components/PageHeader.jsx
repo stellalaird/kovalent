@@ -4,10 +4,10 @@ export default function PageHeader({ children }) {
   return (
     <div
       style={{
-        padding: "14px 16px 0",
-        background: "rgba(246,244,253,0.95)",
-        backdropFilter: "blur(14px)",
-        WebkitBackdropFilter: "blur(14px)",
+        padding: "16px 18px 0",
+        background: "rgba(251,245,230,0.94)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
         borderBottom: `1px solid ${T.border}`,
         position: "sticky",
         top: 0,

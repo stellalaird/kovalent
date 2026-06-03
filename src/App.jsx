@@ -24,7 +24,7 @@ function AppInner() {
         position: "relative",
         overflowX: "hidden",
         paddingBottom: tab === "session" ? 0 : 76,
-        boxShadow: "0 0 60px rgba(109,40,217,0.22), 0 0 120px rgba(0,0,0,0.55)",
+        boxShadow: "0 0 0 1px rgba(147,100,246,0.1), 0 0 80px rgba(147,100,246,0.15), 0 0 160px rgba(0,0,0,0.8)",
       }}
     >
       {tab === "feed" && <FeedPage />}
