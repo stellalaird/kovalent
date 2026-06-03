@@ -28,10 +28,9 @@ function AppProvider({ children }) {
 
   function joinSession(session) {
     const already = mySessions.find(s => s.id === session.id);
-    if (already) { showToast("Already joined!"); return; }
+    if (already) return;
     const myRole = session.type === "meetup" ? "participant" : "learner";
     setMySessions(prev => [...prev, { ...session, status: "waiting_room", myRole }]);
-    showToast(`Joined ${session.skill || session.activity}! You're in the waiting room.`);
   }
 
   function openSession(session, view = "waitingRoom") {

@@ -78,22 +78,26 @@ export default function FeedCard({ session }) {
 
         {/* Two-line text block */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontWeight: 700,
-              fontSize: 14,
-              color: T.text,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {title}
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 3 }}>
+          {/* Line 1: title + type badge(s) */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+            <span
+              style={{
+                fontWeight: 700,
+                fontSize: 14,
+                color: T.text,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                flex: 1,
+                minWidth: 0,
+              }}
+            >
+              {title}
+            </span>
             <TypeBadges type={session.type} />
-            <span style={{ fontSize: 12, color: T.muted }}>{countStr}</span>
           </div>
+          {/* Line 2: count info only */}
+          <span style={{ fontSize: 12, color: T.muted }}>{countStr}</span>
         </div>
 
         {/* Expand toggle */}
@@ -176,7 +180,7 @@ export default function FeedCard({ session }) {
 
             {session.type === "learn" && (
               <>
-                <Button small onClick={() => showToast("Teaching offer sent! ✓")}>
+                <Button small onClick={() => {}}>
                   🎓 Offer to Teach
                 </Button>
                 <Button

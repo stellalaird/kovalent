@@ -112,7 +112,7 @@ export default function SettingsPage() {
             <SettingRow label="Version" sub="Kovalent v1.0.0" right={null} />
             <div style={{ padding: "14px 0" }}>
               <button
-                onClick={() => showToast("Feedback sent! Thank you.")}
+                onClick={() => {}}
                 style={{
                   background: "none", border: "none",
                   color: T.purple, fontWeight: 700,

@@ -27,7 +27,7 @@ export default function MySessionsPage() {
   function SessionMiniCard({ s }) {
     const label = s.skill || s.activity || "Session";
     const partner = s.teacher || (s.participants && s.participants[0]);
-    const statusViews = { waiting_room: "waitingRoom", scheduled: "scheduled", completed: "completed" };
+    const statusViews = { waiting_room: "waitingRoom", scheduled: "waitingRoom", completed: "completed" };
 
     return (
       <Card style={{ marginBottom: 10, cursor: "pointer" }} onClick={() => openSession(s, statusViews[s.status] || "waitingRoom")}>

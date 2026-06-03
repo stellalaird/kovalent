@@ -63,12 +63,6 @@ export default function ChatroomPage({ session }) {
             <span>🎒 {logistics.materials}</span>
           </div>
         )}
-        {!confirmed && (
-          <button onClick={() => setConfirmed(true)} style={{ marginTop: 8, background: "#d1fae5", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: "#065f46", cursor: "pointer" }}>
-            ✓ Confirm Attendance
-          </button>
-        )}
-        {confirmed && <span style={{ marginTop: 8, display: "block", fontSize: 12, color: "#065f46", fontWeight: 700 }}>✅ You confirmed!</span>}
       </div>
 
       {/* Messages */}

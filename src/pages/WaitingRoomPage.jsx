@@ -9,9 +9,11 @@ import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
   const { setTab, setActiveView, mySessions, setMySessions, joinSession, showToast, setViewingUser } = useApp();
-  const alreadyJoined = !!mySessions.find((s) => s.id === session.id);
+  const mySession = mySessions.find((s) => s.id === session.id);
+  const alreadyJoined = !!mySession;
   const isTeach = session.type === "teach";
   const isMeetup = session.type === "meetup";
+  const alreadyRegistered = isTeach && mySession?.status === "scheduled";
   const label = session.skill || session.activity || "Session";
   const host = session.teacher || null;
 
@@ -45,7 +47,8 @@ export default function WaitingRoomPage({ session }) {
   const extras = pool.slice(0, needed);
 
   const interestedList = [...knownInterested, ...extras];
-  const allParticipants = [...interestedList, ...registeredList];
+  // Registered users sorted to the top
+  const allParticipants = [...registeredList, ...interestedList];
   const totalCount = allParticipants.length;
 
   return (
@@ -79,36 +82,65 @@ export default function WaitingRoomPage({ session }) {
           {isTeach ? "Teaching Session" : isMeetup ? "Group Meetup" : "Learning Session"}
         </div>
         <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", marginTop: 4 }}>{label}</div>
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            background: "rgba(255,255,255,0.15)",
-            borderRadius: 999,
-            padding: "4px 12px",
-            marginTop: 8,
-            fontSize: 13,
-            color: "#fff",
-          }}
-        >
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              background: T.success,
-              display: "inline-block",
-            }}
-          />
-          Waiting Room · {totalCount} joined
+
+        {/* Info chips */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
+          {/* Joined count — always shown */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+            <span style={{ width: 7, height: 7, borderRadius: "50%", background: T.success, display: "inline-block" }} />
+            {totalCount} joined
+          </div>
+
+          {/* Capacity — teach sessions only */}
+          {isTeach && session.minGroup && session.maxGroup && (
+            <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+              capacity: {session.minGroup}–{session.maxGroup}
+            </div>
+          )}
+
+          {/* Registered count — teach sessions, only if > 0 */}
+          {isTeach && registeredList.length > 0 && (
+            <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+              {registeredList.length} registered
+            </div>
+          )}
         </div>
       </div>
 
       <div style={{ padding: 16 }}>
+        {/* Meeting details — teach sessions only */}
+        {isTeach && (
+          <Section title="Meeting Details">
+            <Card style={{ marginBottom: 16 }}>
+              <div style={{ padding: 14 }}>
+                {!session.scheduledTime && (session.interested ?? 0) < (session.minGroup ?? 0) && (
+                  <div style={{ fontSize: 12, color: T.muted, fontStyle: "italic", marginBottom: 12 }}>
+                    Need {(session.minGroup ?? 0) - (session.interested ?? 0)} more interested before the teacher can schedule.
+                  </div>
+                )}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {[
+                    ["🕐", "When",      session.scheduledTime || "TBD"],
+                    ["📍", "Where",     session.location      || "TBD"],
+                    ["🎒", "Materials", session.materials     || "TBD"],
+                  ].map(([icon, lbl, val]) => (
+                    <div key={lbl} style={{ display: "flex", gap: 10 }}>
+                      <span style={{ fontSize: 18 }}>{icon}</span>
+                      <div>
+                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>{lbl}</div>
+                        <div style={{ fontSize: 14, fontWeight: val === "TBD" ? 400 : 600, color: val === "TBD" ? T.muted : T.text, marginTop: 1 }}>{val}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </Section>
+        )}
+
         {host && (
           <Section title="Teacher">
-            <Card style={{ marginBottom: 0 }}>
+            <Card style={{ marginBottom: 0, cursor: "pointer" }} onClick={() => setViewingUser(host)}>
               <div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
                 <Avatar user={host} size={48} />
                 <div style={{ flex: 1 }}>
@@ -157,38 +189,61 @@ export default function WaitingRoomPage({ session }) {
         </Section>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {/* View teacher profile — teach sessions only */}
-          {isTeach && host && (
-            <Button variant="secondary" onClick={() => setViewingUser(host)}>
-              👤 View Teacher Profile
+          {/* Join — shown until the user has joined */}
+          {!alreadyJoined && (
+            <Button onClick={() => joinSession(session)}>✓ Join</Button>
+          )}
+
+          {/* Register — shown when joined, teach, meeting details set, not yet registered */}
+          {alreadyJoined && isTeach && session.scheduledTime && !alreadyRegistered && (
+            <Button
+              onClick={() => {
+                setMySessions(prev =>
+                  prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s)
+                );
+              }}
+            >
+              ✓ Register
             </Button>
           )}
 
-          {/* Join — shown until the user has joined */}
-          {!alreadyJoined && (
-            <Button onClick={() => joinSession(session)}>
-              ✓ Join
+          {/* Registered state */}
+          {alreadyRegistered && isTeach && (
+            <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>
+              ✓ Registered
             </Button>
           )}
 
           {/* Chat — available after joining, for teach and collab sessions */}
           {alreadyJoined && (isTeach || isMeetup) && (
-            <Button onClick={() => setActiveView("chatroom")}>
-              💬 Group Chat
-            </Button>
+            <Button onClick={() => setActiveView("chatroom")}>💬 Group Chat</Button>
           )}
 
-          <Button
-            variant="danger"
-            small
-            onClick={() => {
-              setMySessions((prev) => prev.filter((s) => s.id !== session.id));
-              setTab("feed");
-              showToast("Left session");
-            }}
-          >
-            Leave
-          </Button>
+          {/* Cancel Registration (if registered) or Leave */}
+          {alreadyRegistered ? (
+            <Button
+              variant="danger"
+              small
+              onClick={() => {
+                setMySessions(prev =>
+                  prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s)
+                );
+              }}
+            >
+              Cancel Registration
+            </Button>
+          ) : (
+            <Button
+              variant="danger"
+              small
+              onClick={() => {
+                setMySessions(prev => prev.filter(s => s.id !== session.id));
+                setTab("feed");
+              }}
+            >
+              Leave
+            </Button>
+          )}
         </div>
       </div>
     </div>

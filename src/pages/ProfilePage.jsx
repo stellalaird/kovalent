@@ -14,7 +14,6 @@ export default function ProfilePage() {
   function save() {
     setProfile(form);
     setEditing(false);
-    showToast("Profile updated!");
   }
 
   const stats = [
