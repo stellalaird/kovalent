@@ -25,7 +25,9 @@ function TypeBadges({ type }) {
 export default function FeedCard({ session }) {
   const { expandedCard, setExpandedCard, joinSession, openSession, mySessions, showToast } =
     useApp();
-  const isExpanded = expandedCard === session.id;
+  // Use proposal-specific key for expand/collapse so each proposal card is independent
+  const cardId = session._proposalKey || session.id;
+  const isExpanded = expandedCard === cardId;
   const joined = mySessions.find((s) => s.id === session.id);
 
   const tc = T.sessionTypes[session.type] ?? T.sessionTypes.meetup;
@@ -40,7 +42,15 @@ export default function FeedCard({ session }) {
 
   // Compact count string for collapsed row
   let countStr = "";
-  if (session.type === "learn") {
+  if (session._proposal) {
+    // Proposal-specific collab card: show per-proposal counts
+    const p = session._proposal;
+    const userRegistered = mySessions.some(s => s.id === `${session.id}__${p.id}`);
+    const regCount = (p.registrations ?? 0) + (userRegistered ? 1 : 0);
+    countStr = regCount > 0
+      ? `${p.interested} interested · ${regCount} registered`
+      : `${p.interested} interested`;
+  } else if (session.type === "learn") {
     const parts = [`${session.interested} interested`];
     const enoughInterest = session.interested >= (session.minGroup ?? 0);
     if (session.scheduledTime && enoughInterest) {
@@ -96,13 +106,41 @@ export default function FeedCard({ session }) {
             </span>
             <TypeBadges type={session.type} />
           </div>
-          {/* Line 2: count info only */}
+          {/* Collab proposal: time → location → count */}
+          {session._proposal && (
+            <>
+              <div style={{ fontSize: 12, color: T.textMid, fontWeight: 500, marginTop: 2 }}>
+                {session._proposal.time}
+              </div>
+              {session._proposal.location && (
+                <div style={{ fontSize: 12, color: T.textMid, fontWeight: 500 }}>
+                  {session._proposal.location}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Learn sessions with a scheduled time: time → location → count */}
+          {session.type === "learn" && session.scheduledTime && (
+            <>
+              <div style={{ fontSize: 12, color: T.textMid, fontWeight: 500, marginTop: 2 }}>
+                {session.scheduledTime}
+              </div>
+              {session.location && (
+                <div style={{ fontSize: 12, color: T.textMid, fontWeight: 500 }}>
+                  {session.location}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Count info — always last, muted */}
           <span style={{ fontSize: 12, color: T.muted }}>{countStr}</span>
         </div>
 
         {/* Expand toggle */}
         <button
-          onClick={() => setExpandedCard(isExpanded ? null : session.id)}
+          onClick={() => setExpandedCard(isExpanded ? null : cardId)}
           style={{
             background: "none",
             border: "none",

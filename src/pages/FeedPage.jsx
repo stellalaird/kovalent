@@ -32,7 +32,18 @@ export default function FeedPage() {
         (activityRank[a.activityLevel] ?? 2) -
         (activityRank[b.activityLevel] ?? 2)
     )
-    .filter((s) => sessionTypeFilter === "all" || s.type === sessionTypeFilter);
+    .filter((s) => sessionTypeFilter === "all" || s.type === sessionTypeFilter)
+    // Expand collab sessions that have proposals into one card per proposal
+    .flatMap(s => {
+      if (s.type === "collab" && s.proposals?.length > 0) {
+        return s.proposals.map(p => ({
+          ...s,
+          _proposalKey: `${s.id}__feed__${p.id}`,
+          _proposal: p,
+        }));
+      }
+      return [s];
+    });
 
   const header = (
     <PageHeader>
@@ -142,7 +153,7 @@ export default function FeedPage() {
         )}
 
         {sorted.map((session) => (
-          <SessionCard key={session.id} session={session} />
+          <SessionCard key={session._proposalKey || session.id} session={session} />
         ))}
       </div>
     </div>

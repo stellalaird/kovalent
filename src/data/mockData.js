@@ -234,9 +234,9 @@ const MOCK_SESSIONS = [
     description: "Casual chess games, any skill level welcome. We meet at Norris weekly and do blitz + analysis.",
     tags: ["games", "strategy"],
     proposals: [
-      { id: "prop-s8-1", proposer: MOCK_USERS[0], time: "Saturday, June 7 · 2:00 PM", location: "Norris Game Room", note: "Works perfectly for weekly games!" },
-      { id: "prop-s8-2", proposer: MOCK_USERS[1], time: "Friday, June 6 · 5:00 PM",   location: "Tech Atrium",     note: "Right after classes, easy for everyone" },
-      { id: "prop-s8-3", proposer: MOCK_USERS[4], time: "Sunday, June 8 · 1:00 PM",   location: "Norris Student Center", note: "Sunday afternoons are chill" },
+      { id: "prop-s8-1", proposer: MOCK_USERS[0], time: "Saturday, June 7 · 2:00 PM", location: "Norris Game Room",      note: "Works perfectly for weekly games!",         interested: 5, registrations: 2 },
+      { id: "prop-s8-2", proposer: MOCK_USERS[1], time: "Friday, June 6 · 5:00 PM",   location: "Tech Atrium",           note: "Right after classes, easy for everyone",   interested: 4, registrations: 1 },
+      { id: "prop-s8-3", proposer: MOCK_USERS[4], time: "Sunday, June 8 · 1:00 PM",   location: "Norris Student Center", note: "Sunday afternoons are chill",               interested: 3, registrations: 0 },
     ],
     messages: [
       { user: MOCK_USERS[0], text: "Anyone up for a blitz tourney this weekend?", time: "1:15 PM" },
@@ -250,8 +250,8 @@ const MOCK_SESSIONS = [
     description: "5K loops around the lakefront, Tues/Thurs 7am. All paces welcome, we stick together.",
     tags: ["fitness", "outdoors"],
     proposals: [
-      { id: "prop-s9-1", proposer: MOCK_USERS[2],  time: "Tuesday, June 10 · 7:00 AM", location: "Lakefront Trail, start at Foster Beach", note: "Classic Tues/Thurs schedule 🏃" },
-      { id: "prop-s9-2", proposer: MOCK_USERS[15], time: "Saturday, June 7 · 8:00 AM", location: "Sheridan Rd start point",               note: "Weekend run for those who can't do weekdays" },
+      { id: "prop-s9-1", proposer: MOCK_USERS[2],  time: "Tuesday, June 10 · 7:00 AM", location: "Lakefront Trail, Foster Beach start", note: "Classic Tues/Thurs schedule 🏃",               interested: 3, registrations: 2 },
+      { id: "prop-s9-2", proposer: MOCK_USERS[15], time: "Saturday, June 7 · 8:00 AM", location: "Sheridan Rd start point",             note: "Weekend run for those who can't do weekdays", interested: 2, registrations: 1 },
     ],
     messages: [],
   },
@@ -382,11 +382,13 @@ const MOCK_SESSIONS = [
 ];
 
 // Sessions the current user is involved in
+// Use .find() by ID so array-order changes never break these references
+const _s = id => MOCK_SESSIONS.find(s => s.id === id);
 const MY_SESSIONS = [
-  { ...MOCK_SESSIONS[0], status: "waiting_room", myRole: "learner" },
-  { ...MOCK_SESSIONS[3], status: "scheduled",    myRole: "learner" },
-  { ...MOCK_SESSIONS[7], status: "waiting_room", myRole: "participant" },
-  { ...MOCK_SESSIONS[9], status: "scheduled",    myRole: "participant" },
+  { ..._s("s1"),  status: "waiting_room", myRole: "learner"     },
+  { ..._s("s4"),  status: "scheduled",    myRole: "learner"     },
+  { ..._s("s8"),  status: "waiting_room", myRole: "participant" },
+  { ..._s("s10"), status: "scheduled",    myRole: "participant" },
   {
     id: "s-comp1", type: "learn", skill: "Intro to Chess", teacher: MOCK_USERS[0],
     level: "Beginner", status: "completed", myRole: "teacher",

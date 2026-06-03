@@ -42,8 +42,23 @@ export default function MySessionsPage() {
     const cfg   = sessionConfig(s);
     const statusViews = { waiting_room: "waitingRoom", scheduled: "waitingRoom", completed: "completed" };
 
-    const timeStr = s.scheduledTime || (s.status === "waiting_room" ? "Waiting for schedule" : s.status === "completed" ? "Completed" : "");
+    const timeStr = s.scheduledTime || "";
     const locStr  = s.location || "";
+
+    // Count info — same logic as feed cards
+    let countStr = "";
+    if (s.type === "learn") {
+      const parts = [`${s.interested} interested`];
+      if (s.scheduledTime && s.interested >= (s.minGroup ?? 0)) {
+        const regCount = s.participants?.length ?? 0;
+        if (regCount > 0) parts.push(`${regCount} registered`);
+      }
+      if (s.minGroup && s.maxGroup) parts.push(`capacity: ${s.minGroup}–${s.maxGroup}`);
+      countStr = parts.join(" · ");
+    } else if (s.type === "collab") {
+      const pList = s.participants || [];
+      countStr = `${pList.length + (s.interested ?? 0)} interested`;
+    }
 
     return (
       <Card
@@ -74,13 +89,17 @@ export default function MySessionsPage() {
               </span>
               <Badge color={cfg.badgeColor} bg={cfg.badgeBg}>{cfg.label}</Badge>
             </div>
-            {/* Line 2: time */}
+            {/* Line 2: time (T.textMid, matches feed) */}
             {timeStr && (
-              <div style={{ fontSize: 12, color: T.muted }}>{timeStr}</div>
+              <div style={{ fontSize: 12, color: T.textMid, fontWeight: 500 }}>{timeStr}</div>
             )}
-            {/* Line 3: location */}
+            {/* Line 3: location (T.textMid, matches feed) */}
             {locStr && (
-              <div style={{ fontSize: 12, color: T.muted, marginTop: 1 }}>{locStr}</div>
+              <div style={{ fontSize: 12, color: T.textMid, fontWeight: 500 }}>{locStr}</div>
+            )}
+            {/* Line 4: count info (muted, matches feed) */}
+            {countStr && (
+              <div style={{ fontSize: 12, color: T.muted }}>{countStr}</div>
             )}
           </div>
 
