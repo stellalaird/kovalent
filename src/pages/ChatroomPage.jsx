@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { CURRENT_USER } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
 
 export default function ChatroomPage({ session }) {
-  const { setActiveView } = useApp();
+  const { setActiveView, profile } = useApp();
   const [messages, setMessages] = useState(session.messages || []);
   const [input, setInput] = useState("");
   const [logistics, setLogistics] = useState({
@@ -18,7 +17,7 @@ export default function ChatroomPage({ session }) {
 
   function send() {
     if (!input.trim()) return;
-    setMessages(prev => [...prev, { user: CURRENT_USER, text: input, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }]);
+    setMessages(prev => [...prev, { user: profile, text: input, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }]);
     setInput("");
   }
 

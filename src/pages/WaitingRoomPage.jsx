@@ -1,4 +1,4 @@
-import { CURRENT_USER, MOCK_USERS } from "../data/mockData";
+import { MOCK_USERS } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
@@ -8,19 +8,23 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
-  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser } = useApp();
+  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides } = useApp();
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
-  const isTeach = session.type === "learn";
+
+  // Are we the teacher of a teach-type session?
+  const weAreTeacher = session.type === "teach" && teacherOverrides[session.id]?.id === profile?.id;
+
+  const isTeach = session.type === "learn" || weAreTeacher;
   const isMeetup = session.type === "collab";
   const alreadyRegistered = isTeach && mySession?.status === "scheduled";
   const label = session.skill || session.activity || "Session";
-  const host = session.teacher || null;
+  const host = weAreTeacher ? profile : (session.teacher || null);
 
   const registeredList = isTeach ? (session.participants || []) : [];
   const registeredIds = new Set(registeredList.map((u) => u.id));
   const knownInterested = [
-    ...(alreadyJoined ? [CURRENT_USER] : []),
+    ...(alreadyJoined ? [profile] : []),
     ...(session.waitingRoom || []),
     ...(!isTeach ? (session.participants || []) : []),
   ].filter((u, i, arr) => arr.findIndex((x) => x.id === u.id) === i).filter((u) => !registeredIds.has(u.id));
@@ -55,7 +59,7 @@ export default function WaitingRoomPage({ session }) {
         }} />
 
         <button
-          onClick={() => setTab("mySessions")}
+          onClick={() => setTab(alreadyJoined ? "mySessions" : "feed")}
           style={{
             background: T.surface, border: `1px solid ${T.border}`,
             color: T.textMid, borderRadius: 10, padding: "6px 14px",
@@ -107,26 +111,38 @@ export default function WaitingRoomPage({ session }) {
       <div style={{ padding: "18px 16px" }}>
         {/* Actions */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
-          {!alreadyJoined && <Button onClick={() => joinSession(session)}>✓ Join</Button>}
+          {!alreadyJoined && !weAreTeacher && <Button onClick={() => joinSession(session)}>✓ Join</Button>}
           {alreadyJoined && isTeach && session.scheduledTime && !alreadyRegistered && (
             <Button onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s))}>
-              ✓ Register
+              {weAreTeacher ? "Set Meeting Time" : "✓ Register"}
             </Button>
+          )}
+          {alreadyJoined && weAreTeacher && !session.scheduledTime && (
+            <Button onClick={() => {}}>Set Meeting Time</Button>
           )}
           {alreadyRegistered && isTeach && (
             <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>✓ Registered</Button>
           )}
           {alreadyJoined && isMeetup && (
-            <Button variant="secondary" onClick={() => {}}>📅 Propose Meetup</Button>
+            <Button onClick={() => {}}>📅 Propose Meetup</Button>
           )}
           {alreadyJoined && (isTeach || isMeetup) && (
-            <Button onClick={() => setActiveView("chatroom")}>💬 Group Chat</Button>
+            <Button variant="secondary" onClick={() => setActiveView("chatroom")}>Group Chat</Button>
           )}
-          {alreadyRegistered ? (
-            <Button variant="danger" small onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s))}>
+          {alreadyRegistered && (
+            <Button variant="danger" onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s))}>
               Cancel Registration
             </Button>
-          ) : (
+          )}
+          {alreadyJoined && session.type === "teach" && !teacherOverrides[session.id] && (
+            <Button variant="primary" onClick={() => {
+              setTeacherOverrides(prev => ({ ...prev, [session.id]: profile }));
+              setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, myRole: "teacher" } : s));
+            }}>
+              🎓 Offer to Teach
+            </Button>
+          )}
+          {alreadyJoined && !alreadyRegistered && (
             <Button variant="danger" small onClick={() => { setMySessions(prev => prev.filter(s => s.id !== session.id)); setTab("feed"); }}>
               Leave
             </Button>
@@ -196,13 +212,18 @@ export default function WaitingRoomPage({ session }) {
                     </div>
                     {p.note && <div style={{ fontSize: 13, color: T.textMid, marginBottom: 12, lineHeight: 1.6 }}>{p.note}</div>}
                     <div style={{ display: "flex", gap: 8 }}>
-                      <Button variant="secondary" small onClick={() => {}}>View Details</Button>
-                      {registeredForThis
-                        ? <Button variant="success" small style={{ cursor: "default" }} onClick={() => {}}>✓ Registered</Button>
-                        : <Button small onClick={() => setMySessions(prev => {
-                            if (prev.some(s => s.id === propId)) return prev;
-                            return [...prev, { ...session, id: propId, status: "scheduled", scheduledTime: p.time, location: p.location, myRole: "participant" }];
-                          })}>Register</Button>
+                      {!alreadyJoined
+                        ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default", flex: 1 }} onClick={() => {}}>Meetup Chat</Button>
+                        : <Button variant="secondary" style={{ flex: 1 }} onClick={() => {}}>Meetup Chat</Button>
+                      }
+                      {!alreadyJoined
+                        ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default", flex: 1 }} onClick={() => {}}>Join to Register</Button>
+                        : registeredForThis
+                          ? <Button variant="success" style={{ cursor: "default", flex: 1 }} onClick={() => {}}>✓ Registered</Button>
+                          : <Button style={{ flex: 1 }} onClick={() => setMySessions(prev => {
+                              if (prev.some(s => s.id === propId)) return prev;
+                              return [...prev, { ...session, id: propId, status: "scheduled", scheduledTime: p.time, location: p.location, myRole: "participant" }];
+                            })}>Register</Button>
                       }
                     </div>
                   </div>

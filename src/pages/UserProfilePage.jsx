@@ -1,8 +1,7 @@
 import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
-import Badge from "../components/Badge";
+import Avatar from "../components/Avatar";
 import Card from "../components/Card";
-import TokenBadge from "../components/TokenBadge";
 
 export default function UserProfilePage({ user }) {
   const { setViewingUser } = useApp();
@@ -32,19 +31,13 @@ export default function UserProfilePage({ user }) {
 
       <div style={{ padding: "22px 16px 28px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-          <div style={{
-            width: 76, height: 76, borderRadius: "50%",
-            background: user.color || T.purple,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", fontWeight: 900, fontSize: 26, fontFamily: T.fontDisplay,
-            boxShadow: `0 0 0 2px ${T.card}, 0 0 0 4px rgba(180,140,40,0.6), 0 0 24px rgba(180,140,40,0.3)`,
-            flexShrink: 0,
-          }}>
-            {user.avatar}
-          </div>
+          <Avatar user={user} size={76} ring />
           <div>
-            <div style={{ fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 22, color: T.text, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
-              {user.name}
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+              <span style={{ fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 22, color: T.text, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
+                {user.name}
+              </span>
+              {user.gender && <span style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>{user.gender}</span>}
             </div>
             <div style={{ fontSize: 13, color: T.textMid, marginTop: 4, fontWeight: 500 }}>
               {user.year} · {user.major}
@@ -52,10 +45,18 @@ export default function UserProfilePage({ user }) {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 8, marginBottom: 22, flexWrap: "wrap" }}>
-          {user.tokens != null && <TokenBadge count={user.tokens} />}
-          {user.gender && <Badge color={T.textMid} bg={T.surface}>{user.gender}</Badge>}
-        </div>
+        {user.rating != null && (
+          <div style={{ marginBottom: 22 }}>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 5,
+              background: T.goldBg, color: T.gold,
+              padding: "5px 12px", borderRadius: 999,
+              fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em",
+              border: `1px solid ${T.goldBorder}`,
+              boxShadow: "0 0 12px rgba(245,158,11,0.2)",
+            }}>★ {user.rating} teach rating</span>
+          </div>
+        )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 22 }}>
           {stats.map(({ icon, label, value }) => (

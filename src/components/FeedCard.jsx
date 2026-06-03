@@ -7,16 +7,21 @@ import Badge from "./Badge";
 import Button from "./Button";
 
 export default function FeedCard({ session }) {
-  const { expandedCard, setExpandedCard, openSession, mySessions } = useApp();
+  const { expandedCard, setExpandedCard, openSession, joinSession, mySessions, teacherOverrides, setTeacherOverrides, profile } = useApp();
   const cardId = session._proposalKey || session.id;
   const isExpanded = expandedCard === cardId;
   const joined = mySessions.find((s) => s.id === session.id);
+
+  // Teacher assignment for teach-type sessions
+  const assignedTeacher = session.type === "teach" ? teacherOverrides[session.id] : null;
+  const weAreTeacher = assignedTeacher?.id === profile?.id;
+  const someoneElseIsTeacher = assignedTeacher && !weAreTeacher;
 
   const tc = T.sessionTypes[session.type] ?? T.sessionTypes.learn;
   const tLearn = T.sessionTypes.learn;
   const tTeach = T.sessionTypes.teach;
   const title = session.skill || session.activity || "Session";
-  const teacher = session.type === "learn" ? session.teacher : null;
+  const teacher = session.type === "learn" ? session.teacher : someoneElseIsTeacher ? assignedTeacher : null;
   const pList = session.participants || [];
   const waitingList = session.waitingRoom || [];
 
@@ -24,8 +29,8 @@ export default function FeedCard({ session }) {
   let sub = "";
   if (session._proposal) {
     const p = session._proposal;
-    sub = p.time + (p.location ? ` · ${p.location}` : "");
-  } else if (session.type === "learn" && session.scheduledTime) {
+    sub = p.time;
+  } else if (session.scheduledTime) {
     sub = session.scheduledTime;
   } else {
     const count = session.type === "collab"
@@ -35,9 +40,14 @@ export default function FeedCard({ session }) {
   }
 
   // Avatar shown in collapsed row
-  const collapsedAvatar = session.type === "learn"
+  const teachOverflow = Math.max(0, (session.interested ?? 0) - 1);
+  const collabOverflow = Math.max(0, (pList.length + (session.interested ?? 0)) - 1);
+
+  const collapsedAvatar = (session.type === "learn" || someoneElseIsTeacher)
     ? <Avatar user={teacher} size={34} />
-    : <AvatarRow users={session.type === "teach" ? waitingList : pList} size={34} max={1} />;
+    : session.type === "teach"
+      ? <AvatarRow users={waitingList} size={34} max={1} overflowCount={teachOverflow} />
+      : <AvatarRow users={pList} size={34} max={1} overflowCount={collabOverflow} />;
 
   return (
     <div
@@ -67,11 +77,17 @@ export default function FeedCard({ session }) {
               {title}
             </span>
             <div style={{ display: "flex", flexDirection: "row", gap: 4, flexShrink: 0 }}>
-              {session.type === "teach" && (
+              {session.type === "teach" && !assignedTeacher && (
                 <>
                   <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>
                   <Badge color={tTeach.badge} bg={tTeach.bg}>Teach</Badge>
                 </>
+              )}
+              {session.type === "teach" && weAreTeacher && (
+                <Badge color={tTeach.badge} bg={tTeach.bg}>Teach</Badge>
+              )}
+              {session.type === "teach" && someoneElseIsTeacher && (
+                <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>
               )}
               {session.type === "learn" && (
                 <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>
@@ -94,8 +110,8 @@ export default function FeedCard({ session }) {
           padding: "14px 16px 16px",
           background: session.type === "collab" ? T.surfaceHover : "#FAFAFA",
         }}>
-          {/* Learn: show teacher details */}
-          {session.type === "learn" && teacher && (
+          {/* Show teacher details for learn cards or when someone claimed a teach card */}
+          {(session.type === "learn" || someoneElseIsTeacher) && teacher && (
             <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
               <Avatar user={teacher} size={40} ring />
               <div>
@@ -127,21 +143,36 @@ export default function FeedCard({ session }) {
           )}
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {session.type === "learn" && (
+            {(session.type === "learn" || someoneElseIsTeacher) && (
               <Button small onClick={() => openSession(joined ? { ...session, ...joined } : session, "waitingRoom")}>
                 View Waiting Room
               </Button>
             )}
-            {session.type === "teach" && (
+            {session.type === "teach" && !assignedTeacher && (
               <>
-                <Button small onClick={() => {}}>🎓 Offer to Teach</Button>
+                <Button small onClick={() => {
+                  setTeacherOverrides(prev => ({ ...prev, [session.id]: profile }));
+                  joinSession(session, "teacher");
+                  openSession({ ...session, myRole: "teacher" }, "waitingRoom");
+                }}>
+                  🎓 Offer to Teach
+                </Button>
                 <Button variant="secondary" small onClick={() => openSession(session, "waitingRoom")}>
                   View Waiting Room
                 </Button>
               </>
             )}
+            {session.type === "teach" && weAreTeacher && (
+              <Button small onClick={() => openSession(session, "waitingRoom")}>
+                View Waiting Room
+              </Button>
+            )}
             {session.type === "collab" && (
-              <Button small onClick={() => openSession(joined ? { ...session, ...joined } : session, "waitingRoom")}>
+              <Button small onClick={() => {
+                // Strip proposal-specific fields so we always open the base collab waiting room
+                const { _proposal, _proposalKey, ...baseSession } = session;
+                openSession(joined ? { ...baseSession, ...joined } : baseSession, "waitingRoom");
+              }}>
                 View Waiting Room
               </Button>
             )}

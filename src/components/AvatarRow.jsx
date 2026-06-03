@@ -1,9 +1,9 @@
 import { T } from "../styles/theme";
 import Avatar from "./Avatar";
 
-export default function AvatarRow({ users, max = 4, size = 28 }) {
+export default function AvatarRow({ users, max = 4, size = 28, overflowCount }) {
   const shown = users.slice(0, max);
-  const extra = users.length - max;
+  const extra = overflowCount !== undefined ? overflowCount : users.length - max;
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       {shown.map((u, i) => (

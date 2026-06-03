@@ -1,5 +1,5 @@
 // ─── MOCK DATA ───────────────────────────────────────
-import { MOCK_USERS, CURRENT_USER, MOCK_SESSIONS, MY_SESSIONS } from "../data/mockData";
+import { MOCK_USERS, MOCK_SESSIONS, MY_SESSIONS } from "../data/mockData";
 
 // ─── APP STATE CONTEXT ───────────────────────────────────────
 import { AppProvider, useApp } from "../context/AppContext";

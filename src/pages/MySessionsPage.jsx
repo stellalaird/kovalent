@@ -23,10 +23,30 @@ export default function MySessionsPage() {
     return true;
   });
 
+  function parseSessionTime(str) {
+    if (!str) return null;
+    try {
+      const withoutDay = str.replace(/^[A-Za-z]+,\s*/, "");
+      const [datePart, timePart] = withoutDay.split(" · ");
+      return new Date(`${datePart} 2025 ${timePart || "12:00 AM"}`);
+    } catch { return null; }
+  }
+
+  function sortChronological(arr) {
+    return [...arr].sort((a, b) => {
+      const ta = parseSessionTime(a.scheduledTime);
+      const tb = parseSessionTime(b.scheduledTime);
+      if (ta && tb) return ta - tb;
+      if (ta) return -1;
+      if (tb) return 1;
+      return 0;
+    });
+  }
+
   const grouped = {
-    waiting_room: filtered.filter(s => s.status === "waiting_room"),
-    scheduled: filtered.filter(s => s.status === "scheduled"),
-    completed: filtered.filter(s => s.status === "completed"),
+    waiting_room: sortChronological(filtered.filter(s => s.status === "waiting_room")),
+    scheduled: sortChronological(filtered.filter(s => s.status === "scheduled")),
+    completed: sortChronological(filtered.filter(s => s.status === "completed")),
   };
 
   function SessionMiniCard({ s }) {
@@ -39,13 +59,18 @@ export default function MySessionsPage() {
     const pList = s.participants || [];
     const wList = s.waitingRoom || [];
 
+    const teachOverflow = Math.max(0, (s.interested ?? 0) - 1);
+    const collabOverflow = Math.max(0, (pList.length + (s.interested ?? 0)) - 1);
+
     const avatarEl = isCollab(s)
-      ? <AvatarRow users={pList} size={34} max={1} />
-      : isTeachRole(s)
-        ? <AvatarRow users={pList.length ? pList : wList} size={34} max={1} />
-        : teacher
-          ? <Avatar user={teacher} size={34} />
-          : null;
+      ? <AvatarRow users={pList} size={34} max={1} overflowCount={collabOverflow} />
+      : s.type === "teach"
+        ? <AvatarRow users={wList} size={34} max={1} overflowCount={teachOverflow} />
+        : isTeachRole(s)
+          ? <AvatarRow users={pList.length ? pList : wList} size={34} max={1} overflowCount={Math.max(0, (pList.length || wList.length) - 1)} />
+          : teacher
+            ? <Avatar user={teacher} size={34} />
+            : null;
 
     const sub = s.scheduledTime || (isCollab(s)
       ? `${(pList.length + (s.interested ?? 0))} interested`
@@ -89,7 +114,7 @@ export default function MySessionsPage() {
   }
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
       <PageHeader>
         <div style={{
           fontFamily: T.fontDisplay, fontSize: 24, fontWeight: 900,
@@ -98,15 +123,20 @@ export default function MySessionsPage() {
           My Sessions
         </div>
         <div style={{ display: "flex", gap: 6, paddingBottom: 14, overflowX: "auto" }}>
-          {["all", "teach", "learn", "collab"].map(id => (
+          {[
+            { id: "all",    label: "All" },
+            { id: "teach",  label: "Teach" },
+            { id: "learn",  label: "Learn" },
+            { id: "collab", label: "Meetups" },
+          ].map(({ id, label }) => (
             <Pill key={id} active={filter === id} onClick={() => setFilter(id)}>
-              {id.charAt(0).toUpperCase() + id.slice(1)}
+              {label}
             </Pill>
           ))}
         </div>
       </PageHeader>
 
-      <div style={{ padding: "18px 16px", background: T.appBg, minHeight: "100vh" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "18px 16px", background: T.appBg }}>
         {grouped.waiting_room.length > 0 && (
           <Section title={`Waiting Rooms (${grouped.waiting_room.length})`}>
             {grouped.waiting_room.map(s => <SessionMiniCard key={s.id} s={s} />)}

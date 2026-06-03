@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
+import Avatar from "../components/Avatar";
 import Badge from "../components/Badge";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
@@ -13,11 +14,12 @@ export default function ProfilePage() {
 
   function save() { setProfile(form); setEditing(false); }
 
+  const rating = profile.rating ?? 4.5;
+
   const stats = [
     { icon: "🎓", label: "Taught",  value: profile.taught  },
     { icon: "📖", label: "Learned", value: profile.learned },
     { icon: "🤝", label: "Meetups", value: profile.meetups },
-    { icon: "★",  label: "Rating",  value: profile.rating  },
   ];
 
   return (
@@ -31,19 +33,13 @@ export default function ProfilePage() {
       <div style={{ padding: "22px 16px 28px" }}>
         {/* Avatar row */}
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-          <div style={{
-            width: 76, height: 76, borderRadius: "50%",
-            background: profile.color,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", fontWeight: 900, fontSize: 26, fontFamily: T.fontDisplay,
-            boxShadow: `0 0 0 2px ${T.card}, 0 0 0 4px rgba(180,140,40,0.6), 0 0 24px rgba(180,140,40,0.3)`,
-            flexShrink: 0,
-          }}>
-            {profile.avatar}
-          </div>
+          <Avatar user={profile} size={76} ring />
           <div>
-            <div style={{ fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 22, color: T.text, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
-              {profile.name}
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+              <span style={{ fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 22, color: T.text, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
+                {profile.name}
+              </span>
+              {profile.gender && <span style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>{profile.gender}</span>}
             </div>
             <div style={{ fontSize: 13, color: T.textMid, marginTop: 4, fontWeight: 500 }}>
               {profile.year} · {profile.major}
@@ -52,25 +48,32 @@ export default function ProfilePage() {
         </div>
 
         <div style={{ display: "flex", gap: 8, marginBottom: 22, flexWrap: "wrap" }}>
-          <TokenBadge count={profile.tokens} />
-          <Badge color={T.textMid} bg={T.surface}>{profile.gender}</Badge>
+          <TokenBadge count={profile.tokens} showLabel />
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 5,
+            background: T.goldBg, color: T.gold,
+            padding: "5px 12px", borderRadius: 999,
+            fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em",
+            border: `1px solid ${T.goldBorder}`,
+            boxShadow: "0 0 12px rgba(245,158,11,0.2)",
+          }}>★ {rating} teach rating</span>
         </div>
 
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 22 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 22 }}>
           {stats.map(({ icon, label, value }) => (
-            <Card key={label} style={{ borderTop: `2px solid ${T.purple}`, boxShadow: `${T.cardShadow}, 0 0 16px rgba(180,140,40,0.06)` }}>
-              <div style={{ padding: "16px 14px 14px" }}>
-                <div style={{ fontSize: 20, marginBottom: 8 }}>{icon}</div>
+            <Card key={label} style={{ borderTop: `2px solid ${T.purple}` }}>
+              <div style={{ padding: "14px 12px 12px" }}>
+                <div style={{ fontSize: 18, marginBottom: 6 }}>{icon}</div>
                 <div style={{
-                  fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 28,
-                  letterSpacing: "-0.04em", lineHeight: 1, marginBottom: 4,
+                  fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 22,
+                  letterSpacing: "-0.03em", lineHeight: 1, marginBottom: 4,
                   background: T.purpleGradient,
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
                 }}>
                   {value}
                 </div>
-                <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</div>
+                <div style={{ fontSize: 10, color: T.muted, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</div>
               </div>
             </Card>
           ))}

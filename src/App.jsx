@@ -8,6 +8,7 @@ import MySessionsPage from "./pages/MySessionsPage";
 import ProfilePage from "./pages/ProfilePage";
 import SessionPage from "./pages/SessionPage";
 import SettingsPage from "./pages/SettingsPage";
+import CreateSessionPage from "./pages/CreateSessionPage";
 
 // ─── ROOT APP ─────────────────────────────────────────────────
 
@@ -17,23 +18,27 @@ function AppInner() {
   return (
     <div
       style={{
+        position: "relative",
         width: "100%",
         maxWidth: 430,
-        minHeight: "100vh",
+        height: "100dvh",
         background: T.appBg,
-        position: "relative",
+        display: "flex",
+        flexDirection: "column",
         overflowX: "hidden",
-        paddingBottom: tab === "session" ? 0 : 76,
-        boxShadow: "0 0 0 1px rgba(147,100,246,0.1), 0 0 80px rgba(147,100,246,0.15), 0 0 160px rgba(0,0,0,0.8)",
+        boxShadow: "0 0 0 1px rgba(180,140,40,0.1), 0 0 80px rgba(180,140,40,0.1), 0 0 160px rgba(0,0,0,0.3)",
       }}
     >
-      {tab === "feed" && <FeedPage />}
-      {tab === "mySessions" && <MySessionsPage />}
-      {tab === "session" && <SessionPage />}
-      {tab === "profile" && <ProfilePage />}
-      {tab === "settings" && <SettingsPage />}
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowX: "hidden" }}>
+        {tab === "feed" && <FeedPage />}
+        {tab === "mySessions" && <MySessionsPage />}
+        {tab === "session" && <SessionPage />}
+        {tab === "profile" && <ProfilePage />}
+        {tab === "settings" && <SettingsPage />}
+        {tab === "createSession" && <CreateSessionPage />}
+      </div>
 
-      {tab !== "session" && <BottomNav />}
+      {tab !== "session" && tab !== "createSession" && <BottomNav />}
       {toast && <Toast msg={toast.msg} type={toast.type} />}
       {viewingUser && <UserProfilePage user={viewingUser} />}
     </div>

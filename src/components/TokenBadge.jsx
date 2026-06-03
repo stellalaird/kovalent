@@ -1,6 +1,6 @@
 import { T } from "../styles/theme";
 
-export default function TokenBadge({ count }) {
+export default function TokenBadge({ count, showLabel }) {
   return (
     <span style={{
       display: "inline-flex",
@@ -16,7 +16,7 @@ export default function TokenBadge({ count }) {
       border: `1px solid ${T.goldBorder}`,
       boxShadow: "0 0 12px rgba(245,158,11,0.2)",
     }}>
-      ✦ {count}
+      ✦ {count}{showLabel ? " tokens" : ""}
     </span>
   );
 }

@@ -15,6 +15,8 @@ function AppProvider({ children }) {
   const [activeSession, setActiveSession] = useState(null);
   const [activeView, setActiveView] = useState(null); // "waitingRoom"|"chatroom"|"scheduled"|"completed"
   const [mySessions, setMySessions] = useState(MY_SESSIONS);
+  const [customSessions, setCustomSessions] = useState([]);
+  const [teacherOverrides, setTeacherOverrides] = useState({});
   const [profile, setProfile] = useState(CURRENT_USER);
   const [darkMode, setDarkMode] = useState(false);
   const [toast, setToast] = useState(null);
@@ -26,10 +28,10 @@ function AppProvider({ children }) {
     setTimeout(() => setToast(null), 3000);
   }
 
-  function joinSession(session) {
+  function joinSession(session, roleOverride) {
     const already = mySessions.find(s => s.id === session.id);
     if (already) return;
-    const myRole = session.type === "collab" ? "participant" : "learner";
+    const myRole = roleOverride ?? (session.type === "collab" ? "participant" : "learner");
     setMySessions(prev => [...prev, { ...session, status: "waiting_room", myRole }]);
   }
 
@@ -49,6 +51,8 @@ function AppProvider({ children }) {
       activeSession, setActiveSession,
       activeView, setActiveView,
       mySessions, setMySessions,
+      customSessions, setCustomSessions,
+      teacherOverrides, setTeacherOverrides,
       profile, setProfile,
       darkMode, setDarkMode,
       toast, showToast,

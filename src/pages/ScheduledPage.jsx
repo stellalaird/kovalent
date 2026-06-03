@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { CURRENT_USER } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
@@ -9,7 +8,7 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function ScheduledPage({ session }) {
-  const { setTab, setActiveView, showToast } = useApp();
+  const { setTab, setActiveView, showToast, profile } = useApp();
   const [showContact, setShowContact] = useState(null);
   const label = session.skill || session.activity;
   const host = session.teacher;
@@ -70,7 +69,7 @@ export default function ScheduledPage({ session }) {
         </Card>
 
         <Section title="Participants">
-          {[CURRENT_USER, ...(host ? [host] : []), ...participants].map((u) => (
+          {[profile, ...(host ? [host] : []), ...participants].map((u) => (
             <Card key={u.id} style={{ marginBottom: 8 }}>
               <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                 <Avatar user={u} size={40} />

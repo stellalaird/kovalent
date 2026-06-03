@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { CURRENT_USER } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
@@ -9,7 +8,7 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function CompletedPage({ session }) {
-  const { setTab, setViewingUser, setProfile, mySessions, setMySessions } = useApp();
+  const { setTab, setViewingUser, setProfile, mySessions, setMySessions, profile } = useApp();
 
   const isLearner = session.myRole === "learner";
   const label    = session.skill || session.activity;
@@ -207,7 +206,7 @@ export default function CompletedPage({ session }) {
 
             {/* 5. Participants */}
             <Section title={`Participants (${participants.length + 1})`}>
-              {[CURRENT_USER, ...participants].map(u => (
+              {[profile, ...participants].map(u => (
                 <Card
                   key={u.id}
                   style={{ marginBottom: 8, cursor: u.id !== "me" ? "pointer" : "default" }}
@@ -259,7 +258,7 @@ export default function CompletedPage({ session }) {
 
             {/* Attendance */}
             <Section title="Attendance">
-              {[CURRENT_USER, ...participants].map(u => (
+              {[profile, ...participants].map(u => (
                 <Card
                   key={u.id}
                   style={{ marginBottom: 8, cursor: u.id !== "me" ? "pointer" : "default" }}
