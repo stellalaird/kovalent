@@ -94,9 +94,9 @@ export default function FeedPage() {
         <div style={{ display: "flex", gap: 5, paddingBottom: 10, overflowX: "auto" }}>
           {[
             { id: "all", label: "All" },
-            { id: "teach", label: "Teach" },
             { id: "learn", label: "Learn" },
-            { id: "meetup", label: "Collab" },
+            { id: "teach", label: "Teach" },
+            { id: "collab", label: "Collab" },
           ].map(({ id, label }) => (
             <Pill
               key={id}

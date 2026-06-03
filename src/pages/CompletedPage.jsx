@@ -9,27 +9,38 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function CompletedPage({ session }) {
-  const { setTab, setViewingUser } = useApp();
+  const { setTab, setViewingUser, setProfile, mySessions, setMySessions } = useApp();
 
   const isLearner = session.myRole === "learner";
   const label    = session.skill || session.activity;
   const host     = session.teacher || null;
   const participants = session.attended || session.participants || [];
 
-  // Rating
-  const [rating, setRating]           = useState(0);
+  // Rating — initialised from persisted session data
+  const [rating, setRating]           = useState(session.ratingValue    || 0);
   const [hoverRating, setHoverRating] = useState(0);
-  const [ratingDone, setRatingDone]   = useState(false);
+  const [ratingDone, setRatingDone]   = useState(session.ratingSubmitted || false);
 
-  // Tipping (learner only)
-  const [extraTip, setExtraTip] = useState(0);
-  const [tipSent, setTipSent]   = useState(false);
-  const totalTip = 1 + extraTip;
+  // Tipping — initialised from persisted session data
+  const [extraTip, setExtraTip] = useState(session.extraTipAmount || 0);
+  const [tipSent, setTipSent]   = useState(session.tipSent        || false);
+
+  function persistTip(amount) {
+    setMySessions(prev => prev.map(s =>
+      s.id === session.id ? { ...s, tipSent: true, extraTipAmount: amount } : s
+    ));
+  }
+
+  function persistRating(value) {
+    setMySessions(prev => prev.map(s =>
+      s.id === session.id ? { ...s, ratingSubmitted: true, ratingValue: value } : s
+    ));
+  }
 
   return (
     <div>
-      {/* Header */}
-      <div style={{ background: T.success, padding: "20px 16px 16px" }}>
+      {/* Header — matches WaitingRoomPage style */}
+      <div style={{ background: T.purpleGradient, padding: "20px 16px 16px" }}>
         <button
           onClick={() => setTab("mySessions")}
           style={{
@@ -40,10 +51,19 @@ export default function CompletedPage({ session }) {
         >
           ← Back
         </button>
-        <Badge color="#fff" bg="rgba(255,255,255,0.2)">Completed 🎉</Badge>
-        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", marginTop: 8 }}>{label}</div>
-        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", marginTop: 4 }}>
-          {session.scheduledTime}
+        <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+          {session.type === "collab" ? "Group Collab" : session.myRole === "learner" ? "Learning Session" : "Teaching Session"}
+        </div>
+        <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", marginTop: 4 }}>{label}</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+            ✓ Completed
+          </div>
+          {session.scheduledTime && (
+            <div style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "#fff" }}>
+              {session.scheduledTime}
+            </div>
+          )}
         </div>
       </div>
 
@@ -59,24 +79,26 @@ export default function CompletedPage({ session }) {
                   Tip the Teacher
                 </div>
 
-                {/* Auto-tip — always done */}
+                {/* Auto-tip row — updates to total once extra tip is sent */}
                 <div style={{
                   display: "flex", alignItems: "center", gap: 8,
                   background: T.successBg, borderRadius: 10,
-                  padding: "8px 12px", marginBottom: 16,
+                  padding: "8px 12px", marginBottom: tipSent ? 0 : 16,
                 }}>
                   <span style={{ fontSize: 16 }}>✦</span>
                   <span style={{ fontSize: 13, fontWeight: 600, color: T.success }}>
-                    1 token sent to {host?.name || "teacher"} ✓
+                    {tipSent
+                      ? `${1 + extraTip} tokens sent to ${host?.name || "teacher"} ✓`
+                      : `1 token sent to ${host?.name || "teacher"} ✓`}
                   </span>
                 </div>
 
-                {/* Extra tip */}
-                <div style={{ fontSize: 13, fontWeight: 600, color: T.textMid, marginBottom: 8 }}>
-                  Send an extra tip?
-                </div>
-                {!tipSent ? (
+                {/* Extra tip — hidden once sent */}
+                {!tipSent && (
                   <>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: T.textMid, marginBottom: 8, marginTop: 16 }}>
+                      Send an extra tip?
+                    </div>
                     <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
                       {[1, 2, 3].map(n => (
                         <button
@@ -95,15 +117,15 @@ export default function CompletedPage({ session }) {
                       ))}
                     </div>
                     {extraTip > 0 && (
-                      <Button small onClick={() => setTipSent(true)}>
+                      <Button small onClick={() => {
+                        setTipSent(true);
+                        persistTip(extraTip);
+                        setProfile(prev => ({ ...prev, tokens: Math.max(0, prev.tokens - extraTip) }));
+                      }}>
                         Send ✦{extraTip} more
                       </Button>
                     )}
                   </>
-                ) : (
-                  <div style={{ color: T.success, fontWeight: 700, fontSize: 14 }}>
-                    ✓ +{extraTip} tokens sent to {host?.name || "teacher"}
-                  </div>
                 )}
               </div>
             </Card>
@@ -131,7 +153,7 @@ export default function CompletedPage({ session }) {
                         >★</button>
                       ))}
                     </div>
-                    <Button small onClick={() => { if (rating > 0) setRatingDone(true); }}>
+                    <Button small onClick={() => { if (rating > 0) { setRatingDone(true); persistRating(rating); } }}>
                       Submit Rating
                     </Button>
                   </>
@@ -287,7 +309,7 @@ export default function CompletedPage({ session }) {
                         >★</button>
                       ))}
                     </div>
-                    <Button small onClick={() => { if (rating > 0) setRatingDone(true); }}>
+                    <Button small onClick={() => { if (rating > 0) { setRatingDone(true); persistRating(rating); } }}>
                       Submit Rating
                     </Button>
                   </>

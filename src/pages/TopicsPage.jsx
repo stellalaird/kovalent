@@ -54,7 +54,7 @@ const ALL_SESSIONS = [
   ...MOCK_SESSIONS,
   {
     id: "s-comp1",
-    type: "teach",
+    type: "learn",
     skill: "Intro to Chess",
     teacher: MOCK_USERS[0],
     level: "Beginner",
@@ -136,8 +136,8 @@ function TopicDetailPage({ tag, onBack }) {
         {upcoming.length > 0 && (
           <Section title={`Upcoming (${upcoming.length})`}>
             {upcoming.map((session) => {
-              if (session.type === "teach") return <TeachCard key={session.id} session={session} />;
               if (session.type === "learn") return <LearnCard key={session.id} session={session} />;
+              if (session.type === "teach") return <TeachCard key={session.id} session={session} />;
               return <MeetupCard key={session.id} session={session} />;
             })}
           </Section>

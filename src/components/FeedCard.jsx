@@ -8,10 +8,10 @@ import Button from "./Button";
 import Card from "./Card";
 
 function TypeBadges({ type }) {
-  if (type === "teach") {
+  if (type === "learn") {
     return <Badge color={T.purple} bg={T.purpleLight}>Learn</Badge>;
   }
-  if (type === "learn") {
+  if (type === "teach") {
     return (
       <>
         <Badge color="#1D4ED8" bg="#DBEAFE">Teach</Badge>
@@ -31,16 +31,16 @@ export default function FeedCard({ session }) {
   const tc = T.sessionTypes[session.type] ?? T.sessionTypes.meetup;
   const title = session.skill || session.activity || "Session";
   const person =
-    session.type === "teach"
+    session.type === "learn"
       ? session.teacher
-      : session.type === "learn"
+      : session.type === "teach"
       ? session.requester
       : null;
   const pList = session.participants || [];
 
   // Compact count string for collapsed row
   let countStr = "";
-  if (session.type === "teach") {
+  if (session.type === "learn") {
     const parts = [`${session.interested} interested`];
     const enoughInterest = session.interested >= (session.minGroup ?? 0);
     if (session.scheduledTime && enoughInterest) {
@@ -148,7 +148,7 @@ export default function FeedCard({ session }) {
           )}
 
           {/* Meetup participants row */}
-          {session.type === "meetup" && pList.length > 0 && (
+          {session.type === "collab" && pList.length > 0 && (
             <div style={{ marginBottom: 12 }}>
               <AvatarRow users={pList} size={32} />
             </div>
@@ -169,7 +169,7 @@ export default function FeedCard({ session }) {
           )}
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {session.type === "teach" && (
+            {session.type === "learn" && (
               <Button
                 small
                 onClick={() => openSession(joined ? { ...session, ...joined } : session, "waitingRoom")}
@@ -178,7 +178,7 @@ export default function FeedCard({ session }) {
               </Button>
             )}
 
-            {session.type === "learn" && (
+            {session.type === "teach" && (
               <>
                 <Button small onClick={() => {}}>
                   🎓 Offer to Teach
@@ -193,7 +193,7 @@ export default function FeedCard({ session }) {
               </>
             )}
 
-            {session.type === "meetup" && (
+            {session.type === "collab" && (
               <Button
                 small
                 onClick={() => openSession(joined ? { ...session, ...joined } : session, "waitingRoom")}

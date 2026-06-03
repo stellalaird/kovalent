@@ -11,8 +11,8 @@ export default function WaitingRoomPage({ session }) {
   const { setTab, setActiveView, mySessions, setMySessions, joinSession, showToast, setViewingUser } = useApp();
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
-  const isTeach = session.type === "teach";
-  const isMeetup = session.type === "meetup";
+  const isTeach = session.type === "learn";
+  const isMeetup = session.type === "collab";
   const alreadyRegistered = isTeach && mySession?.status === "scheduled";
   const label = session.skill || session.activity || "Session";
   const host = session.teacher || null;

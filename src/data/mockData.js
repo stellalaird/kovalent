@@ -139,7 +139,7 @@ const CURRENT_USER = {
 // ─── MOCK SESSIONS ───────────────────────────────────────────
 const MOCK_SESSIONS = [
   {
-    id: "s1", type: "teach", skill: "Jazz Guitar Fundamentals", teacher: MOCK_USERS[1],
+    id: "s1", type: "learn", skill: "Jazz Guitar Fundamentals", teacher: MOCK_USERS[1],
     level: "Beginner", interested: 8, minGroup: 2, maxGroup: 5, taught: 5,
     description: "Learn jazz chord voicings, basic improv theory, and rhythm patterns. We'll start with standards like Autumn Leaves.",
     activityLevel: "high", status: "feed", tags: ["music", "guitar"],
@@ -161,7 +161,7 @@ const MOCK_SESSIONS = [
     ],
   },
   {
-    id: "s2", type: "teach", skill: "Watercolor Basics", teacher: MOCK_USERS[2],
+    id: "s2", type: "learn", skill: "Watercolor Basics", teacher: MOCK_USERS[2],
     level: "All Levels", interested: 12, minGroup: 2, maxGroup: 6, taught: 7,
     description: "Explore wet-on-wet techniques, color blending, and simple landscapes. Materials provided for first session.",
     activityLevel: "medium", status: "feed", tags: ["art", "creative"],
@@ -181,7 +181,7 @@ const MOCK_SESSIONS = [
     ],
   },
   {
-    id: "s3", type: "teach", skill: "Python for Beginners", teacher: MOCK_USERS[0],
+    id: "s3", type: "learn", skill: "Python for Beginners", teacher: MOCK_USERS[0],
     level: "Beginner", interested: 15, minGroup: 3, maxGroup: 8, taught: 3,
     description: "Intro to Python: variables, loops, functions. Perfect for non-CS majors who want to learn coding basics.",
     activityLevel: "high", status: "feed", tags: ["coding", "tech"],
@@ -196,7 +196,7 @@ const MOCK_SESSIONS = [
     ],
   },
   {
-    id: "s4", type: "teach", skill: "Pottery Wheel", teacher: MOCK_USERS[4],
+    id: "s4", type: "learn", skill: "Pottery Wheel", teacher: MOCK_USERS[4],
     level: "Intermediate", interested: 6, minGroup: 2, maxGroup: 4, taught: 4,
     description: "Throwing and centering clay on the wheel. We'll use Norris University Center's ceramics studio.",
     activityLevel: "medium", status: "scheduled",
@@ -207,28 +207,28 @@ const MOCK_SESSIONS = [
     messages: [],
   },
   {
-    id: "s5", type: "learn", skill: "Spanish Conversation", requester: MOCK_USERS[3],
+    id: "s5", type: "teach", skill: "Spanish Conversation", requester: MOCK_USERS[3],
     interested: 4, level: "Intermediate",
     description: "Looking for a fluent speaker to practice conversational Spanish, especially medical vocabulary.",
     activityLevel: "medium", status: "feed", tags: ["language"],
     waitingRoom: [MOCK_USERS[10], MOCK_USERS[7], MOCK_USERS[12]],
   },
   {
-    id: "s6", type: "learn", skill: "Film Photography", requester: MOCK_USERS[5],
+    id: "s6", type: "teach", skill: "Film Photography", requester: MOCK_USERS[5],
     interested: 7, level: "Beginner",
     description: "Want to learn how to shoot and develop 35mm film. Darkroom access at Block Museum.",
     activityLevel: "high", status: "feed", tags: ["photography", "art"],
     waitingRoom: [MOCK_USERS[15], MOCK_USERS[2], MOCK_USERS[8], MOCK_USERS[16]],
   },
   {
-    id: "s7", type: "learn", skill: "Piano / Keyboard", requester: MOCK_USERS[3],
+    id: "s7", type: "teach", skill: "Piano / Keyboard", requester: MOCK_USERS[3],
     interested: 3, level: "Beginner",
     description: "Complete beginner wanting to learn basics. Have a keyboard in my dorm, flexible on timing.",
     activityLevel: "low", status: "feed", tags: ["music"],
     waitingRoom: [MOCK_USERS[9], MOCK_USERS[13]],
   },
   {
-    id: "s8", type: "meetup", activity: "Chess Club",
+    id: "s8", type: "collab", activity: "Chess Club",
     participants: [MOCK_USERS[0], MOCK_USERS[1], MOCK_USERS[4], MOCK_USERS[7], MOCK_USERS[11]],
     activityLevel: "high", status: "feed", interested: 7, maxGroup: 12,
     description: "Casual chess games, any skill level welcome. We meet at Norris weekly and do blitz + analysis.",
@@ -239,7 +239,7 @@ const MOCK_SESSIONS = [
     ],
   },
   {
-    id: "s9", type: "meetup", activity: "Morning Run Group",
+    id: "s9", type: "collab", activity: "Morning Run Group",
     participants: [MOCK_USERS[2], MOCK_USERS[4], MOCK_USERS[8], MOCK_USERS[15]],
     activityLevel: "medium", status: "feed", interested: 4, maxGroup: 10,
     description: "5K loops around the lakefront, Tues/Thurs 7am. All paces welcome, we stick together.",
@@ -248,7 +248,7 @@ const MOCK_SESSIONS = [
   },
   // ── Additional teach sessions ──────────────────────────────
   {
-    id: "s11", type: "teach", skill: "Film Editing Basics", teacher: MOCK_USERS[15],
+    id: "s11", type: "learn", skill: "Film Editing Basics", teacher: MOCK_USERS[15],
     level: "Beginner", interested: 6, minGroup: 2, maxGroup: 4, taught: 2,
     description: "Intro to Premiere Pro and DaVinci Resolve — cutting, color grading, and basic sound. We'll edit a short clip together.",
     activityLevel: "medium", status: "feed", tags: ["art", "tech"],
@@ -260,7 +260,7 @@ const MOCK_SESSIONS = [
     ],
   },
   {
-    id: "s12", type: "teach", skill: "Mandarin for Beginners", teacher: MOCK_USERS[12],
+    id: "s12", type: "learn", skill: "Mandarin for Beginners", teacher: MOCK_USERS[12],
     level: "Beginner", interested: 9, minGroup: 2, maxGroup: 6, taught: 4,
     description: "Learn tones, basic vocab, and survival phrases. Camille is fluent in Mandarin and has taught informally for years.",
     activityLevel: "high", status: "feed", tags: ["language"],
@@ -272,7 +272,7 @@ const MOCK_SESSIONS = [
     ],
   },
   {
-    id: "s13", type: "teach", skill: "Yoga & Mindfulness", teacher: MOCK_USERS[14],
+    id: "s13", type: "learn", skill: "Yoga & Mindfulness", teacher: MOCK_USERS[14],
     level: "All Levels", interested: 11, minGroup: 3, maxGroup: 8, taught: 3,
     description: "A gentle flow + breathing practice for stress relief and flexibility. No experience needed — all levels welcome.",
     activityLevel: "high", status: "feed", tags: ["fitness"],
@@ -291,7 +291,7 @@ const MOCK_SESSIONS = [
     ],
   },
   {
-    id: "s14", type: "teach", skill: "Personal Finance 101", teacher: MOCK_USERS[7],
+    id: "s14", type: "learn", skill: "Personal Finance 101", teacher: MOCK_USERS[7],
     level: "Beginner", interested: 14, minGroup: 4, maxGroup: 10, taught: 3,
     description: "Budgeting, saving, credit scores, investing basics. Built from real experience — no textbooks, just practical knowledge.",
     activityLevel: "high", status: "feed", tags: ["strategy"],
@@ -313,21 +313,21 @@ const MOCK_SESSIONS = [
 
   // ── Additional learn sessions ───────────────────────────────
   {
-    id: "s15", type: "learn", skill: "Electric Guitar", requester: MOCK_USERS[17],
+    id: "s15", type: "teach", skill: "Electric Guitar", requester: MOCK_USERS[17],
     interested: 3, level: "Beginner",
     description: "Complete beginner wanting to learn electric guitar. Have a cheap Strat in my dorm. Open to any genre but especially into indie and math rock.",
     activityLevel: "low", status: "feed", tags: ["music", "guitar"],
     waitingRoom: [MOCK_USERS[1], MOCK_USERS[9]],
   },
   {
-    id: "s16", type: "learn", skill: "French Conversation", requester: MOCK_USERS[11],
+    id: "s16", type: "teach", skill: "French Conversation", requester: MOCK_USERS[11],
     interested: 5, level: "Beginner",
     description: "Looking to practice basic French conversation — vocab, pronunciation, everyday phrases. Can trade Spanish lessons!",
     activityLevel: "medium", status: "feed", tags: ["language"],
     waitingRoom: [MOCK_USERS[12], MOCK_USERS[0]],
   },
   {
-    id: "s17", type: "learn", skill: "Excel & Data Analysis", requester: MOCK_USERS[8],
+    id: "s17", type: "teach", skill: "Excel & Data Analysis", requester: MOCK_USERS[8],
     interested: 8, level: "Beginner",
     description: "Need to get comfortable with Excel and basic data analysis for my econ coursework. Pivot tables, formulas, charts.",
     activityLevel: "high", status: "feed", tags: ["coding", "strategy"],
@@ -336,7 +336,7 @@ const MOCK_SESSIONS = [
 
   // ── Additional collab sessions ──────────────────────────────
   {
-    id: "s18", type: "meetup", activity: "Finals Study Group",
+    id: "s18", type: "collab", activity: "Finals Study Group",
     participants: [MOCK_USERS[16], MOCK_USERS[13], MOCK_USERS[6], MOCK_USERS[3]],
     activityLevel: "high", status: "feed", interested: 8, maxGroup: 15,
     description: "Open study sessions at Mudd library during finals week. Any major welcome — bring your work and good vibes.",
@@ -344,7 +344,7 @@ const MOCK_SESSIONS = [
     messages: [],
   },
   {
-    id: "s19", type: "meetup", activity: "Lakefront Hike",
+    id: "s19", type: "collab", activity: "Lakefront Hike",
     participants: [MOCK_USERS[17], MOCK_USERS[7], MOCK_USERS[14]],
     activityLevel: "medium", status: "feed", interested: 6, maxGroup: 12,
     description: "Casual hike along the lakefront path — about 5 miles round trip. All fitness levels welcome. Usually Saturday mornings.",
@@ -352,7 +352,7 @@ const MOCK_SESSIONS = [
     messages: [],
   },
   {
-    id: "s20", type: "meetup", activity: "Photography Walk",
+    id: "s20", type: "collab", activity: "Photography Walk",
     participants: [MOCK_USERS[2], MOCK_USERS[5], MOCK_USERS[15]],
     activityLevel: "high", status: "feed", interested: 7, maxGroup: 10,
     description: "Casual walk around campus and the lakefront to shoot. Film and digital both welcome. Share and critique each other's shots after.",
@@ -361,7 +361,7 @@ const MOCK_SESSIONS = [
   },
 
   {
-    id: "s10", type: "meetup", activity: "Board Game Night",
+    id: "s10", type: "collab", activity: "Board Game Night",
     activityLevel: "high", status: "scheduled",
     scheduledTime: "Friday, June 6 · 7:00 PM", location: "Norris Game Room",
     participants: [MOCK_USERS[1], MOCK_USERS[5], MOCK_USERS[3], MOCK_USERS[12]],
@@ -379,7 +379,7 @@ const MY_SESSIONS = [
   { ...MOCK_SESSIONS[7], status: "waiting_room", myRole: "participant" },
   { ...MOCK_SESSIONS[9], status: "scheduled",    myRole: "participant" },
   {
-    id: "s-comp1", type: "teach", skill: "Intro to Chess", teacher: MOCK_USERS[0],
+    id: "s-comp1", type: "learn", skill: "Intro to Chess", teacher: MOCK_USERS[0],
     level: "Beginner", status: "completed", myRole: "teacher",
     scheduledTime: "May 15, 2025 · 3:00 PM", location: "Tech LG52",
     participants: [MOCK_USERS[1], MOCK_USERS[3]],
@@ -389,7 +389,7 @@ const MY_SESSIONS = [
     activityLevel: "low", messages: [],
   },
   {
-    id: "c-learn1", type: "teach", skill: "Intro to Film Photography", teacher: MOCK_USERS[2],
+    id: "c-learn1", type: "learn", skill: "Intro to Film Photography", teacher: MOCK_USERS[2],
     level: "Beginner", status: "completed", myRole: "learner",
     scheduledTime: "May 20, 2025 · 2:00 PM", location: "Block Museum Darkroom",
     participants: [MOCK_USERS[3], MOCK_USERS[6], MOCK_USERS[15]],
@@ -398,7 +398,7 @@ const MY_SESSIONS = [
     interested: 4, minGroup: 2, maxGroup: 6, activityLevel: "medium", messages: [],
   },
   {
-    id: "c-learn2", type: "teach", skill: "Music Theory Fundamentals", teacher: MOCK_USERS[9],
+    id: "c-learn2", type: "learn", skill: "Music Theory Fundamentals", teacher: MOCK_USERS[9],
     level: "Beginner", status: "completed", myRole: "learner",
     scheduledTime: "May 28, 2025 · 6:00 PM", location: "Norris Music Room 208",
     participants: [MOCK_USERS[1], MOCK_USERS[13], MOCK_USERS[17]],
@@ -407,7 +407,7 @@ const MY_SESSIONS = [
     interested: 5, minGroup: 2, maxGroup: 6, activityLevel: "medium", messages: [],
   },
   {
-    id: "c-learn3", type: "teach", skill: "Beginner Pottery", teacher: MOCK_USERS[4],
+    id: "c-learn3", type: "learn", skill: "Beginner Pottery", teacher: MOCK_USERS[4],
     level: "Beginner", status: "completed", myRole: "learner",
     scheduledTime: "April 30, 2025 · 3:00 PM", location: "Norris Ceramics Studio",
     participants: [MOCK_USERS[5], MOCK_USERS[11], MOCK_USERS[6]],

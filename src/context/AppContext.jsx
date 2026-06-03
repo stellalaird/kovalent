@@ -29,7 +29,7 @@ function AppProvider({ children }) {
   function joinSession(session) {
     const already = mySessions.find(s => s.id === session.id);
     if (already) return;
-    const myRole = session.type === "meetup" ? "participant" : "learner";
+    const myRole = session.type === "collab" ? "participant" : "learner";
     setMySessions(prev => [...prev, { ...session, status: "waiting_room", myRole }]);
   }
 

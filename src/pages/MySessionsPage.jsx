@@ -9,14 +9,14 @@ import Section from "../components/Section";
 
 // Derive icon / badge config from a session's type + myRole
 function sessionConfig(s) {
-  if (s.type === "meetup") {
+  if (s.type === "collab") {
     return { icon: "🤝", iconBg: T.successBg,  badgeColor: T.success,  badgeBg: T.successBg,  label: "Collab" };
   }
   if (s.myRole === "teacher") {
-    return { icon: "🎓", iconBg: T.purpleLight, badgeColor: T.purple,   badgeBg: T.purpleLight, label: "Teach"  };
+    return { icon: "📖", iconBg: "#DBEAFE",   badgeColor: "#1D4ED8",  badgeBg: "#DBEAFE",     label: "Teach"  };
   }
-  // learner in a teach session
-  return     { icon: "📖", iconBg: "#DBEAFE",   badgeColor: "#1D4ED8",  badgeBg: "#DBEAFE",     label: "Learn"  };
+  // learner in a learn session (has teacher)
+  return     { icon: "🎓", iconBg: T.purpleLight, badgeColor: T.purple,   badgeBg: T.purpleLight, label: "Learn"  };
 }
 
 export default function MySessionsPage() {
@@ -28,7 +28,7 @@ export default function MySessionsPage() {
     const { label } = sessionConfig(s);
     if (filter === "teach")  return label === "Teach";
     if (filter === "learn")  return label === "Learn";
-    if (filter === "meetup") return label === "Collab";
+    if (filter === "collab") return label === "Collab";
     return true;
   });
   const grouped = {
@@ -104,7 +104,7 @@ export default function MySessionsPage() {
             { id: "all",    label: "All"    },
             { id: "teach",  label: "Teach"  },
             { id: "learn",  label: "Learn"  },
-            { id: "meetup", label: "Collab" },
+            { id: "collab", label: "Collab" },
           ].map(({ id, label }) => (
             <Pill key={id} active={filter === id} onClick={() => setFilter(id)}>
               {label}
