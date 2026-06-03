@@ -7,6 +7,21 @@ import Badge from "./Badge";
 import Button from "./Button";
 import Card from "./Card";
 
+function TypeBadges({ type }) {
+  if (type === "teach") {
+    return <Badge color={T.purple} bg={T.purpleLight}>Learn</Badge>;
+  }
+  if (type === "learn") {
+    return (
+      <>
+        <Badge color="#1D4ED8" bg="#DBEAFE">Teach</Badge>
+        <Badge color={T.purple} bg={T.purpleLight}>Learn</Badge>
+      </>
+    );
+  }
+  return <Badge color={T.success} bg={T.successBg}>Collab</Badge>;
+}
+
 export default function FeedCard({ session }) {
   const { expandedCard, setExpandedCard, joinSession, openSession, mySessions, showToast } =
     useApp();
@@ -26,12 +41,18 @@ export default function FeedCard({ session }) {
   // Compact count string for collapsed row
   let countStr = "";
   if (session.type === "teach") {
-    countStr = `${session.interested}${session.minGroup && session.maxGroup ? ` · ${session.minGroup}–${session.maxGroup}` : ""}`;
-  } else if (session.type === "learn") {
-    countStr = `${session.interested} interested`;
+    const parts = [`${session.interested} interested`];
+    const enoughInterest = session.interested >= (session.minGroup ?? 0);
+    if (session.scheduledTime && enoughInterest) {
+      const regCount = session.participants?.length ?? 0;
+      if (regCount > 0) parts.push(`${regCount} registered`);
+    }
+    if (session.minGroup && session.maxGroup) {
+      parts.push(`capacity: ${session.minGroup}–${session.maxGroup}`);
+    }
+    countStr = parts.join(" · ");
   } else {
-    const total = pList.length + (session.interested ?? 0);
-    countStr = `${total} interested`;
+    countStr = `${session.interested} interested`;
   }
 
   return (
@@ -70,9 +91,7 @@ export default function FeedCard({ session }) {
             {title}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 3 }}>
-            <Badge color={tc.badge} bg={tc.bg}>
-              {tc.label}
-            </Badge>
+            <TypeBadges type={session.type} />
             <span style={{ fontSize: 12, color: T.muted }}>{countStr}</span>
           </div>
         </div>
@@ -146,20 +165,14 @@ export default function FeedCard({ session }) {
           )}
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {session.type === "teach" &&
-              (joined ? (
-                <Button
-                  variant="ghost"
-                  small
-                  onClick={() => openSession({ ...session, ...joined }, "waitingRoom")}
-                >
-                  → Go to Waiting Room
-                </Button>
-              ) : (
-                <Button small onClick={() => joinSession(session)}>
-                  ✓ Interested
-                </Button>
-              ))}
+            {session.type === "teach" && (
+              <Button
+                small
+                onClick={() => openSession(joined ? { ...session, ...joined } : session, "waitingRoom")}
+              >
+                View Waiting Room
+              </Button>
+            )}
 
             {session.type === "learn" && (
               <>
@@ -169,31 +182,19 @@ export default function FeedCard({ session }) {
                 <Button
                   variant="secondary"
                   small
-                  onClick={() => showToast("Added to waiting list!")}
+                  onClick={() => openSession(session, "waitingRoom")}
                 >
-                  Join Waitlist
+                  View Waiting Room
                 </Button>
               </>
             )}
 
-            {session.type === "meetup" &&
-              (joined ? (
-                <Button
-                  variant="ghost"
-                  small
-                  onClick={() => openSession({ ...session, ...joined }, "waitingRoom")}
-                >
-                  → Go to Meetup Room
-                </Button>
-              ) : (
-                <Button small onClick={() => joinSession(session)}>
-                  Join Meetup
-                </Button>
-              ))}
-
-            {session.type === "teach" && !joined && (
-              <Button variant="secondary" small onClick={() => {}}>
-                View Profile
+            {session.type === "meetup" && (
+              <Button
+                small
+                onClick={() => openSession(joined ? { ...session, ...joined } : session, "waitingRoom")}
+              >
+                View Waiting Room
               </Button>
             )}
           </div>

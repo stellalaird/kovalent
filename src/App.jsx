@@ -2,6 +2,7 @@ import { T } from "./styles/theme";
 import { AppProvider, useApp } from "./context/AppContext";
 import Toast from "./components/Toast";
 import BottomNav from "./pages/BottomNav";
+import UserProfilePage from "./pages/UserProfilePage";
 import FeedPage from "./pages/FeedPage";
 import MySessionsPage from "./pages/MySessionsPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -11,7 +12,7 @@ import SettingsPage from "./pages/SettingsPage";
 // ─── ROOT APP ─────────────────────────────────────────────────
 
 function AppInner() {
-  const { tab, toast } = useApp();
+  const { tab, toast, viewingUser } = useApp();
 
   return (
     <div
@@ -34,6 +35,7 @@ function AppInner() {
 
       {tab !== "session" && <BottomNav />}
       {toast && <Toast msg={toast.msg} type={toast.type} />}
+      {viewingUser && <UserProfilePage user={viewingUser} />}
     </div>
   );
 }

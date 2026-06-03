@@ -1,47 +1,170 @@
-// ─── MOCK DATA ───────────────────────────────────────────────
+// ─── MOCK USERS ──────────────────────────────────────────────
 const MOCK_USERS = [
-  { id: "u1", name: "Priya Nair", year: "3rd Year", major: "CS + Psychology", gender: "She/Her", avatar: "PN", color: "#7c3aed", tokens: 24, taught: 3, learned: 5, meetups: 4, rating: 4.9, contact: "priya@northwestern.edu" },
-  { id: "u2", name: "Marcus Webb", year: "2nd Year", major: "Music + Economics", gender: "He/Him", avatar: "MW", color: "#0ea5e9", tokens: 18, taught: 5, learned: 2, meetups: 7, rating: 4.8, contact: "marcus@northwestern.edu" },
-  { id: "u3", name: "Sofia Reyes", year: "4th Year", major: "Art History", gender: "She/Her", avatar: "SR", color: "#ec4899", tokens: 31, taught: 7, learned: 3, meetups: 9, rating: 5.0, contact: "sofia@northwestern.edu" },
-  { id: "u4", name: "Jalen Brooks", year: "1st Year", major: "Pre-Med", gender: "He/Him", avatar: "JB", color: "#10b981", tokens: 8, taught: 1, learned: 6, meetups: 2, rating: 4.6, contact: "jalen@northwestern.edu" },
-  { id: "u5", name: "Mei Lin", year: "3rd Year", major: "Chemical Engineering", gender: "She/Her", avatar: "ML", color: "#f59e0b", tokens: 22, taught: 4, learned: 4, meetups: 5, rating: 4.7, contact: "mei@northwestern.edu" },
-  { id: "u6", name: "Devon Park", year: "2nd Year", major: "Film Studies", gender: "They/Them", avatar: "DP", color: "#8b5cf6", tokens: 15, taught: 2, learned: 7, meetups: 3, rating: 4.8, contact: "devon@northwestern.edu" },
+  {
+    id: "u1", name: "Priya Nair", year: "3rd Year", major: "CS + Psychology",
+    gender: "She/Her", avatar: "PN", color: "#7c3aed",
+    tokens: 24, taught: 3, learned: 5, meetups: 4,
+    contact: "priya@northwestern.edu",
+    bio: "CS + Psych junior who loves hackathons, Indian classical dance, and oat lattes. Always down to teach or learn something new.",
+  },
+  {
+    id: "u2", name: "Marcus Webb", year: "2nd Year", major: "Music + Economics",
+    gender: "He/Him", avatar: "MW", color: "#0ea5e9",
+    tokens: 18, taught: 5, learned: 2, meetups: 7,
+    contact: "marcus@northwestern.edu",
+    bio: "Music ed major obsessed with jazz theory, vinyl records, and the intersection of music and economics. Tea > coffee.",
+  },
+  {
+    id: "u3", name: "Sofia Reyes", year: "4th Year", major: "Art History",
+    gender: "She/Her", avatar: "SR", color: "#ec4899",
+    tokens: 31, taught: 7, learned: 3, meetups: 9,
+    contact: "sofia@northwestern.edu",
+    bio: "Art history senior writing my thesis on Brutalist architecture. I sketch everywhere, collect vintage film cameras, and make great pasta.",
+  },
+  {
+    id: "u4", name: "Jalen Brooks", year: "1st Year", major: "Pre-Med",
+    gender: "He/Him", avatar: "JB", color: "#10b981",
+    tokens: 8, taught: 1, learned: 6, meetups: 2,
+    contact: "jalen@northwestern.edu",
+    bio: "Pre-med freshman trying to figure it all out. Big into basketball, Spanish telenovelas, and cooking anything my mom taught me.",
+  },
+  {
+    id: "u5", name: "Mei Lin", year: "3rd Year", major: "Chemical Engineering",
+    gender: "She/Her", avatar: "ML", color: "#f59e0b",
+    tokens: 22, taught: 4, learned: 4, meetups: 5,
+    contact: "mei@northwestern.edu",
+    bio: "ChemE junior with a soft spot for ceramics, hiking, and anything that blurs the line between art and science.",
+  },
+  {
+    id: "u6", name: "Devon Park", year: "2nd Year", major: "Film Studies",
+    gender: "They/Them", avatar: "DP", color: "#8b5cf6",
+    tokens: 15, taught: 2, learned: 7, meetups: 3,
+    contact: "devon@northwestern.edu",
+    bio: "Film studies sophomore making experimental short films in my dorm room. Big fan of A24, long bike rides, and free food.",
+  },
+  {
+    id: "u7", name: "Zoe Chen", year: "2nd Year", major: "Neuroscience",
+    gender: "She/Her", avatar: "ZC", color: "#06b6d4",
+    tokens: 11, taught: 1, learned: 5, meetups: 3,
+    contact: "zchen@northwestern.edu",
+    bio: "Neurosci sophomore fascinated by memory and dreaming. Writes poetry on the side and can be found in the ceramics studio most weekends.",
+  },
+  {
+    id: "u8", name: "Marcus Thompson", year: "4th Year", major: "Political Science",
+    gender: "He/Him", avatar: "MT", color: "#f97316",
+    tokens: 19, taught: 3, learned: 4, meetups: 8,
+    contact: "mthompson@northwestern.edu",
+    bio: "Poly sci senior interning at a nonprofit this semester. Big on debate, long-form journalism, and pickup basketball.",
+  },
+  {
+    id: "u9", name: "Amara Okonkwo", year: "1st Year", major: "Economics",
+    gender: "She/Her", avatar: "AO", color: "#84cc16",
+    tokens: 6, taught: 0, learned: 4, meetups: 2,
+    contact: "amara@northwestern.edu",
+    bio: "Econ freshman from Lagos figuring out Northwestern one dining hall at a time. I love afrobeats, fashion, and financial literacy workshops.",
+  },
+  {
+    id: "u10", name: "Luca Ferretti", year: "3rd Year", major: "Music Performance",
+    gender: "He/Him", avatar: "LF", color: "#a855f7",
+    tokens: 27, taught: 6, learned: 2, meetups: 4,
+    contact: "luca@northwestern.edu",
+    bio: "Music performance junior — classically trained but jazz at heart. I play piano and guitar, compose, and love teaching.",
+  },
+  {
+    id: "u11", name: "Nadia Vasquez", year: "2nd Year", major: "Journalism",
+    gender: "She/Her", avatar: "NV", color: "#e11d48",
+    tokens: 13, taught: 2, learned: 5, meetups: 6,
+    contact: "nadia@northwestern.edu",
+    bio: "Medill sophomore covering campus news and writing a food blog on the side. Fluent in Spanish and working on my French.",
+  },
+  {
+    id: "u12", name: "Eli Park", year: "4th Year", major: "Computer Science",
+    gender: "They/Them", avatar: "EP", color: "#0891b2",
+    tokens: 33, taught: 8, learned: 3, meetups: 5,
+    contact: "eli@northwestern.edu",
+    bio: "CS senior building a startup between classes. They/them. Into climbing, speculative fiction, and making things with my hands.",
+  },
+  {
+    id: "u13", name: "Camille Dubois", year: "3rd Year", major: "International Studies",
+    gender: "She/Her", avatar: "CD", color: "#be185d",
+    tokens: 20, taught: 4, learned: 6, meetups: 7,
+    contact: "camille@northwestern.edu",
+    bio: "International studies junior from Montreal. Speaks French, English, and Mandarin. Into human rights law, photography, and good bread.",
+  },
+  {
+    id: "u14", name: "Oliver Huang", year: "1st Year", major: "Pre-Law",
+    gender: "He/Him", avatar: "OH", color: "#16a34a",
+    tokens: 5, taught: 0, learned: 3, meetups: 1,
+    contact: "oliver@northwestern.edu",
+    bio: "Pre-law freshman who did Model UN throughout high school. Learning piano, training for a 10K, and stress-baking sourdough.",
+  },
+  {
+    id: "u15", name: "Simone Baptiste", year: "2nd Year", major: "Dance + Psychology",
+    gender: "She/Her", avatar: "SB", color: "#d946ef",
+    tokens: 17, taught: 3, learned: 4, meetups: 9,
+    contact: "simone@northwestern.edu",
+    bio: "Dance + psych sophomore choreographing a new piece about grief. I study how movement affects mental health and teach fitness classes.",
+  },
+  {
+    id: "u16", name: "Aiden Moore", year: "3rd Year", major: "Film Studies + CS",
+    gender: "He/Him", avatar: "AM", color: "#475569",
+    tokens: 14, taught: 2, learned: 5, meetups: 4,
+    contact: "aiden@northwestern.edu",
+    bio: "Film + CS junior making tools for indie filmmakers. Into drone cinematography, retro gaming, and fixing old bikes.",
+  },
+  {
+    id: "u17", name: "Fatima Hassan", year: "4th Year", major: "Biomedical Engineering",
+    gender: "She/Her", avatar: "FH", color: "#b45309",
+    tokens: 29, taught: 5, learned: 3, meetups: 6,
+    contact: "fatima@northwestern.edu",
+    bio: "BME senior doing research on wearable biosensors. Also a certified EMT and I run a self-defense workshop for women on campus.",
+  },
+  {
+    id: "u18", name: "Theo Nakamura", year: "2nd Year", major: "Architecture",
+    gender: "He/Him", avatar: "TN", color: "#0f766e",
+    tokens: 10, taught: 1, learned: 6, meetups: 3,
+    contact: "theo@northwestern.edu",
+    bio: "Architecture sophomore obsessed with sustainable design and Japanese spatial philosophy. I sketch constantly and play guitar badly.",
+  },
 ];
 
 const CURRENT_USER = {
-  id: "me", name: "Alex Chen", year: "3rd Year", major: "Computer Science", gender: "He/Him",
-  avatar: "AC", color: "#6c4fc2", tokens: 20, taught: 2, learned: 4, meetups: 3,
-  rating: 4.7, contact: "alexchen@northwestern.edu", bio: "CS junior interested in music, chess, and building cool things.",
+  id: "me", name: "Alex Chen", year: "3rd Year", major: "Computer Science",
+  gender: "He/Him", avatar: "AC", color: "#6c4fc2",
+  tokens: 20, taught: 2, learned: 4, meetups: 3,
+  contact: "alexchen@northwestern.edu",
+  bio: "CS junior interested in music, chess, and building cool things. Always looking for people to learn from and teach.",
 };
 
+// ─── MOCK SESSIONS ───────────────────────────────────────────
 const MOCK_SESSIONS = [
   {
     id: "s1", type: "teach", skill: "Jazz Guitar Fundamentals", teacher: MOCK_USERS[1],
     level: "Beginner", interested: 8, minGroup: 2, maxGroup: 5, taught: 5,
     description: "Learn jazz chord voicings, basic improv theory, and rhythm patterns. We'll start with standards like Autumn Leaves.",
     activityLevel: "high", status: "feed", tags: ["music", "guitar"],
-    waitingRoom: [MOCK_USERS[0], MOCK_USERS[3]],
+    waitingRoom: [MOCK_USERS[0], MOCK_USERS[3], MOCK_USERS[9], MOCK_USERS[13]],
     messages: [
       { user: MOCK_USERS[1], text: "Hey everyone! Excited to teach this. Let's nail down a time.", time: "2:30 PM" },
       { user: MOCK_USERS[0], text: "I'm free most evenings after 6pm!", time: "2:45 PM" },
       { user: MOCK_USERS[3], text: "Weekends work great for me", time: "3:00 PM" },
-    ]
+    ],
   },
   {
     id: "s2", type: "teach", skill: "Watercolor Basics", teacher: MOCK_USERS[2],
     level: "All Levels", interested: 12, minGroup: 2, maxGroup: 6, taught: 7,
     description: "Explore wet-on-wet techniques, color blending, and simple landscapes. Materials provided for first session.",
     activityLevel: "medium", status: "feed", tags: ["art", "creative"],
-    waitingRoom: [MOCK_USERS[4], MOCK_USERS[5], MOCK_USERS[0]],
-    messages: []
+    waitingRoom: [MOCK_USERS[4], MOCK_USERS[5], MOCK_USERS[0], MOCK_USERS[6], MOCK_USERS[14]],
+    messages: [],
   },
   {
     id: "s3", type: "teach", skill: "Python for Beginners", teacher: MOCK_USERS[0],
     level: "Beginner", interested: 15, minGroup: 3, maxGroup: 8, taught: 3,
     description: "Intro to Python: variables, loops, functions. Perfect for non-CS majors who want to learn coding basics.",
     activityLevel: "high", status: "feed", tags: ["coding", "tech"],
-    waitingRoom: [MOCK_USERS[3]],
-    messages: []
+    waitingRoom: [MOCK_USERS[3], MOCK_USERS[9], MOCK_USERS[13], MOCK_USERS[7], MOCK_USERS[11]],
+    messages: [],
   },
   {
     id: "s4", type: "teach", skill: "Pottery Wheel", teacher: MOCK_USERS[4],
@@ -50,58 +173,68 @@ const MOCK_SESSIONS = [
     activityLevel: "medium", status: "scheduled",
     scheduledTime: "Saturday, June 7 · 2:00 PM", location: "Norris Ceramics Studio, Room 201",
     materials: "Clay provided. Wear clothes you don't mind getting dirty.",
+    waitingRoom: [MOCK_USERS[6], MOCK_USERS[16], MOCK_USERS[17], MOCK_USERS[14]],
     participants: [MOCK_USERS[1], MOCK_USERS[5]],
-    messages: []
+    messages: [],
   },
   {
     id: "s5", type: "learn", skill: "Spanish Conversation", requester: MOCK_USERS[3],
-    interested: 4, level: "Intermediate", description: "Looking for a fluent speaker to practice conversational Spanish, especially medical vocab.",
+    interested: 4, level: "Intermediate",
+    description: "Looking for a fluent speaker to practice conversational Spanish, especially medical vocabulary.",
     activityLevel: "medium", status: "feed", tags: ["language"],
+    waitingRoom: [MOCK_USERS[10], MOCK_USERS[7], MOCK_USERS[12]],
   },
   {
     id: "s6", type: "learn", skill: "Film Photography", requester: MOCK_USERS[5],
-    interested: 7, level: "Beginner", description: "Want to learn how to shoot and develop 35mm film. Darkroom access at Block Museum.",
+    interested: 7, level: "Beginner",
+    description: "Want to learn how to shoot and develop 35mm film. Darkroom access at Block Museum.",
     activityLevel: "high", status: "feed", tags: ["photography", "art"],
+    waitingRoom: [MOCK_USERS[15], MOCK_USERS[2], MOCK_USERS[8], MOCK_USERS[16]],
   },
   {
-    id: "s7", type: "learn", skill: "Piano/Keyboard", requester: MOCK_USERS[3],
-    interested: 3, level: "Beginner", description: "Complete beginner wanting to learn basics. Have a keyboard in my dorm.",
+    id: "s7", type: "learn", skill: "Piano / Keyboard", requester: MOCK_USERS[3],
+    interested: 3, level: "Beginner",
+    description: "Complete beginner wanting to learn basics. Have a keyboard in my dorm, flexible on timing.",
     activityLevel: "low", status: "feed", tags: ["music"],
+    waitingRoom: [MOCK_USERS[9], MOCK_USERS[13]],
   },
   {
-    id: "s8", type: "meetup", activity: "Chess Club", participants: [MOCK_USERS[0], MOCK_USERS[1], MOCK_USERS[4]],
-    activityLevel: "high", status: "feed", interested: 9, maxGroup: 12,
+    id: "s8", type: "meetup", activity: "Chess Club",
+    participants: [MOCK_USERS[0], MOCK_USERS[1], MOCK_USERS[4], MOCK_USERS[7], MOCK_USERS[11]],
+    activityLevel: "high", status: "feed", interested: 7, maxGroup: 12,
     description: "Casual chess games, any skill level welcome. We meet at Norris weekly and do blitz + analysis.",
     tags: ["games", "strategy"],
     messages: [
       { user: MOCK_USERS[0], text: "Anyone up for a blitz tourney this weekend?", time: "1:15 PM" },
       { user: MOCK_USERS[1], text: "Absolutely! Saturday works for me", time: "1:20 PM" },
-    ]
+    ],
   },
   {
-    id: "s9", type: "meetup", activity: "Morning Run Group", participants: [MOCK_USERS[2], MOCK_USERS[4]],
-    activityLevel: "medium", status: "feed", interested: 5, maxGroup: 10,
+    id: "s9", type: "meetup", activity: "Morning Run Group",
+    participants: [MOCK_USERS[2], MOCK_USERS[4], MOCK_USERS[8], MOCK_USERS[15]],
+    activityLevel: "medium", status: "feed", interested: 4, maxGroup: 10,
     description: "5K loops around the lakefront, Tues/Thurs 7am. All paces welcome, we stick together.",
     tags: ["fitness", "outdoors"],
-    messages: []
+    messages: [],
   },
   {
-    id: "s10", type: "meetup", activity: "Board Game Night", participants: [MOCK_USERS[1], MOCK_USERS[5], MOCK_USERS[3], MOCK_USERS[2]],
+    id: "s10", type: "meetup", activity: "Board Game Night",
     activityLevel: "high", status: "scheduled",
     scheduledTime: "Friday, June 6 · 7:00 PM", location: "Norris Game Room",
-    participants: [MOCK_USERS[1], MOCK_USERS[5], MOCK_USERS[3]],
+    participants: [MOCK_USERS[1], MOCK_USERS[5], MOCK_USERS[3], MOCK_USERS[12]],
+    interested: 3,
     description: "Catan, Ticket to Ride, Codenames — bring your favorites!",
     tags: ["games", "social"],
-    messages: []
+    messages: [],
   },
 ];
 
 // Sessions the current user is involved in
 const MY_SESSIONS = [
   { ...MOCK_SESSIONS[0], status: "waiting_room", myRole: "learner" },
-  { ...MOCK_SESSIONS[3], status: "scheduled", myRole: "learner" },
+  { ...MOCK_SESSIONS[3], status: "scheduled",    myRole: "learner" },
   { ...MOCK_SESSIONS[7], status: "waiting_room", myRole: "participant" },
-  { ...MOCK_SESSIONS[9], status: "scheduled", myRole: "participant" },
+  { ...MOCK_SESSIONS[9], status: "scheduled",    myRole: "participant" },
   {
     id: "s-comp1", type: "teach", skill: "Intro to Chess", teacher: MOCK_USERS[0],
     level: "Beginner", status: "completed", myRole: "teacher",
@@ -109,9 +242,9 @@ const MY_SESSIONS = [
     participants: [MOCK_USERS[1], MOCK_USERS[3]],
     attended: [MOCK_USERS[1], MOCK_USERS[3]],
     ratings: [5, 4], description: "Taught chess basics.",
+    interested: 2, minGroup: 2, maxGroup: 6, taught: 1,
+    activityLevel: "low", messages: [],
   },
 ];
-
-
 
 export { MOCK_USERS, CURRENT_USER, MOCK_SESSIONS, MY_SESSIONS };

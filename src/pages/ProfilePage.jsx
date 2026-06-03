@@ -1,14 +1,9 @@
 import { useState } from "react";
-
-// ─── APP STATE CONTEXT ───────────────────────────────────────
 import { useApp } from "../context/AppContext";
-
-// ─── STYLES ──────────────────────────────────────────────────
 import { T } from "../styles/theme";
-
-// ─── UTILITY COMPONENTS ──────────────────────────────────────
 import Badge from "../components/Badge";
 import Card from "../components/Card";
+import PageHeader from "../components/PageHeader";
 import TokenBadge from "../components/TokenBadge";
 
 export default function ProfilePage() {
@@ -23,49 +18,45 @@ export default function ProfilePage() {
   }
 
   const stats = [
-    { icon: "🎓", label: "Taught",  value: profile.taught },
+    { icon: "🎓", label: "Taught",  value: profile.taught  },
     { icon: "📖", label: "Learned", value: profile.learned },
     { icon: "🤝", label: "Meetups", value: profile.meetups },
-    { icon: "★",  label: "Rating",  value: profile.rating },
+    { icon: "★",  label: "Rating",  value: profile.rating  },
   ];
 
   return (
     <div>
-      {/* Banner */}
-      <div style={{
-        background: `linear-gradient(140deg, #7C3AED 0%, ${T.purpleDeep} 55%, #1E0A4C 100%)`,
-        padding: "28px 16px 84px",
-        position: "relative",
-        overflow: "hidden",
-      }}>
-        {/* Subtle radial highlight */}
-        <div style={{
-          position: "absolute", top: -40, right: -40,
-          width: 180, height: 180, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
-      </div>
+      <PageHeader>
+        <div style={{ fontSize: 22, fontWeight: 800, color: T.text, letterSpacing: "-0.03em", paddingBottom: 14 }}>
+          Profile
+        </div>
+      </PageHeader>
 
-      <div style={{ padding: "0 16px", marginTop: -64 }}>
+      <div style={{ padding: "20px 16px 24px" }}>
         {/* Avatar + name row */}
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 14, marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
           <div style={{
-            width: 80, height: 80, borderRadius: "50%",
+            width: 72, height: 72, borderRadius: "50%",
             background: profile.color,
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", fontWeight: 800, fontSize: 26,
-            boxShadow: `0 0 0 3px #fff, 0 0 0 5.5px ${T.purple}, 0 4px 16px rgba(0,0,0,0.18)`,
+            color: "#fff", fontWeight: 800, fontSize: 24,
+            boxShadow: `0 0 0 3px ${T.purpleLight}, 0 0 0 5px ${T.purple}`,
             flexShrink: 0,
-          }}>{profile.avatar}</div>
-          <div style={{ paddingBottom: 4 }}>
-            <div style={{ fontWeight: 800, fontSize: 20, color: T.text, letterSpacing: "-0.02em" }}>{profile.name}</div>
-            <div style={{ fontSize: 13, color: T.textMid, marginTop: 2 }}>{profile.year} · {profile.major}</div>
+          }}>
+            {profile.avatar}
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 20, color: T.text, letterSpacing: "-0.02em" }}>
+              {profile.name}
+            </div>
+            <div style={{ fontSize: 13, color: T.textMid, marginTop: 3 }}>
+              {profile.year} · {profile.major}
+            </div>
           </div>
         </div>
 
         {/* Token + gender badges */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
           <TokenBadge count={profile.tokens} />
           <Badge color={T.textMid} bg={T.purpleLight}>{profile.gender}</Badge>
         </div>
@@ -82,7 +73,9 @@ export default function ProfilePage() {
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                }}>{value}</div>
+                }}>
+                  {value}
+                </div>
                 <div style={{ fontSize: 12, color: T.muted, fontWeight: 500, marginTop: 2 }}>{label}</div>
               </div>
             </Card>
@@ -98,11 +91,8 @@ export default function ProfilePage() {
                 onClick={() => editing ? save() : setEditing(true)}
                 style={{
                   background: editing ? T.purpleGradient : T.purpleFaint,
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "6px 16px",
-                  fontSize: 13,
-                  fontWeight: 700,
+                  border: "none", borderRadius: 10,
+                  padding: "6px 16px", fontSize: 13, fontWeight: 700,
                   color: editing ? "#fff" : T.purple,
                   cursor: "pointer",
                   boxShadow: editing ? T.btnPrimaryShadow : "none",
@@ -133,7 +123,7 @@ export default function ProfilePage() {
                     }}
                   />
                 ) : (
-                  <div style={{ fontSize: 14, color: T.text }}>{profile[key] || "—"}</div>
+                  <div style={{ fontSize: 14, color: T.text, lineHeight: 1.5 }}>{profile[key] || "—"}</div>
                 )}
               </div>
             ))}

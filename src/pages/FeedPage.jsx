@@ -19,11 +19,12 @@ import SessionCard from "../components/SessionCard";
 import TopicsPageContent from "../pages/TopicsPage";
 
 export default function FeedPage() {
-  const { feedView, setFeedView, activeTopic, sessionTypeFilter, setSessionTypeFilter } = useApp();
+  const { feedView, setFeedView, activeTopic, sessionTypeFilter, setSessionTypeFilter, mySessions } = useApp();
 
   const activityRank = { high: 0, medium: 1, low: 2 };
 
-  const feedSessions = MOCK_SESSIONS.filter((s) => s.status === "feed");
+  const joinedIds = new Set(mySessions.map((s) => s.id));
+  const feedSessions = MOCK_SESSIONS.filter((s) => s.status === "feed" && !joinedIds.has(s.id));
 
   const sorted = [...feedSessions]
     .sort(
@@ -95,7 +96,7 @@ export default function FeedPage() {
             { id: "all", label: "All" },
             { id: "teach", label: "Teach" },
             { id: "learn", label: "Learn" },
-            { id: "meetup", label: "Meet Up" },
+            { id: "meetup", label: "Collab" },
           ].map(({ id, label }) => (
             <Pill
               key={id}

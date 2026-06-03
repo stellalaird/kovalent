@@ -38,8 +38,8 @@ export const T = {
 
   // ── Session type badges ────────────────────────────────────
   sessionTypes: {
-    teach:  { badge: "#7C3AED", bg: "#EDE8FF", label: "Teach",   icon: "🎓" },
-    learn:  { badge: "#1D4ED8", bg: "#DBEAFE", label: "Learn",   icon: "📖" },
-    meetup: { badge: "#059669", bg: "#D1FAE5", label: "Meet Up", icon: "🤝" },
+    teach:  { badge: "#7C3AED", bg: "#EDE8FF", label: "Learn",  icon: "🎓" },
+    learn:  { badge: "#1D4ED8", bg: "#DBEAFE", label: "Teach",  icon: "📖" },
+    meetup: { badge: "#059669", bg: "#D1FAE5", label: "Collab", icon: "🤝" },
   },
 };

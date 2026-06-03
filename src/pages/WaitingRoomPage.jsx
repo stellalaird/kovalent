@@ -1,4 +1,4 @@
-import { CURRENT_USER } from "../data/mockData";
+import { CURRENT_USER, MOCK_USERS } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
@@ -8,12 +8,45 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
-  const { setTab, setActiveView, showToast } = useApp();
+  const { setTab, setActiveView, mySessions, setMySessions, joinSession, showToast, setViewingUser } = useApp();
+  const alreadyJoined = !!mySessions.find((s) => s.id === session.id);
   const isTeach = session.type === "teach";
   const isMeetup = session.type === "meetup";
   const label = session.skill || session.activity || "Session";
-  const participants = session.waitingRoom || session.participants || [];
   const host = session.teacher || null;
+
+  // ── Build participant lists ──────────────────────────────
+  // Registered = confirmed attendance (teach sessions only for now)
+  const registeredList = isTeach ? (session.participants || []) : [];
+  const registeredIds = new Set(registeredList.map((u) => u.id));
+
+  // Known real users who are interested
+  const knownInterested = [
+    ...(alreadyJoined ? [CURRENT_USER] : []),
+    ...(session.waitingRoom || []),
+    ...(!isTeach ? (session.participants || []) : []),
+  ]
+    .filter((u, i, arr) => arr.findIndex((x) => x.id === u.id) === i)
+    .filter((u) => !registeredIds.has(u.id));
+
+  // Target interested count from mock data
+  const targetInterested = isTeach
+    ? (session.interested ?? knownInterested.length)
+    : (session.participants?.length ?? 0) + (session.interested ?? 0);
+
+  // Fill the gap with real users from the pool
+  const usedIds = new Set([
+    ...knownInterested.map((u) => u.id),
+    ...registeredList.map((u) => u.id),
+    ...(host ? [host.id] : []),
+  ]);
+  const pool = MOCK_USERS.filter((u) => !usedIds.has(u.id));
+  const needed = Math.max(0, targetInterested - knownInterested.length);
+  const extras = pool.slice(0, needed);
+
+  const interestedList = [...knownInterested, ...extras];
+  const allParticipants = [...interestedList, ...registeredList];
+  const totalCount = allParticipants.length;
 
   return (
     <div>
@@ -68,7 +101,7 @@ export default function WaitingRoomPage({ session }) {
               display: "inline-block",
             }}
           />
-          Waiting Room · {participants.length + 1} joined
+          Waiting Room · {totalCount} joined
         </div>
       </div>
 
@@ -93,43 +126,68 @@ export default function WaitingRoomPage({ session }) {
           </Section>
         )}
 
-        <Section title={`Participants (${participants.length + 1})`}>
-          {[CURRENT_USER, ...participants].map((u) => (
-            <Card key={u.id} style={{ marginBottom: 8 }}>
+        <Section title={`Participants (${totalCount})`}>
+          {allParticipants.map((u) => (
+            <Card
+              key={u.id}
+              style={{ marginBottom: 8, cursor: u.id !== "me" ? "pointer" : "default" }}
+              onClick={u.id !== "me" ? () => setViewingUser(u) : undefined}
+            >
               <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                 <Avatar user={u} size={38} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: 14, color: T.text }}>
-                    {u.name}{" "}
+                  <div style={{ fontWeight: 600, fontSize: 14, color: T.text, display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
+                    {u.name}
                     {u.id === "me" && (
-                      <Badge color={T.purple} bg={T.purpleLight}>
-                        You
-                      </Badge>
+                      <Badge color={T.purple} bg={T.purpleLight}>You</Badge>
                     )}
                   </div>
-                  <div style={{ fontSize: 12, color: T.muted }}>
-                    {u.year} · {u.major}
-                  </div>
+                  {u.year && (
+                    <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>
+                      {u.year}{u.major ? ` · ${u.major}` : ""}
+                    </div>
+                  )}
                 </div>
+                {registeredIds.has(u.id) && (
+                  <Badge color={T.success} bg={T.successBg}>Registered</Badge>
+                )}
               </div>
             </Card>
           ))}
         </Section>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <Button onClick={() => setActiveView("chatroom")}>💬 Open Chatroom</Button>
-          <Button variant="ghost" onClick={() => showToast("Availability sent!")}>
-            📅 Submit Availability
-          </Button>
+          {/* View teacher profile — teach sessions only */}
+          {isTeach && host && (
+            <Button variant="secondary" onClick={() => setViewingUser(host)}>
+              👤 View Teacher Profile
+            </Button>
+          )}
+
+          {/* Join — shown until the user has joined */}
+          {!alreadyJoined && (
+            <Button onClick={() => joinSession(session)}>
+              ✓ Join
+            </Button>
+          )}
+
+          {/* Chat — available after joining, for teach and collab sessions */}
+          {alreadyJoined && (isTeach || isMeetup) && (
+            <Button onClick={() => setActiveView("chatroom")}>
+              💬 Group Chat
+            </Button>
+          )}
+
           <Button
             variant="danger"
             small
             onClick={() => {
-              setTab("mySessions");
-              showToast("Left waiting room");
+              setMySessions((prev) => prev.filter((s) => s.id !== session.id));
+              setTab("feed");
+              showToast("Left session");
             }}
           >
-            Leave Session
+            Leave
           </Button>
         </div>
       </div>

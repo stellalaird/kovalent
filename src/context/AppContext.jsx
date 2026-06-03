@@ -19,6 +19,7 @@ function AppProvider({ children }) {
   const [darkMode, setDarkMode] = useState(false);
   const [toast, setToast] = useState(null);
   const [modal, setModal] = useState(null);
+  const [viewingUser, setViewingUser] = useState(null);
 
   function showToast(msg, type = "success") {
     setToast({ msg, type });
@@ -53,6 +54,7 @@ function AppProvider({ children }) {
       darkMode, setDarkMode,
       toast, showToast,
       modal, setModal,
+      viewingUser, setViewingUser,
       joinSession, openSession,
     }}>
       {children}
