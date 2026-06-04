@@ -2,12 +2,15 @@
 import { MOCK_USERS, MOCK_SESSIONS, MY_SESSIONS } from "../data/mockData";
 
 // ─── APP STATE CONTEXT ───────────────────────────────────────
+import { useState } from "react";
 import { AppProvider, useApp } from "../context/AppContext";
 
 // ─── STYLES ──────────────────────────────────────────────────
 import { T } from "../styles/theme";
 
 // ─── UTILITY COMPONENTS ──────────────────────────────────────
+import Avatar from "../components/Avatar";
+import AvatarRow from "../components/AvatarRow";
 import Badge from "../components/Badge";
 import Card from "../components/Card";
 import Section from "../components/Section";
@@ -51,35 +54,104 @@ const TOPIC_DEFS = [
 
 const ALL_SESSIONS = [
   ...MOCK_SESSIONS,
-  {
-    id: "s-comp1",
-    type: "learn",
-    skill: "Intro to Chess",
-    teacher: MOCK_USERS[0],
-    level: "Beginner",
-    status: "completed",
-    tags: ["games", "strategy"],
-    scheduledTime: "May 15, 2025 · 3:00 PM",
-    location: "Tech LG52",
-    participants: [MOCK_USERS[1], MOCK_USERS[3]],
-    attended: [MOCK_USERS[1], MOCK_USERS[3]],
-    interested: 0,
-    minGroup: 2,
-    maxGroup: 6,
-    taught: 1,
-    activityLevel: "low",
-    description: "Taught chess basics to a small group.",
-    messages: [],
-  },
+  ...MY_SESSIONS.filter(s => s.status === "completed"),
 ];
 
+function CompletedSessionCard({ s }) {
+  const { openSession, profile } = useApp();
+  const tLearn = T.sessionTypes.learn;
+  const tTeach = T.sessionTypes.teach;
+  const isCollab = s.type === "collab";
+  const isTeachRole = s.myRole === "teacher";
+  const teacher = s.type === "learn" ? s.teacher : null;
+  const pList = s.participants || [];
+  const wList = s.waitingRoom || [];
+  const collabOverflow = Math.max(0, (pList.length + (s.interested ?? 0)) - 1);
+  const teachOverflow  = Math.max(0, (s.interested ?? 0) - 1);
+  const avatarEl = isCollab
+    ? <AvatarRow users={pList} size={34} max={1} overflowCount={collabOverflow} />
+    : isTeachRole
+      ? <Avatar user={profile} size={34} />
+      : s.type === "teach"
+        ? <AvatarRow users={wList} size={34} max={1} overflowCount={teachOverflow} />
+        : teacher
+          ? <Avatar user={teacher} size={34} />
+          : null;
+  const title = s.skill || s.activity || "Session";
+  const sub = s.scheduledTime || "";
+
+  return (
+    <div
+      style={{
+        marginBottom: 8, cursor: "pointer",
+        borderRadius: T.cardRadius,
+        border: `1px solid ${T.cardBorder}`,
+        background: isCollab ? "#F2E8CE" : "#FFFFFF",
+        boxShadow: T.cardShadow,
+        overflow: "hidden",
+      }}
+      onClick={() => openSession(s, "completed")}
+    >
+      <div style={{ padding: "13px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+        {avatarEl}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: sub ? 2 : 0 }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: T.text, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, minWidth: 0 }}>
+              {title}
+            </span>
+            <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+              {!isCollab && isTeachRole  && <Badge color={tTeach.badge} bg={tTeach.bg}>Teach</Badge>}
+              {!isCollab && !isTeachRole && <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>}
+            </div>
+          </div>
+          {sub && <div style={{ fontSize: 12, color: T.muted }}>{sub}</div>}
+        </div>
+        <div style={{ color: T.muted, flexShrink: 0, opacity: 0.5, fontSize: 16 }}>›</div>
+      </div>
+    </div>
+  );
+}
+
 function TopicDetailPage({ tag, onBack }) {
+  const { setActiveTopic, setFeedView, joinedCommunities, setJoinedCommunities, setViewingUser, profile } = useApp();
+  const isJoined = joinedCommunities.includes(tag);
+  const toggleJoin = () => setJoinedCommunities(prev =>
+    prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+  );
+  const [activeTab, setActiveTab] = useState("sessions");
+
   const topicDef = TOPIC_DEFS.find((t) => t.tag === tag) || { label: tag, emoji: "🏷️" };
   const accent = TOPIC_ACCENT[tag] || { bg: T.purpleLight, color: T.purple };
+  const withTag = s => ({ ...s, _fromCommunity: tag });
 
   const tagged = ALL_SESSIONS.filter((session) => (session.tags || []).includes(tag));
+
+  // Collect all unique people from tagged sessions
+  const people = (() => {
+    const seen = new Set();
+    const result = [];
+    for (const s of tagged) {
+      const users = [
+        s.teacher,
+        ...(s.participants || []),
+        ...(s.attended || []),
+        ...(s.waitingRoom || []),
+      ].filter(Boolean);
+      for (const u of users) {
+        if (!seen.has(u.id)) { seen.add(u.id); result.push(u); }
+      }
+    }
+    // Add current user if they've joined the community and aren't already listed
+    if (isJoined && !seen.has(profile.id)) result.unshift(profile);
+    return result;
+  })();
   const upcoming = tagged.filter((session) => ["feed", "waiting_room", "scheduled"].includes(session.status));
-  const completed = tagged.filter((session) => session.status === "completed");
+  const completed = tagged
+    .filter((session) => session.status === "completed")
+    .sort((a, b) => {
+      const parse = s => s?.scheduledTime ? new Date(s.scheduledTime.replace(" · ", " ")) : new Date(0);
+      return parse(b) - parse(a);
+    });
 
   return (
     <div>
@@ -106,7 +178,7 @@ function TopicDetailPage({ tag, onBack }) {
           ← Topics
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 14 }}>
           <div style={{
             width: 52,
             height: 52,
@@ -120,7 +192,7 @@ function TopicDetailPage({ tag, onBack }) {
           }}>
             {topicDef.emoji}
           </div>
-          <div>
+          <div style={{ flex: 1 }}>
             <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>
               {topicDef.label}
             </div>
@@ -128,53 +200,108 @@ function TopicDetailPage({ tag, onBack }) {
               {tagged.length} session{tagged.length !== 1 ? "s" : ""}
             </div>
           </div>
+          <button
+            onClick={toggleJoin}
+            style={{
+              padding: "7px 18px",
+              borderRadius: 999,
+              border: isJoined ? "1.5px solid rgba(255,255,255,0.5)" : "none",
+              background: isJoined ? "transparent" : T.purpleGradient,
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 13,
+              cursor: "pointer",
+              letterSpacing: "-0.01em",
+              flexShrink: 0,
+              transition: "all 0.15s",
+            }}
+          >
+            {isJoined ? "✓ Joined" : "Join"}
+          </button>
         </div>
+
       </div>
 
-      <div style={{ padding: 16 }}>
-        {upcoming.length > 0 && (
-          <Section title={`Upcoming (${upcoming.length})`}>
-            {upcoming.map((session) => {
-              if (session.type === "collab") return <MeetupCard key={session.id} session={session} />;
-              return <SessionCard key={session.id} session={session} />;
-            })}
-          </Section>
+      {/* Tabs */}
+      <div style={{ display: "flex", borderBottom: `1px solid ${T.border}`, background: T.surface }}>
+        {["sessions", "people"].map(t => (
+          <button
+            key={t}
+            onClick={() => setActiveTab(t)}
+            style={{
+              flex: 1,
+              padding: "11px 0",
+              border: "none",
+              borderBottom: activeTab === t ? `2px solid ${T.purple}` : "2px solid transparent",
+              background: "transparent",
+              color: activeTab === t ? T.purple : T.muted,
+              fontWeight: activeTab === t ? 700 : 500,
+              fontFamily: T.fontBody,
+              fontSize: 13,
+              cursor: "pointer",
+              letterSpacing: "-0.01em",
+              transition: "all 0.15s",
+            }}
+          >
+            {t === "sessions" ? "Sessions" : `People (${people.length})`}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ padding: "28px 16px 16px" }}>
+        {activeTab === "sessions" && (
+          <>
+            {upcoming.length > 0 && (
+              <Section title={`Upcoming (${upcoming.length})`}>
+                {upcoming.map((session) => {
+                  if (session.type === "collab") return <MeetupCard key={session.id} session={withTag(session)} />;
+                  return <SessionCard key={session.id} session={withTag(session)} />;
+                })}
+              </Section>
+            )}
+
+            {completed.length > 0 && (
+              <Section title={`Past (${completed.length})`}>
+                {completed.map((session) => (
+                  <CompletedSessionCard key={session.id} s={withTag(session)} />
+                ))}
+              </Section>
+            )}
+
+            {tagged.length === 0 && (
+              <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
+                <div style={{ fontWeight: 700, fontSize: 16, color: T.text }}>No sessions yet</div>
+                <div style={{ fontSize: 14, color: T.muted, marginTop: 4 }}>Be the first to create one!</div>
+              </div>
+            )}
+          </>
         )}
 
-        {completed.length > 0 && (
-          <Section title={`Completed (${completed.length})`}>
-            {completed.map((session) => (
-              <Card key={session.id} style={{ marginBottom: 10 }}>
+        {activeTab === "people" && (
+          <>
+            {people.length === 0 && (
+              <div style={{ textAlign: "center", padding: "60px 20px" }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>👥</div>
+                <div style={{ fontWeight: 700, fontSize: 16, color: T.text }}>No people yet</div>
+              </div>
+            )}
+            {people.map(u => (
+              <Card key={u.id} style={{ marginBottom: 8, cursor: "pointer" }} onClick={() => setViewingUser(u)}>
                 <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{
-                    width: 38, height: 38, borderRadius: 12,
-                    background: T.successBg,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 18, flexShrink: 0,
-                  }}>
-                    ✅
-                  </div>
+                  <Avatar user={u} size={40} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {session.skill || session.activity}
-                    </div>
-                    <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>
-                      {session.scheduledTime || "Past session"}
-                    </div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: T.text, letterSpacing: "-0.01em" }}>{u.name}</div>
+                    {u.year && <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{u.year}{u.major ? ` · ${u.major}` : ""}</div>}
                   </div>
-                  <Badge color={T.success} bg={T.successBg}>Done</Badge>
+                  {u.id === profile.id
+                    ? <Badge color={T.purple} bg={T.purpleLight}>You</Badge>
+                    : u.rating != null && <Badge color={T.purple} bg={T.purpleLight}>★ {u.rating}</Badge>
+                  }
                 </div>
               </Card>
             ))}
-          </Section>
-        )}
-
-        {tagged.length === 0 && (
-          <div style={{ textAlign: "center", padding: "60px 20px" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: T.text }}>No sessions yet</div>
-            <div style={{ fontSize: 14, color: T.muted, marginTop: 4 }}>Be the first to create one!</div>
-          </div>
+          </>
         )}
       </div>
     </div>
@@ -182,26 +309,64 @@ function TopicDetailPage({ tag, onBack }) {
 }
 
 export default function TopicsPageContent() {
-  const { activeTopic, setActiveTopic } = useApp();
+  const { activeTopic, setActiveTopic, joinedCommunities, communityFilter, communitySort } = useApp();
 
   if (activeTopic) {
     return <TopicDetailPage tag={activeTopic} onBack={() => setActiveTopic(null)} />;
   }
 
+  const upcomingStatuses = new Set(["feed", "waiting_room", "scheduled"]);
   const tagCounts = {};
   ALL_SESSIONS.forEach((session) => {
+    if (!upcomingStatuses.has(session.status)) return;
     (session.tags || []).forEach((tag) => {
       tagCounts[tag] = (tagCounts[tag] || 0) + 1;
     });
   });
 
-  const visibleTopics = TOPIC_DEFS.filter((topic) => tagCounts[topic.tag] > 0);
+  // Show all communities that have any session (upcoming or past), but only count upcoming
+  const anyTagCounts = {};
+  ALL_SESSIONS.forEach((session) => {
+    (session.tags || []).forEach((tag) => {
+      anyTagCounts[tag] = (anyTagCounts[tag] || 0) + 1;
+    });
+  });
+
+  // Count unique people per tag
+  const tagPeopleCounts = {};
+  TOPIC_DEFS.forEach(({ tag }) => {
+    const seen = new Set();
+    ALL_SESSIONS.forEach(s => {
+      if (!(s.tags || []).includes(tag)) return;
+      [s.teacher, ...(s.participants || []), ...(s.attended || []), ...(s.waitingRoom || [])]
+        .filter(Boolean).forEach(u => seen.add(u.id));
+    });
+    tagPeopleCounts[tag] = seen.size;
+  });
+
+  const allTopics = TOPIC_DEFS.filter((topic) => anyTagCounts[topic.tag] > 0);
+  const visibleTopics = (() => {
+    let topics = communityFilter === "joined"
+      ? allTopics.filter(t => joinedCommunities.includes(t.tag))
+      : [...allTopics];
+    if (communitySort === "most_upcoming") return topics.sort((a, b) => (tagCounts[b.tag] || 0) - (tagCounts[a.tag] || 0));
+    if (communitySort === "most_people")   return topics.sort((a, b) => (tagPeopleCounts[b.tag] || 0) - (tagPeopleCounts[a.tag] || 0));
+    return topics.sort((a, b) => a.label.localeCompare(b.label)); // alpha (default)
+  })();
 
   return (
     <div style={{ padding: "16px 16px 8px" }}>
+      {communityFilter === "joined" && visibleTopics.length === 0 && (
+        <div style={{ textAlign: "center", padding: "48px 20px" }}>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>🏘️</div>
+          <div style={{ fontWeight: 700, fontSize: 15, color: T.text, marginBottom: 4 }}>No communities joined yet</div>
+          <div style={{ fontSize: 13, color: T.muted }}>Open a community and tap Join!</div>
+        </div>
+      )}
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {visibleTopics.map((topic) => {
-          const count = tagCounts[topic.tag] || 0;
+          const count = tagCounts[topic.tag] || 0; // upcoming only
           const accent = TOPIC_ACCENT[topic.tag] || { bg: T.purpleLight, color: T.purple };
 
           return (
@@ -241,7 +406,7 @@ export default function TopicsPageContent() {
                   {topic.label}
                 </div>
                 <div style={{ fontSize: 12, color: accent.color, fontWeight: 600, marginTop: 2 }}>
-                  {count} session{count !== 1 ? "s" : ""}
+                  {count} upcoming
                 </div>
               </div>
 

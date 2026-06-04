@@ -9,7 +9,7 @@ import SessionCard from "../components/SessionCard";
 import TopicsPageContent from "../pages/TopicsPage";
 
 export default function FeedPage() {
-  const { feedView, setFeedView, activeTopic, sessionTypeFilter, setSessionTypeFilter, mySessions, profile, setTab, customSessions } = useApp();
+  const { feedView, setFeedView, activeTopic, sessionTypeFilter, setSessionTypeFilter, mySessions, profile, setTab, customSessions, communityFilter, setCommunityFilter, communitySort, setCommunitySort, joinedCommunities } = useApp();
   const [chronological, setChronological] = useState(false);
 
   const activityRank = { high: 0, medium: 1, low: 2 };
@@ -162,6 +162,29 @@ export default function FeedPage() {
               {label}
             </button>
           ))}
+        </div>
+      )}
+      {!activeTopic && feedView === "topics" && (
+        <div style={{ display: "flex", gap: 6, paddingBottom: 12, overflowX: "auto", alignItems: "center" }}>
+          {[
+            { id: "all",    label: "All" },
+            { id: "joined", label: "Joined" },
+          ].map(({ id, label }) => (
+            <button key={id} onClick={() => setCommunityFilter(id)} style={filterBtnStyle(communityFilter === id, T.purple)}>
+              {label}
+            </button>
+          ))}
+          <div style={{ marginLeft: "auto", display: "flex", gap: 6, flexShrink: 0 }}>
+            {[
+              { id: "alpha",         label: "A↑" },
+              { id: "most_upcoming", label: "📅↑" },
+              { id: "most_people",   label: "👤↑" },
+            ].map(({ id, label }) => (
+              <button key={id} onClick={() => setCommunitySort(id)} style={filterBtnStyle(communitySort === id, T.purple)}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
       {!activeTopic && feedView === "sessions" && (

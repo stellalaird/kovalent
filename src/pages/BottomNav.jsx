@@ -55,7 +55,7 @@ export default function BottomNav() {
 
   const tabs = [
     { id: "feed", label: "Feed" },
-    { id: "mySessions", label: "Sessions", badge: waitingCount },
+    { id: "mySessions", label: "Sessions" },
     { id: "profile", label: "Profile" },
     { id: "settings", label: "Settings" },
   ];

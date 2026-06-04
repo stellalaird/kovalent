@@ -8,8 +8,9 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function CompletedPage({ session }) {
-  const { setTab, setViewingUser, setProfile, mySessions, setMySessions, profile, showToast, setActiveSession, setActiveView } = useApp();
+  const { setTab, setViewingUser, setProfile, mySessions, setMySessions, profile, showToast, setActiveSession, setActiveView, setActiveTopic, setFeedView } = useApp();
 
+  const weParticipated = !!session.myRole;
   const isLearner = session.myRole === "learner";
   const isCollab  = session.type === "collab";
   const label    = session.skill || session.activity;
@@ -45,8 +46,9 @@ export default function CompletedPage({ session }) {
       <div style={{ background: T.appBg, padding: "22px 18px 24px", position: "relative", overflow: "hidden", borderBottom: `1px solid ${T.border}` }}>
         <div style={{ position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)", width: 300, height: 180, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(52,211,153,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
         <button onClick={() => {
-          if (session._parentSession) { setActiveSession(session._parentSession); setActiveView("waitingRoom"); setTab("session"); }
-          else setTab("mySessions");
+          if (session._parentSession) { setActiveSession(session._parentSession); setActiveView("waitingRoom"); setTab("session"); return; }
+          if (session._fromCommunity) { setActiveTopic(session._fromCommunity); setFeedView("topics"); setTab("feed"); return; }
+          setTab("mySessions");
         }} style={{
           background: T.surface, border: `1px solid ${T.border}`, color: T.textMid,
           borderRadius: 10, padding: "6px 14px", fontWeight: 600,
@@ -72,8 +74,67 @@ export default function CompletedPage({ session }) {
 
       <div style={{ padding: 16 }}>
 
+        {/* ── OBSERVER LAYOUT (session we didn't attend) ── */}
+        {!weParticipated && (
+          <>
+            <Button
+              disabled={repeatRequested}
+              onClick={() => { if (!repeatRequested) setRepeatRequested(true); }}
+              style={{ marginBottom: 16, opacity: repeatRequested ? 0.45 : 1, cursor: repeatRequested ? "default" : "pointer", width: "100%" }}
+            >
+              {repeatRequested ? "Repeat Session Requested" : "Request Repeat Session"}
+            </Button>
+
+            <Card style={{ marginBottom: 16 }}>
+              <div style={{ padding: 16 }}>
+                <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
+                  📸 Group Photo
+                </div>
+                {session.groupPhoto
+                  ? <img src={session.groupPhoto} alt="Group photo" style={{ width: "100%", borderRadius: 14, display: "block", objectFit: "cover", height: 160 }} />
+                  : <div style={{ background: T.purpleFaint, borderRadius: 14, height: 140, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: `1.5px dashed ${T.border}` }}>
+                      <span style={{ fontSize: 36, marginBottom: 8 }}>🖼️</span>
+                      <span style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>No photo yet</span>
+                    </div>
+                }
+              </div>
+            </Card>
+
+            {host && (
+              <Section title="Teacher">
+                <Card style={{ marginBottom: 0, cursor: "pointer" }} onClick={() => setViewingUser(host)}>
+                  <div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+                    <Avatar user={host} size={48} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 15, color: T.text, letterSpacing: "-0.02em" }}>{host.name}</div>
+                      <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{host.year} · {host.major}</div>
+                      {host.taught != null && <div style={{ fontSize: 12, color: T.muted, marginTop: 3 }}>{host.taught} sessions taught</div>}
+                    </div>
+                    {host.rating != null && <Badge color={T.purple} bg={T.purpleLight}>★ {host.rating}</Badge>}
+                  </div>
+                </Card>
+              </Section>
+            )}
+
+            <Section title={`Attendance (${participants.length})`}>
+              {participants.map(u => (
+                <Card key={u.id} style={{ marginBottom: 8, cursor: "pointer" }} onClick={() => setViewingUser(u)}>
+                  <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                    <Avatar user={u} size={38} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: T.text }}>{u.name}</div>
+                      {u.year && <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{u.year}{u.major ? ` · ${u.major}` : ""}</div>}
+                    </div>
+                    <Badge color={T.success} bg={T.successBg}>✓ Attended</Badge>
+                  </div>
+                </Card>
+              ))}
+            </Section>
+          </>
+        )}
+
         {/* ── LEARNER LAYOUT ─────────────────────────────── */}
-        {isLearner && (
+        {weParticipated && isLearner && (
           <>
             <Button
               disabled={repeatRequested}
@@ -248,7 +309,7 @@ export default function CompletedPage({ session }) {
         )}
 
         {/* ── COLLAB LAYOUT ──────────────────────────────── */}
-        {isCollab && (
+        {weParticipated && isCollab && (
           <>
             <Button
               onClick={() => {
@@ -297,7 +358,7 @@ export default function CompletedPage({ session }) {
         )}
 
         {/* ── TEACHER LAYOUT ─────────────────────────────── */}
-        {!isLearner && !isCollab && (
+        {weParticipated && !isLearner && !isCollab && (
           <>
             <Button
               disabled={repeated}

@@ -23,6 +23,9 @@ function AppProvider({ children }) {
   const [modal, setModal] = useState(null);
   const [viewingUser, setViewingUser] = useState(null);
   const [activeProposal, setActiveProposal] = useState(null);
+  const [joinedCommunities, setJoinedCommunities] = useState([]);
+  const [communityFilter, setCommunityFilter] = useState("all");
+  const [communitySort,   setCommunitySort]   = useState("alpha");
 
   function showToast(msg, type = "success") {
     setToast({ msg, type });
@@ -72,6 +75,9 @@ function AppProvider({ children }) {
       modal, setModal,
       viewingUser, setViewingUser,
       activeProposal, setActiveProposal,
+      joinedCommunities, setJoinedCommunities,
+      communityFilter, setCommunityFilter,
+      communitySort, setCommunitySort,
       joinSession, openSession,
     }}>
       {children}

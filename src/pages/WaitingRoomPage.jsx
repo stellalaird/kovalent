@@ -9,7 +9,7 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
-  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal, openSession } = useApp();
+  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal, openSession, setActiveTopic, setFeedView } = useApp();
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
 
@@ -62,7 +62,10 @@ export default function WaitingRoomPage({ session }) {
         }} />
 
         <button
-          onClick={() => setTab(alreadyJoined ? "mySessions" : "feed")}
+          onClick={() => {
+            if (session._fromCommunity) { setActiveTopic(session._fromCommunity); setFeedView("topics"); setTab("feed"); return; }
+            setTab(alreadyJoined ? "mySessions" : "feed");
+          }}
           style={{
             background: T.surface, border: `1px solid ${T.border}`,
             color: T.textMid, borderRadius: 10, padding: "6px 14px",
