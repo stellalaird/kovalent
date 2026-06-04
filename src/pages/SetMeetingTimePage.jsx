@@ -1,6 +1,6 @@
+import { T } from "../styles/theme";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { T } from "../styles/theme";
 
 const fieldStyle = {
   width: "100%",
@@ -47,6 +47,20 @@ function formatScheduledTime(dateVal, timeVal) {
 
 export default function SetMeetingTimePage({ session }) {
   const { setActiveView, setActiveSession, setMySessions } = useApp();
+  const fieldStyle = {
+    width: "100%",
+    borderRadius: 12,
+    border: `1px solid ${T.border}`,
+    padding: "11px 14px",
+    fontSize: 14,
+    outline: "none",
+    boxSizing: "border-box",
+    color: T.text,
+    background: T.surface,
+    fontFamily: T.fontBody,
+    letterSpacing: "-0.01em",
+    transition: "border-color 0.15s",
+  };
 
   const [form, setForm] = useState({
     dateVal: session._dateVal || "",

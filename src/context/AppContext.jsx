@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { setDarkMode as setThemeDarkMode } from "../styles/theme";
 
 // ─── MOCK DATA ───────────────────────────────────────
 import { CURRENT_USER, MY_SESSIONS } from "../data/mockData";
@@ -18,7 +19,13 @@ function AppProvider({ children }) {
   const [customSessions, setCustomSessions] = useState([]);
   const [teacherOverrides, setTeacherOverrides] = useState({});
   const [profile, setProfile] = useState(CURRENT_USER);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, _setDarkMode] = useState(false);
+  function setDarkMode(val) {
+    setThemeDarkMode(val);  // update Proxy target before re-render
+    _setDarkMode(val);
+  }
+  const [notifs, setNotifs] = useState({ messages: true, sessions: true, reminders: false });
+  const [privacy, setPrivacy] = useState({ showContact: "community", showRating: true });
   const [toast, setToast] = useState(null);
   const [modal, setModal] = useState(null);
   const [viewingUser, setViewingUser] = useState(null);
@@ -78,6 +85,8 @@ function AppProvider({ children }) {
       joinedCommunities, setJoinedCommunities,
       communityFilter, setCommunityFilter,
       communitySort, setCommunitySort,
+      notifs, setNotifs,
+      privacy, setPrivacy,
       joinSession, openSession,
     }}>
       {children}

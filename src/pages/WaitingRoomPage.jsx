@@ -1,6 +1,6 @@
+import { T } from "../styles/theme";
 import { MOCK_USERS } from "../data/mockData";
 import { useApp } from "../context/AppContext";
-import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
 import AvatarRow from "../components/AvatarRow";
 import Badge from "../components/Badge";
@@ -9,7 +9,7 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
-  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal, openSession, setActiveTopic, setFeedView } = useApp();
+  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal, openSession, setActiveTopic, setFeedView, privacy } = useApp();
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
 
@@ -128,7 +128,7 @@ export default function WaitingRoomPage({ session }) {
               ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default" }} onClick={() => {}}>Session Full</Button>
               : <Button onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s))}>✓ Register</Button>
           )}
-          {alreadyRegistered && isTeach && (
+          {alreadyRegistered && isTeach && !weAreTeacher && (
             <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>✓ Registered</Button>
           )}
           {alreadyJoined && isMeetup && (
@@ -137,7 +137,7 @@ export default function WaitingRoomPage({ session }) {
           {alreadyJoined && (isTeach || isMeetup) && (
             <Button variant="secondary" onClick={() => setActiveView("chatroom")}>Group Chat</Button>
           )}
-          {alreadyRegistered && (
+          {alreadyRegistered && !weAreTeacher && (
             <Button variant="danger" onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s))}>
               Cancel Registration
             </Button>
@@ -159,7 +159,7 @@ export default function WaitingRoomPage({ session }) {
               if (weAreTeacher) setTeacherOverrides(prev => { const n = { ...prev }; delete n[session.id]; return n; });
               setTab("feed");
             }}>
-              Leave
+              {weAreTeacher ? "Cancel Session" : "Leave"}
             </Button>
           )}
         </div>
@@ -204,7 +204,7 @@ export default function WaitingRoomPage({ session }) {
                   <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{host.year} · {host.major}</div>
                   <div style={{ fontSize: 12, color: T.muted, marginTop: 3 }}>{host.taught} sessions taught</div>
                 </div>
-                {host.rating != null && (
+                {host.rating != null && !(host.id === profile.id && !privacy.showRating) && (
                   <Badge color={T.purple} bg={T.purpleLight}>★ {host.rating}</Badge>
                 )}
               </div>

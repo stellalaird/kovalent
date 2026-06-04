@@ -1,10 +1,10 @@
-import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
+import { useApp } from "../context/AppContext";
 import Avatar from "../components/Avatar";
 import Card from "../components/Card";
 
 export default function UserProfilePage({ user }) {
-  const { setViewingUser } = useApp();
+  const { setViewingUser, profile, privacy } = useApp();
 
   const stats = [
     { icon: "🎓", label: "Taught",  value: user.taught  ?? 0 },
@@ -45,7 +45,7 @@ export default function UserProfilePage({ user }) {
           </div>
         </div>
 
-        {user.rating != null && (
+        {user.rating != null && !(user.id === profile.id && !privacy.showRating) && (
           <div style={{ marginBottom: 22 }}>
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 5,

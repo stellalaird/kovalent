@@ -1,15 +1,12 @@
-import { useState } from "react";
-import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
+import { useApp } from "../context/AppContext";
 import Badge from "../components/Badge";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
 import Section from "../components/Section";
 
 export default function SettingsPage() {
-  const { darkMode, setDarkMode } = useApp();
-  const [notifs, setNotifs] = useState({ messages: true, sessions: true, reminders: false });
-  const [privacy, setPrivacy] = useState({ showContact: "connections", showRating: true });
+  const { darkMode, setDarkMode, notifs, setNotifs, privacy, setPrivacy, profile } = useApp();
 
   function Toggle({ on, onChange }) {
     return (
@@ -80,8 +77,8 @@ export default function SettingsPage() {
                     letterSpacing: "-0.01em",
                   }}>
                   <option value="everyone">Everyone</option>
-                  <option value="connections">Connections</option>
-                  <option value="none">No one</option>
+                  <option value="community">Community Members</option>
+                  <option value="none">No One</option>
                 </select>
               }
             />
@@ -97,7 +94,7 @@ export default function SettingsPage() {
 
         <Section title="Account">
           <Card style={{ padding: "0 16px" }}>
-            <SettingRow label="Northwestern Email" sub="Verified: alexchen@northwestern.edu"
+            <SettingRow label="Northwestern Email" sub={`Verified: ${profile.contact}`}
               right={<Badge color={T.success} bg={T.successBg}>✓ Verified</Badge>} />
             <SettingRow label="Version" sub="Kovalent v1.0.0" right={null} />
             <div style={{ padding: "16px 0" }}>

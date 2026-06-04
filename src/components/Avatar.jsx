@@ -1,6 +1,9 @@
 import { T } from "../styles/theme";
+import { useApp } from "../context/AppContext";
+import { useState } from "react";
 
 export default function Avatar({ user, size = 36, ring = false }) {
+  const [imgError, setImgError] = useState(false);
   const showRing = ring || size >= 48;
   const ringStyle = showRing
     ? `0 0 0 2px ${T.card}, 0 0 0 3.5px rgba(180,140,40,0.65), 0 0 12px rgba(180,140,40,0.3)`
@@ -14,11 +17,12 @@ export default function Avatar({ user, size = 36, ring = false }) {
     boxShadow: ringStyle,
   };
 
-  if (user?.photo) {
+  if (user?.photo && !imgError) {
     return (
       <img
         src={user.photo}
         alt={user.name || ""}
+        onError={() => setImgError(true)}
         style={{
           ...base,
           objectFit: "cover",

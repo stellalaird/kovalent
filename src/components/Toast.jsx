@@ -1,4 +1,5 @@
 import { T } from "../styles/theme";
+import { useApp } from "../context/AppContext";
 
 export default function Toast({ msg, type }) {
   if (!msg) return null;

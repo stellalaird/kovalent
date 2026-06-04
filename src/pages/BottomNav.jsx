@@ -1,5 +1,5 @@
-import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
+import { useApp } from "../context/AppContext";
 
 const icons = {
   feed: (active) => (

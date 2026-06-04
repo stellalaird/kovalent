@@ -129,10 +129,10 @@ const MOCK_USERS = [
 ];
 
 const CURRENT_USER = {
-  id: "me", name: "Alex Chen", year: "3rd Year", major: "Computer Science",
-  gender: "He/Him", avatar: "AC", color: "#6c4fc2", photo: "https://api.dicebear.com/9.x/avataaars/svg?seed=AlexChen",
-  tokens: 20, taught: 2, learned: 4, meetups: 3, rating: 4.5,
-  contact: "alexchen@northwestern.edu",
+  id: "me", name: "Michael Jackson", year: "3rd Year", major: "Computer Science",
+  gender: "He/Him", avatar: "MJ", color: "#6c4fc2", photo: "https://api.dicebear.com/9.x/avataaars/svg?seed=MichaelJackson",
+  tokens: 10, taught: 2, learned: 4, meetups: 3, rating: 4.5,
+  contact: "michaeljackson@northwestern.edu",
   bio: "CS junior interested in music, chess, and building cool things. Always looking for people to learn from and teach.",
 };
 
@@ -487,6 +487,15 @@ const _s = id => MOCK_SESSIONS.find(s => s.id === id);
 const MY_SESSIONS = [
   { ..._s("s1"),  status: "waiting_room", myRole: "learner"     },
   { ..._s("s17"), status: "waiting_room", myRole: "learner"     },
+  {
+    id: "my-teach-unscheduled", type: "learn", skill: "Music Theory Basics", teacher: CURRENT_USER,
+    level: "Beginner", status: "waiting_room", myRole: "teacher",
+    description: "Cover the fundamentals: scales, intervals, chords, and rhythm. Great for anyone who plays an instrument but never formally studied theory.",
+    tags: ["music", "theory"],
+    participants: [], waitingRoom: [MOCK_USERS[1], MOCK_USERS[6], MOCK_USERS[9]],
+    interested: 3, minGroup: 2, maxGroup: 6, activityLevel: "medium",
+    messages: [],
+  },
   { ..._s("s4"),  status: "scheduled",    myRole: "learner"     },
   { ..._s("s8"),  status: "waiting_room", myRole: "participant" },
   { ..._s("s10"), id: "s10__prop-s10-1", _baseId: "s10", status: "scheduled", scheduledTime: "Friday, June 6 · 7:00 PM", location: "Norris Game Room", myRole: "participant" },

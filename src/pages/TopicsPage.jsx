@@ -1,3 +1,4 @@
+import { T } from "../styles/theme";
 // ─── MOCK DATA ───────────────────────────────────────
 import { MOCK_USERS, MOCK_SESSIONS, MY_SESSIONS } from "../data/mockData";
 
@@ -6,7 +7,6 @@ import { useState } from "react";
 import { AppProvider, useApp } from "../context/AppContext";
 
 // ─── STYLES ──────────────────────────────────────────────────
-import { T } from "../styles/theme";
 
 // ─── UTILITY COMPONENTS ──────────────────────────────────────
 import Avatar from "../components/Avatar";
@@ -29,8 +29,8 @@ const TOPIC_ACCENT = {
   tech:        { bg: "#DBEAFE", color: "#1D4ED8" },
   language:    { bg: "#D1FAE5", color: "#065F46" },
   photography: { bg: "#F1F5F9", color: "#475569" },
-  games:       { bg: T.purpleLight, color: T.purpleDeep },
-  strategy:    { bg: T.purpleLight, color: T.purpleDeep },
+  games:       { bg: "rgba(201,162,39,0.14)", color: "#8B6914" },
+  strategy:    { bg: "rgba(201,162,39,0.14)", color: "#8B6914" },
   fitness:     { bg: "#ECFDF5", color: "#047857" },
   outdoors:    { bg: "#ECFDF5", color: "#047857" },
   social:      { bg: "#FFF7ED", color: "#C2410C" },

@@ -1,6 +1,6 @@
+import { T } from "../styles/theme";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useApp } from "../context/AppContext";
-import { T } from "../styles/theme";
 import Avatar from "./Avatar";
 import AvatarRow from "./AvatarRow";
 import Badge from "./Badge";
@@ -57,7 +57,7 @@ export default function FeedCard({ session }) {
         marginBottom: 8,
         borderRadius: T.cardRadius,
         border: `1px solid ${T.cardBorder}`,
-        background: session.type === "collab" ? "#F2E8CE" : "#FFFFFF",
+        background: session.type === "collab" ? T.cardElevated : T.card,
         boxShadow: T.cardShadow,
         overflow: "hidden",
       }}

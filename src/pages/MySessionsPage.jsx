@@ -1,6 +1,6 @@
+import { T } from "../styles/theme";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
 import AvatarRow from "../components/AvatarRow";
 import Badge from "../components/Badge";
@@ -96,7 +96,7 @@ export default function MySessionsPage() {
           marginBottom: 8, cursor: "pointer",
           borderRadius: T.cardRadius,
           border: `1px solid ${T.cardBorder}`,
-          background: isCollab(s) ? "#F2E8CE" : "#FFFFFF",
+          background: isCollab(s) ? T.cardElevated : T.card,
           boxShadow: T.cardShadow,
           overflow: "hidden",
         }}
@@ -117,6 +117,7 @@ export default function MySessionsPage() {
               <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
                 {!isCollab(s) && isTeachRole(s) && <Badge color={tTeach.badge} bg={tTeach.bg}>Teach</Badge>}
                 {!isCollab(s) && !isTeachRole(s) && <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>}
+                {!isCollab(s) && !isTeachRole(s) && s.type === "teach" && <Badge color={tTeach.badge} bg={tTeach.bg}>Teach</Badge>}
               </div>
             </div>
             {sub && <div style={{ fontSize: 12, color: T.muted }}>{sub}</div>}

@@ -1,6 +1,6 @@
+import { T } from "../styles/theme";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
 import Badge from "../components/Badge";
 import Card from "../components/Card";
@@ -8,18 +8,27 @@ import PageHeader from "../components/PageHeader";
 import TokenBadge from "../components/TokenBadge";
 
 export default function ProfilePage() {
-  const { profile, setProfile } = useApp();
+  const { profile, setProfile, mySessions, privacy } = useApp();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(profile);
 
-  function save() { setProfile(form); setEditing(false); }
+  function save() {
+    const seed = (form.name || "user").replace(/\s+/g, "");
+    setProfile({ ...form, photo: `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}` });
+    setEditing(false);
+  }
 
   const rating = profile.rating;
 
+  const completed = mySessions.filter(s => s.status === "completed");
+  const taughtCount  = completed.filter(s => s.myRole === "teacher").length;
+  const learnedCount = completed.filter(s => s.type !== "collab" && s.myRole !== "teacher").length;
+  const meetupsCount = completed.filter(s => s.type === "collab").length;
+
   const stats = [
-    { icon: "🎓", label: "Taught",  value: profile.taught  },
-    { icon: "📖", label: "Learned", value: profile.learned },
-    { icon: "🤝", label: "Meetups", value: profile.meetups },
+    { icon: "🎓", label: "Taught",  value: taughtCount  },
+    { icon: "📖", label: "Learned", value: learnedCount },
+    { icon: "🤝", label: "Meetups", value: meetupsCount },
   ];
 
   return (
@@ -49,14 +58,14 @@ export default function ProfilePage() {
 
         <div style={{ display: "flex", gap: 8, marginBottom: 22, flexWrap: "wrap" }}>
           <TokenBadge count={profile.tokens} showLabel />
-          <span style={{
+          {privacy.showRating && <span style={{
             display: "inline-flex", alignItems: "center", gap: 5,
             background: T.goldBg, color: T.gold,
             padding: "5px 12px", borderRadius: 999,
             fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em",
             border: `1px solid ${T.goldBorder}`,
             boxShadow: "0 0 12px rgba(245,158,11,0.2)",
-          }}>★ {rating} teach rating</span>
+          }}>★ {rating} teach rating</span>}
         </div>
 
         {/* Stats */}
@@ -101,12 +110,30 @@ export default function ProfilePage() {
                 {editing ? "Save" : "Edit"}
               </button>
             </div>
-            {[["Name","name"],["Year","year"],["Major","major"],["Gender","gender"],["Bio","bio"],["Contact","contact"]].map(([label, key]) => (
-              <div key={key} style={{ marginBottom: 16 }}>
+            {[["Name","name"],["Gender","gender"],["Year","year"],["Major","major"],["Bio","bio"],["Contact","contact"]].map(([label, key], i, arr) => (
+              <div key={key} style={{ marginBottom: i === arr.length - 1 ? 0 : 16 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 5 }}>
                   {label}
                 </div>
-                {editing ? (
+                {editing && key === "year" ? (
+                  <select
+                    value={form[key] || ""}
+                    onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
+                    style={{
+                      width: "100%", borderRadius: 10, border: `1px solid ${T.border}`,
+                      padding: "9px 13px", fontSize: 14, outline: "none",
+                      boxSizing: "border-box", color: T.text, background: T.surface,
+                      letterSpacing: "-0.01em", appearance: "none",
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
+                      backgroundRepeat: "no-repeat", backgroundPosition: "right 13px center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {["1st Year","2nd Year","3rd Year","4th Year","Grad"].map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                ) : editing ? (
                   <input
                     value={form[key] || ""}
                     onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}

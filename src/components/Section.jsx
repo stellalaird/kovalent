@@ -1,4 +1,5 @@
 import { T } from "../styles/theme";
+import { useApp } from "../context/AppContext";
 
 export default function Section({ title, children }) {
   return (

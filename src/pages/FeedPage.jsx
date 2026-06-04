@@ -1,7 +1,7 @@
+import { T } from "../styles/theme";
 import { useState } from "react";
 import { MOCK_SESSIONS } from "../data/mockData";
 import { useApp } from "../context/AppContext";
-import { T } from "../styles/theme";
 import PageHeader from "../components/PageHeader";
 import Pill from "../components/Pill";
 import TokenBadge from "../components/TokenBadge";

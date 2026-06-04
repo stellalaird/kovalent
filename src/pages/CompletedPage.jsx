@@ -1,6 +1,6 @@
+import { T } from "../styles/theme";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
 import Badge from "../components/Badge";
 import Button from "../components/Button";
@@ -8,7 +8,7 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function CompletedPage({ session }) {
-  const { setTab, setViewingUser, setProfile, mySessions, setMySessions, profile, showToast, setActiveSession, setActiveView, setActiveTopic, setFeedView } = useApp();
+  const { setTab, setViewingUser, setProfile, mySessions, setMySessions, profile, showToast, setActiveSession, setActiveView, setActiveTopic, setFeedView, privacy } = useApp();
 
   const weParticipated = !!session.myRole;
   const isLearner = session.myRole === "learner";
@@ -110,7 +110,7 @@ export default function CompletedPage({ session }) {
                       <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{host.year} · {host.major}</div>
                       {host.taught != null && <div style={{ fontSize: 12, color: T.muted, marginTop: 3 }}>{host.taught} sessions taught</div>}
                     </div>
-                    {host.rating != null && <Badge color={T.purple} bg={T.purpleLight}>★ {host.rating}</Badge>}
+                    {host.rating != null && !(host.id === profile.id && !privacy.showRating) && <Badge color={T.purple} bg={T.purpleLight}>★ {host.rating}</Badge>}
                   </div>
                 </Card>
               </Section>

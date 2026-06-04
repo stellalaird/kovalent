@@ -13,7 +13,10 @@ import CreateSessionPage from "./pages/CreateSessionPage";
 // ─── ROOT APP ─────────────────────────────────────────────────
 
 function AppInner() {
-  const { tab, toast, viewingUser } = useApp();
+  const { tab, toast, viewingUser, darkMode } = useApp();
+  // Reading darkMode here means AppInner re-renders when dark mode changes,
+  // which causes all children to re-render and pick up new T values via the Proxy.
+  void darkMode;
 
   return (
     <div
@@ -48,14 +51,7 @@ function AppInner() {
 export default function App() {
   return (
     <AppProvider>
-      <div
-        style={{
-          minHeight: "100vh",
-          background: T.desktopBg,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <div style={{ minHeight: "100vh", background: T.desktopBg, display: "flex", justifyContent: "center" }}>
         <AppInner />
       </div>
     </AppProvider>

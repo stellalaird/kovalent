@@ -1,4 +1,5 @@
 import { T } from "../styles/theme";
+import { useApp } from "../context/AppContext";
 import Avatar from "./Avatar";
 
 export default function AvatarRow({ users, max = 4, size = 28, overflowCount }) {

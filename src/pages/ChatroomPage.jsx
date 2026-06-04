@@ -1,6 +1,6 @@
+import { T } from "../styles/theme";
 import { useState, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
-import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
 
 export default function ChatroomPage({ session }) {
