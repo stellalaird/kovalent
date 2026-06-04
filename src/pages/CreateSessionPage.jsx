@@ -115,8 +115,10 @@ export default function CreateSessionPage() {
 
     setCustomSessions(prev => [session, ...prev]);
     if (form.type === "teach") joinSession(session, "teacher");
+    if (form.type === "learn") joinSession(session, "learner");
+    if (form.type === "collab") joinSession(session, "participant");
     showToast("Session posted to the feed!");
-    setTab(form.type === "teach" ? "mySessions" : "feed");
+    setTab("mySessions");
   }
 
   function toggleTag(tag) {

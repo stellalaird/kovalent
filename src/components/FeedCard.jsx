@@ -12,16 +12,16 @@ export default function FeedCard({ session }) {
   const isExpanded = expandedCard === cardId;
   const joined = mySessions.find((s) => s.id === session.id);
 
-  // Teacher assignment for teach-type sessions
+  // Resolve teacher: learn sessions have session.teacher; teach sessions use teacherOverrides
   const assignedTeacher = session.type === "teach" ? teacherOverrides[session.id] : null;
-  const weAreTeacher = assignedTeacher?.id === profile?.id;
-  const someoneElseIsTeacher = assignedTeacher && !weAreTeacher;
+  const teacher = session.type === "learn" ? session.teacher : assignedTeacher ?? null;
+  const weAreTeacher = teacher?.id === profile?.id;
+  const hasTeacher = !!teacher;
 
   const tc = T.sessionTypes[session.type] ?? T.sessionTypes.learn;
   const tLearn = T.sessionTypes.learn;
   const tTeach = T.sessionTypes.teach;
   const title = session.skill || session.activity || "Session";
-  const teacher = session.type === "learn" ? session.teacher : someoneElseIsTeacher ? assignedTeacher : null;
   const pList = session.participants || [];
   const waitingList = session.waitingRoom || [];
 
@@ -30,7 +30,7 @@ export default function FeedCard({ session }) {
   if (session._proposal) {
     const p = session._proposal;
     sub = p.time;
-  } else if (session.scheduledTime) {
+  } else if (session.scheduledTime && (session.type !== "teach" || hasTeacher)) {
     sub = session.scheduledTime;
   } else {
     const count = session.type === "collab"
@@ -43,11 +43,13 @@ export default function FeedCard({ session }) {
   const teachOverflow = Math.max(0, (session.interested ?? 0) - 1);
   const collabOverflow = Math.max(0, (pList.length + (session.interested ?? 0)) - 1);
 
-  const collapsedAvatar = (session.type === "learn" || someoneElseIsTeacher)
+  const collapsedAvatar = hasTeacher
     ? <Avatar user={teacher} size={34} />
     : session.type === "teach"
       ? <AvatarRow users={waitingList} size={34} max={1} overflowCount={teachOverflow} />
-      : <AvatarRow users={pList} size={34} max={1} overflowCount={collabOverflow} />;
+      : session._proposal
+        ? <Avatar user={session._proposal.proposer} size={34} />
+        : <AvatarRow users={pList} size={34} max={1} overflowCount={collabOverflow} />;
 
   return (
     <div
@@ -77,20 +79,22 @@ export default function FeedCard({ session }) {
               {title}
             </span>
             <div style={{ display: "flex", flexDirection: "row", gap: 4, flexShrink: 0 }}>
-              {session.type === "teach" && !assignedTeacher && (
+              {session.type === "teach" && !hasTeacher && (
                 <>
                   <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>
                   <Badge color={tTeach.badge} bg={tTeach.bg}>Teach</Badge>
                 </>
               )}
-              {session.type === "teach" && weAreTeacher && (
+              {session.type === "teach" && hasTeacher && weAreTeacher && (
                 <Badge color={tTeach.badge} bg={tTeach.bg}>Teach</Badge>
               )}
-              {session.type === "teach" && someoneElseIsTeacher && (
+              {session.type === "teach" && hasTeacher && !weAreTeacher && (
                 <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>
               )}
               {session.type === "learn" && (
-                <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>
+                weAreTeacher
+                  ? <Badge color={tTeach.badge} bg={tTeach.bg}>Teach</Badge>
+                  : <Badge color={tLearn.badge} bg={tLearn.bg}>Learn</Badge>
               )}
             </div>
           </div>
@@ -110,8 +114,8 @@ export default function FeedCard({ session }) {
           padding: "14px 16px 16px",
           background: session.type === "collab" ? T.surfaceHover : "#FAFAFA",
         }}>
-          {/* Show teacher details for learn cards or when someone claimed a teach card */}
-          {(session.type === "learn" || someoneElseIsTeacher) && teacher && (
+          {/* Show teacher details whenever a teacher exists */}
+          {hasTeacher && (
             <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
               <Avatar user={teacher} size={40} ring />
               <div>
@@ -142,19 +146,10 @@ export default function FeedCard({ session }) {
             </div>
           )}
 
+
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {(session.type === "learn" || someoneElseIsTeacher) && (
+            {session.type !== "collab" && (
               <Button small onClick={() => openSession(joined ? { ...session, ...joined } : session, "waitingRoom")}>
-                View Waiting Room
-              </Button>
-            )}
-            {session.type === "teach" && !assignedTeacher && (
-              <Button small onClick={() => openSession(session, "waitingRoom")}>
-                View Waiting Room
-              </Button>
-            )}
-            {session.type === "teach" && weAreTeacher && (
-              <Button small onClick={() => openSession(session, "waitingRoom")}>
                 View Waiting Room
               </Button>
             )}

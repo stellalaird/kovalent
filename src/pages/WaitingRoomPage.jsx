@@ -2,13 +2,14 @@ import { MOCK_USERS } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import { T } from "../styles/theme";
 import Avatar from "../components/Avatar";
+import AvatarRow from "../components/AvatarRow";
 import Badge from "../components/Badge";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
-  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal } = useApp();
+  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal, openSession } = useApp();
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
 
@@ -120,9 +121,9 @@ export default function WaitingRoomPage({ session }) {
             </Button>
           )}
           {alreadyJoined && isTeach && !weAreTeacher && session.scheduledTime && !alreadyRegistered && (
-            <Button onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s))}>
-              ✓ Register
-            </Button>
+            session.maxGroup && registeredList.length >= session.maxGroup
+              ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default" }} onClick={() => {}}>Session Full</Button>
+              : <Button onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s))}>✓ Register</Button>
           )}
           {alreadyRegistered && isTeach && (
             <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>✓ Registered</Button>
@@ -148,7 +149,13 @@ export default function WaitingRoomPage({ session }) {
             </Button>
           )}
           {alreadyJoined && !alreadyRegistered && (
-            <Button variant="danger" small onClick={() => { setMySessions(prev => prev.filter(s => s.id !== session.id)); setTab("feed"); }}>
+            <Button variant="danger" small onClick={() => {
+              // Remove this session and any registered proposals for it
+              setMySessions(prev => prev.filter(s => s.id !== session.id && s._baseId !== session.id));
+              // Clear teacher override if we were the teacher
+              if (weAreTeacher) setTeacherOverrides(prev => { const n = { ...prev }; delete n[session.id]; return n; });
+              setTab("feed");
+            }}>
               Leave
             </Button>
           )}
@@ -211,12 +218,9 @@ export default function WaitingRoomPage({ session }) {
               return (
                 <Card key={p.id} style={{ marginBottom: 10 }}>
                   <div style={{ padding: "14px 16px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                      <Avatar user={p.proposer} size={28} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 700, fontSize: 13, color: T.text }}>{p.proposer.name}</div>
-                        <div style={{ fontSize: 12, color: T.muted, marginTop: 1 }}>{p.time}{p.location ? ` · ${p.location}` : ""}</div>
-                      </div>
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: T.text }}>{p.time}</div>
+                      {p.location && <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{p.location}</div>}
                     </div>
                     {p.note && <div style={{ fontSize: 13, color: T.textMid, marginBottom: 12, lineHeight: 1.6 }}>{p.note}</div>}
                     <div style={{ display: "flex", gap: 8 }}>
@@ -240,6 +244,44 @@ export default function WaitingRoomPage({ session }) {
             })}
           </Section>
         )}
+
+        {isMeetup && (() => {
+          const baseId = session._baseId || session.id;
+          const myPastMeetups = mySessions.filter(s => s.status === "completed" && s._sourceId === baseId);
+          const sessionPastMeetups = session.pastSessions || [];
+          const allPast = myPastMeetups.length > 0 ? myPastMeetups : sessionPastMeetups;
+          return allPast.length > 0 ? (
+            <Section title={`Past Meetups (${allPast.length})`}>
+              {allPast.map(s => (
+                <Card key={s.id} style={{ marginBottom: 8, cursor: "pointer" }} onClick={() => {
+                  const sessionToOpen = myPastMeetups.length > 0 ? s : {
+                    id: s.id,
+                    type: "collab",
+                    activity: session.activity || session.skill,
+                    myRole: "participant",
+                    status: "completed",
+                    scheduledTime: s.scheduledTime,
+                    location: s.location,
+                    attended: s.attendees || [],
+                    participants: s.attendees || [],
+                    groupPhoto: s.groupPhoto,
+                    _parentSession: session,
+                  };
+                  openSession(sessionToOpen, "completed");
+                }}>
+                  <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: T.text }}>{s.scheduledTime}</div>
+                      {s.location && <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{s.location}</div>}
+                    </div>
+                    {(() => { const a = s.attendees || s.attended || s.participants; return a?.length > 0 && <AvatarRow users={a} size={24} max={4} />; })()}
+                    <span style={{ color: T.muted, opacity: 0.5, fontSize: 16 }}>›</span>
+                  </div>
+                </Card>
+              ))}
+            </Section>
+          ) : null;
+        })()}
 
         <Section title={`Interested (${totalCount})`}>
           {allParticipants.map((u) => (

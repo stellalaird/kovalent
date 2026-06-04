@@ -214,7 +214,6 @@ const MOCK_SESSIONS = [
     interested: 4, level: "Intermediate",
     description: "Looking for a fluent speaker to practice conversational Spanish, especially medical vocabulary.",
     activityLevel: "medium", status: "feed", tags: ["language"],
-    scheduledTime: "Saturday, June 7 · 3:00 PM",
     waitingRoom: [MOCK_USERS[10], MOCK_USERS[7], MOCK_USERS[12]],
   },
   {
@@ -222,7 +221,6 @@ const MOCK_SESSIONS = [
     interested: 7, level: "Beginner",
     description: "Want to learn how to shoot and develop 35mm film. Darkroom access at Block Museum.",
     activityLevel: "high", status: "feed", tags: ["photography", "art"],
-    scheduledTime: "Sunday, June 8 · 11:00 AM",
     waitingRoom: [MOCK_USERS[15], MOCK_USERS[2], MOCK_USERS[8], MOCK_USERS[16]],
   },
   {
@@ -238,14 +236,14 @@ const MOCK_SESSIONS = [
     activityLevel: "high", status: "feed", interested: 7, maxGroup: 12,
     description: "Casual chess games, any skill level welcome. We meet at Norris weekly and do blitz + analysis.",
     tags: ["games", "strategy"],
-    proposals: [
-      { id: "prop-s8-1", proposer: MOCK_USERS[0], time: "Saturday, June 7 · 2:00 PM", location: "Norris Game Room",      note: "Works perfectly for weekly games!",         interested: 5, registrations: 2, messages: [] },
-      { id: "prop-s8-2", proposer: MOCK_USERS[1], time: "Friday, June 6 · 5:00 PM",   location: "Tech Atrium",           note: "Right after classes, easy for everyone",   interested: 4, registrations: 1, messages: [] },
-      { id: "prop-s8-3", proposer: MOCK_USERS[4], time: "Sunday, June 8 · 1:00 PM",   location: "Norris Student Center", note: "Sunday afternoons are chill",               interested: 3, registrations: 0, messages: [] },
-    ],
     messages: [
-      { user: MOCK_USERS[0], text: "Anyone up for a blitz tourney this weekend?", time: "1:15 PM" },
-      { user: MOCK_USERS[1], text: "Absolutely! Saturday works for me", time: "1:20 PM" },
+      { user: MOCK_USERS[0], text: "Anyone up for a blitz tourney this week?", time: "1:15 PM" },
+      { user: MOCK_USERS[1], text: "Absolutely! I'm pretty flexible Mon or Tue", time: "1:20 PM" },
+    ],
+    pastSessions: [
+      { id: "ps-s8-1", scheduledTime: "Saturday, May 24 · 2:00 PM", location: "Norris Game Room", attendees: [MOCK_USERS[0], MOCK_USERS[1], MOCK_USERS[4], MOCK_USERS[7]], groupPhoto: "https://picsum.photos/seed/chess77/400/220" },
+      { id: "ps-s8-2", scheduledTime: "Saturday, May 17 · 2:00 PM", location: "Norris Game Room", attendees: [MOCK_USERS[0], MOCK_USERS[4], MOCK_USERS[7], MOCK_USERS[11]] },
+      { id: "ps-s8-3", scheduledTime: "Saturday, May 3 · 2:00 PM",  location: "Norris Game Room", attendees: [MOCK_USERS[0], MOCK_USERS[1], MOCK_USERS[7]] },
     ],
   },
   {
@@ -254,11 +252,13 @@ const MOCK_SESSIONS = [
     activityLevel: "medium", status: "feed", interested: 4, maxGroup: 10,
     description: "5K loops around the lakefront, Tues/Thurs 7am. All paces welcome, we stick together.",
     tags: ["fitness", "outdoors"],
-    proposals: [
-      { id: "prop-s9-1", proposer: MOCK_USERS[2],  time: "Tuesday, June 10 · 7:00 AM", location: "Lakefront Trail, Foster Beach start", note: "Classic Tues/Thurs schedule 🏃",               interested: 3, registrations: 2, messages: [] },
-      { id: "prop-s9-2", proposer: MOCK_USERS[15], time: "Saturday, June 7 · 8:00 AM", location: "Sheridan Rd start point",             note: "Weekend run for those who can't do weekdays", interested: 2, registrations: 1, messages: [] },
-    ],
     messages: [],
+    pastSessions: [
+      { id: "ps-s9-1", scheduledTime: "Thursday, May 29 · 7:00 AM", location: "Lakefront Trail, Foster Beach start", attendees: [MOCK_USERS[2], MOCK_USERS[4], MOCK_USERS[8], MOCK_USERS[15]] },
+      { id: "ps-s9-2", scheduledTime: "Tuesday, May 27 · 7:00 AM", location: "Lakefront Trail, Foster Beach start", attendees: [MOCK_USERS[2], MOCK_USERS[8], MOCK_USERS[15]] },
+      { id: "ps-s9-3", scheduledTime: "Thursday, May 22 · 7:00 AM", location: "Lakefront Trail, Foster Beach start", attendees: [MOCK_USERS[4], MOCK_USERS[8]] },
+      { id: "ps-s9-4", scheduledTime: "Tuesday, May 6 · 7:00 AM",   location: "Lakefront Trail, Foster Beach start", attendees: [MOCK_USERS[2], MOCK_USERS[8], MOCK_USERS[15]], groupPhoto: "https://picsum.photos/seed/run55/400/220" },
+    ],
   },
   // ── Additional teach sessions ──────────────────────────────
   {
@@ -266,7 +266,6 @@ const MOCK_SESSIONS = [
     level: "Beginner", interested: 6, minGroup: 2, maxGroup: 4, taught: 2,
     description: "Intro to Premiere Pro and DaVinci Resolve — cutting, color grading, and basic sound. We'll edit a short clip together.",
     activityLevel: "medium", status: "feed", tags: ["art", "tech"],
-    scheduledTime: "Saturday, June 7 · 1:00 PM",
     location: "Norris University Center, Room 304",
     materials: "Bring a laptop if you have one.",
     waitingRoom: [MOCK_USERS[5], MOCK_USERS[6], MOCK_USERS[8]],
@@ -281,7 +280,6 @@ const MOCK_SESSIONS = [
     level: "Beginner", interested: 9, minGroup: 2, maxGroup: 6, taught: 4,
     description: "Learn tones, basic vocab, and survival phrases. Camille is fluent in Mandarin and has taught informally for years.",
     activityLevel: "high", status: "feed", tags: ["language"],
-    scheduledTime: "Sunday, June 8 · 3:00 PM",
     location: "Kresge Hall, Room 2-410",
     materials: "No materials needed. Just bring yourself!",
     waitingRoom: [MOCK_USERS[13], MOCK_USERS[8], MOCK_USERS[17], MOCK_USERS[10]],
@@ -354,6 +352,27 @@ const MOCK_SESSIONS = [
     waitingRoom: [MOCK_USERS[11], MOCK_USERS[0], MOCK_USERS[7]],
   },
 
+  {
+    id: "s21", type: "learn", skill: "Songwriting Basics", teacher: MOCK_USERS[1],
+    level: "All Levels", interested: 9, minGroup: 2, maxGroup: 6, taught: 5,
+    description: "Learn how to write a song from scratch — chord progressions, melody, and lyrics. No music theory required.",
+    activityLevel: "high", status: "feed", tags: ["music", "creative"],
+    location: "Norris Music Room 208",
+    materials: "Bring an instrument if you play one. Notebook recommended.",
+    waitingRoom: [MOCK_USERS[6], MOCK_USERS[14], MOCK_USERS[16]],
+    messages: [],
+  },
+  {
+    id: "s22", type: "learn", skill: "Bread Baking", teacher: MOCK_USERS[13],
+    level: "Beginner", interested: 6, minGroup: 2, maxGroup: 5, taught: 2,
+    description: "We'll make a simple sourdough loaf together — mixing, proofing, scoring, and baking. Take home your own bread!",
+    activityLevel: "medium", status: "feed", tags: ["social", "creative"],
+    location: "Allison Dining Hall Kitchen",
+    materials: "Nothing needed — all ingredients provided.",
+    waitingRoom: [MOCK_USERS[4], MOCK_USERS[11], MOCK_USERS[17]],
+    messages: [],
+  },
+
   // ── Additional collab sessions ──────────────────────────────
   {
     id: "s18", type: "collab", activity: "Finals Study Group",
@@ -362,8 +381,8 @@ const MOCK_SESSIONS = [
     description: "Open study sessions at Mudd library during finals week. Any major welcome — bring your work and good vibes.",
     tags: ["strategy", "social"],
     proposals: [
-      { id: "prop-s18-1", proposer: MOCK_USERS[16], time: "Sunday, June 8 · 2:00 PM",  location: "Mudd Library, 2nd Floor",      note: "Sunday works for most of us!",        interested: 6, registrations: 3, messages: [] },
-      { id: "prop-s18-2", proposer: MOCK_USERS[13], time: "Monday, June 9 · 7:00 PM",  location: "Mudd Library, Group Room 2",  note: "Weeknight session before exams start", interested: 4, registrations: 2, messages: [] },
+      { id: "prop-s18-1", proposer: MOCK_USERS[16], time: "Wednesday, June 11 · 2:00 PM", location: "Mudd Library, 2nd Floor",     note: "Wednesday afternoon — good midweek reset!", interested: 6, registrations: 3, messages: [] },
+      { id: "prop-s18-2", proposer: MOCK_USERS[13], time: "Monday, June 9 · 7:00 PM",   location: "Mudd Library, Group Room 2", note: "Weeknight session before exams start",      interested: 4, registrations: 2, messages: [] },
     ],
     messages: [],
   },
@@ -381,9 +400,12 @@ const MOCK_SESSIONS = [
     activityLevel: "high", status: "feed", interested: 7, maxGroup: 10,
     description: "Casual walk around campus and the lakefront to shoot. Film and digital both welcome. Share and critique each other's shots after.",
     tags: ["photography", "art"],
+    pastSessions: [
+      { id: "ps-s20-1", scheduledTime: "Saturday, May 10 · 9:00 AM", location: "Deering Library steps", attendees: [MOCK_USERS[2], MOCK_USERS[5], MOCK_USERS[15]], groupPhoto: "https://picsum.photos/seed/photo33/400/220" },
+      { id: "ps-s20-2", scheduledTime: "Sunday, April 27 · 10:00 AM", location: "Lakefront near SPAC",  attendees: [MOCK_USERS[2], MOCK_USERS[5]] },
+    ],
     proposals: [
-      { id: "prop-s20-1", proposer: MOCK_USERS[2],  time: "Saturday, June 7 · 9:00 AM",  location: "Meet at Deering Library steps", note: "Golden hour light in the morning 📷",  interested: 5, registrations: 2, messages: [] },
-      { id: "prop-s20-2", proposer: MOCK_USERS[5],  time: "Sunday, June 8 · 4:00 PM",    location: "Lakefront near SPAC",           note: "Afternoon light is great for portraits", interested: 4, registrations: 1, messages: [] },
+      { id: "prop-s20-1", proposer: MOCK_USERS[2],  time: "Saturday, June 7 · 9:00 AM",  location: "Meet at Deering Library steps", note: "Golden hour light in the morning 📷",       interested: 5, registrations: 2, messages: [] },
     ],
     messages: [],
   },
@@ -391,11 +413,13 @@ const MOCK_SESSIONS = [
   {
     id: "s10", type: "collab", activity: "Board Game Night",
     activityLevel: "high", status: "scheduled",
-    scheduledTime: "Friday, June 6 · 7:00 PM", location: "Norris Game Room",
     participants: [MOCK_USERS[1], MOCK_USERS[5], MOCK_USERS[3], MOCK_USERS[12]],
     interested: 3,
     description: "Catan, Ticket to Ride, Codenames — bring your favorites!",
     tags: ["games", "social"],
+    proposals: [
+      { id: "prop-s10-1", proposer: MOCK_USERS[1], time: "Friday, June 6 · 7:00 PM", location: "Norris Game Room", note: "Weekly game night, same spot as always 🎲", interested: 5, registrations: 4, messages: [] },
+    ],
     messages: [],
   },
 ];
@@ -405,12 +429,35 @@ const MOCK_SESSIONS = [
 const _s = id => MOCK_SESSIONS.find(s => s.id === id);
 const MY_SESSIONS = [
   { ..._s("s1"),  status: "waiting_room", myRole: "learner"     },
+  { ..._s("s17"), status: "waiting_room", myRole: "learner"     },
   { ..._s("s4"),  status: "scheduled",    myRole: "learner"     },
   { ..._s("s8"),  status: "waiting_room", myRole: "participant" },
-  { ..._s("s10"), status: "scheduled",    myRole: "participant" },
+  { ..._s("s10"), id: "s10__prop-s10-1", _baseId: "s10", status: "scheduled", scheduledTime: "Friday, June 6 · 7:00 PM", location: "Norris Game Room", myRole: "participant" },
+  {
+    id: "my-teach1", type: "learn", skill: "Chess Strategy", teacher: CURRENT_USER,
+    level: "Intermediate", status: "scheduled", myRole: "teacher",
+    scheduledTime: "Saturday, June 7 · 3:00 PM", location: "Norris Game Room",
+    materials: "Bring a chess set if you have one.",
+    description: "We'll cover opening principles, middlegame planning, and basic endgame technique.",
+    participants: [MOCK_USERS[3], MOCK_USERS[6]],
+    waitingRoom: [MOCK_USERS[3], MOCK_USERS[6], MOCK_USERS[13]],
+    interested: 3, minGroup: 2, maxGroup: 6, taught: 2, activityLevel: "medium",
+    messages: [],
+  },
+  {
+    id: "my-teach2", type: "learn", skill: "Intro to React", teacher: CURRENT_USER,
+    level: "Beginner", status: "scheduled", myRole: "teacher",
+    scheduledTime: "Monday, June 9 · 6:00 PM", location: "Tech LG52",
+    materials: "Bring a laptop with Node.js installed.",
+    description: "Hands-on intro to React — components, state, and hooks. We'll build a small app together.",
+    participants: [MOCK_USERS[8], MOCK_USERS[11], MOCK_USERS[17]],
+    waitingRoom: [MOCK_USERS[8], MOCK_USERS[11], MOCK_USERS[17], MOCK_USERS[13]],
+    interested: 4, minGroup: 2, maxGroup: 8, taught: 2, activityLevel: "high",
+    messages: [],
+  },
   {
     id: "s-comp1", type: "learn", skill: "Intro to Chess", teacher: MOCK_USERS[0],
-    level: "Beginner", status: "completed", myRole: "teacher",
+    level: "Beginner", status: "completed", myRole: "teacher", repeatRequests: 2,
     scheduledTime: "May 15, 2025 · 3:00 PM", location: "Tech LG52",
     participants: [MOCK_USERS[1], MOCK_USERS[3]],
     attended: [MOCK_USERS[1], MOCK_USERS[3]],
@@ -444,6 +491,26 @@ const MY_SESSIONS = [
     attended:     [MOCK_USERS[5], MOCK_USERS[11], MOCK_USERS[6]],
     description: "First session on the pottery wheel — centering clay and basic throwing technique.",
     interested: 4, minGroup: 2, maxGroup: 5, activityLevel: "medium", messages: [],
+  },
+  {
+    id: "my-teach-comp1", type: "learn", skill: "Python for Beginners", teacher: CURRENT_USER,
+    level: "Beginner", status: "completed", myRole: "teacher", repeatRequests: 4,
+    scheduledTime: "May 10, 2025 · 5:00 PM", location: "Tech LG52",
+    materials: "Bring a laptop. We'll install Python together if needed.",
+    description: "Intro to Python: variables, loops, functions. Perfect for non-CS majors who want to learn coding basics.",
+    participants: [MOCK_USERS[3], MOCK_USERS[6], MOCK_USERS[8], MOCK_USERS[11], MOCK_USERS[13]],
+    attended:     [MOCK_USERS[3], MOCK_USERS[6], MOCK_USERS[8], MOCK_USERS[11], MOCK_USERS[13]],
+    interested: 5, minGroup: 3, maxGroup: 8, taught: 3, activityLevel: "high", messages: [],
+  },
+  {
+    id: "my-collab-comp1", type: "collab", activity: "Board Game Night",
+    status: "completed", myRole: "participant", _sourceId: "s10",
+    scheduledTime: "May 17, 2025 · 7:00 PM", location: "Norris Game Room",
+    participants: [CURRENT_USER, MOCK_USERS[1], MOCK_USERS[5], MOCK_USERS[3], MOCK_USERS[12], MOCK_USERS[7]],
+    attended:     [CURRENT_USER, MOCK_USERS[1], MOCK_USERS[5], MOCK_USERS[3], MOCK_USERS[12], MOCK_USERS[7]],
+    description: "Catan, Ticket to Ride, Codenames — brought our favorites. Great turnout!",
+    interested: 5, activityLevel: "high", tags: ["games", "social"], messages: [],
+    groupPhoto: "https://picsum.photos/seed/boardgame42/400/220",
   },
 ];
 

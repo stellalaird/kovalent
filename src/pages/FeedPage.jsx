@@ -10,7 +10,7 @@ import TopicsPageContent from "../pages/TopicsPage";
 
 export default function FeedPage() {
   const { feedView, setFeedView, activeTopic, sessionTypeFilter, setSessionTypeFilter, mySessions, profile, setTab, customSessions } = useApp();
-  const [chronological, setChronological] = useState(true);
+  const [chronological, setChronological] = useState(false);
 
   const activityRank = { high: 0, medium: 1, low: 2 };
   const joinedIds = new Set(mySessions.map((s) => s.id));
@@ -46,17 +46,46 @@ export default function FeedPage() {
     }
   }
 
-  const sorted = [...expanded].sort((a, b) => {
-    if (chronological) {
-      const ta = parseSessionTime(getTime(a));
-      const tb = parseSessionTime(getTime(b));
-      if (ta && tb) return ta - tb;
-      if (ta) return -1;
-      if (tb) return 1;
-      return 0;
+  const byActivity = (a, b) => (activityRank[a.activityLevel] ?? 2) - (activityRank[b.activityLevel] ?? 2);
+
+  function interleave(a, b, ratio = 2) {
+    const result = [];
+    let ai = 0, bi = 0;
+    while (ai < a.length || bi < b.length) {
+      for (let i = 0; i < ratio && ai < a.length; i++) result.push(a[ai++]);
+      if (bi < b.length) {
+        result.push(b[bi++]);
+        // Keep same-base-session proposals together
+        while (bi < b.length && b[bi].id === b[bi - 1].id) result.push(b[bi++]);
+      }
     }
-    return (activityRank[a.activityLevel] ?? 2) - (activityRank[b.activityLevel] ?? 2);
-  });
+    return result;
+  }
+
+  const sorted = (() => {
+    let arr;
+    if (chronological) {
+      arr = [...expanded].sort((a, b) => {
+        const ta = parseSessionTime(getTime(a));
+        const tb = parseSessionTime(getTime(b));
+        if (ta && tb) return ta - tb;
+        if (ta) return -1;
+        if (tb) return 1;
+        return 0;
+      });
+    } else {
+      const learnTeach = expanded.filter(s => s.type !== "collab").sort(byActivity);
+      const collabs   = expanded.filter(s => s.type === "collab").sort(byActivity);
+      arr = interleave(learnTeach, collabs, 2);
+    }
+    // Pin Lakefront Hike (s19) to 4th from last
+    const lhIdx = arr.findIndex(s => s.id === "s19");
+    if (lhIdx !== -1 && arr.length >= 4) {
+      const [item] = arr.splice(lhIdx, 1);
+      arr.splice(arr.length - 3, 0, item);
+    }
+    return arr;
+  })();
 
   const filterBtnStyle = (active, color) => ({
     padding: "4px 12px",
@@ -157,7 +186,7 @@ export default function FeedPage() {
               onClick={() => setChronological(c => !c)}
               style={filterBtnStyle(chronological, T.purple)}
             >
-              🗓 Upcoming
+              🕐↑
             </button>
           </div>
         </div>

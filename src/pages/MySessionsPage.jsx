@@ -8,7 +8,7 @@ import PageHeader from "../components/PageHeader";
 import Section from "../components/Section";
 
 export default function MySessionsPage() {
-  const { mySessions, openSession } = useApp();
+  const { mySessions, openSession, profile } = useApp();
   const [filter, setFilter] = useState("all");
 
   const isTeachRole = s => s.myRole === "teacher";
@@ -46,9 +46,15 @@ export default function MySessionsPage() {
     mySessions.filter(s => s._baseId).map(s => s._baseId)
   );
 
+  const isAwaitingTeacher = s =>
+    s.status === "waiting_room" && s.type === "teach" && !isTeachRole(s);
+
   const grouped = {
+    awaiting_teacher: sortChronological(filtered.filter(s => isAwaitingTeacher(s))),
     waiting_room: sortChronological(filtered.filter(s =>
-      s.status === "waiting_room" && !(s.type === "collab" && registeredCollabIds.has(s.id))
+      s.status === "waiting_room" &&
+      !isAwaitingTeacher(s) &&
+      !(s.type === "collab" && registeredCollabIds.has(s.id))
     )),
     scheduled: sortChronological(filtered.filter(s => s.status === "scheduled")),
     completed: sortChronological(filtered.filter(s => s.status === "completed")),
@@ -67,17 +73,20 @@ export default function MySessionsPage() {
     const teachOverflow = Math.max(0, (s.interested ?? 0) - 1);
     const collabOverflow = Math.max(0, (pList.length + (s.interested ?? 0)) - 1);
 
+    // When we are the teacher (either created a learn session or offered to teach a teach session),
+    // show our avatar. Otherwise show the teacher's avatar or participant avatars.
     const avatarEl = isCollab(s)
       ? <AvatarRow users={pList} size={34} max={1} overflowCount={collabOverflow} />
-      : s.type === "teach"
-        ? <AvatarRow users={wList} size={34} max={1} overflowCount={teachOverflow} />
-        : isTeachRole(s)
-          ? <AvatarRow users={pList.length ? pList : wList} size={34} max={1} overflowCount={Math.max(0, (pList.length || wList.length) - 1)} />
+      : isTeachRole(s)
+        ? <Avatar user={profile} size={34} />
+        : s.type === "teach"
+          ? <AvatarRow users={wList} size={34} max={1} overflowCount={teachOverflow} />
           : teacher
             ? <Avatar user={teacher} size={34} />
             : null;
 
-    const sub = s.scheduledTime || (isCollab(s)
+    const showTime = s.scheduledTime && (s.type !== "teach" || isTeachRole(s));
+    const sub = showTime ? s.scheduledTime : (isCollab(s)
       ? `${(pList.length + (s.interested ?? 0))} interested`
       : `${s.interested ?? 0} interested`);
 
@@ -160,8 +169,13 @@ export default function MySessionsPage() {
       </PageHeader>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "18px 16px", background: T.appBg }}>
+        {grouped.awaiting_teacher.length > 0 && (
+          <Section title={`Awaiting Teacher (${grouped.awaiting_teacher.length})`}>
+            {grouped.awaiting_teacher.map(s => <SessionMiniCard key={s.id} s={s} />)}
+          </Section>
+        )}
         {grouped.waiting_room.length > 0 && (
-          <Section title={`Interested (${grouped.waiting_room.length})`}>
+          <Section title={`Unregistered / Unscheduled (${grouped.waiting_room.length})`}>
             {grouped.waiting_room.map(s => <SessionMiniCard key={s.id} s={s} />)}
           </Section>
         )}

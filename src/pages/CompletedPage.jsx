@@ -8,9 +8,10 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function CompletedPage({ session }) {
-  const { setTab, setViewingUser, setProfile, mySessions, setMySessions, profile } = useApp();
+  const { setTab, setViewingUser, setProfile, mySessions, setMySessions, profile, showToast, setActiveSession, setActiveView } = useApp();
 
   const isLearner = session.myRole === "learner";
+  const isCollab  = session.type === "collab";
   const label    = session.skill || session.activity;
   const host     = session.teacher || null;
   const participants = session.attended || session.participants || [];
@@ -23,6 +24,8 @@ export default function CompletedPage({ session }) {
   // Tipping — initialised from persisted session data
   const [extraTip, setExtraTip] = useState(session.extraTipAmount || 0);
   const [tipSent, setTipSent]   = useState(session.tipSent        || false);
+  const [repeated, setRepeated] = useState(false);
+  const [repeatRequested, setRepeatRequested] = useState(false);
 
   function persistTip(amount) {
     setMySessions(prev => prev.map(s =>
@@ -41,7 +44,10 @@ export default function CompletedPage({ session }) {
       {/* Header — matches WaitingRoomPage style */}
       <div style={{ background: T.appBg, padding: "22px 18px 24px", position: "relative", overflow: "hidden", borderBottom: `1px solid ${T.border}` }}>
         <div style={{ position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)", width: 300, height: 180, borderRadius: "50%", background: "radial-gradient(ellipse, rgba(52,211,153,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <button onClick={() => setTab("mySessions")} style={{
+        <button onClick={() => {
+          if (session._parentSession) { setActiveSession(session._parentSession); setActiveView("waitingRoom"); setTab("session"); }
+          else setTab("mySessions");
+        }} style={{
           background: T.surface, border: `1px solid ${T.border}`, color: T.textMid,
           borderRadius: 10, padding: "6px 14px", fontWeight: 600,
           cursor: "pointer", fontSize: 13, marginBottom: 18, letterSpacing: "-0.01em", position: "relative",
@@ -69,6 +75,14 @@ export default function CompletedPage({ session }) {
         {/* ── LEARNER LAYOUT ─────────────────────────────── */}
         {isLearner && (
           <>
+            <Button
+              disabled={repeatRequested}
+              onClick={() => { if (!repeatRequested) setRepeatRequested(true); }}
+              style={{ marginBottom: 16, opacity: repeatRequested ? 0.45 : 1, cursor: repeatRequested ? "default" : "pointer", width: "100%" }}
+            >
+              {repeatRequested ? "Repeat Session Requested" : "Request Repeat Session"}
+            </Button>
+
             {/* 1. Tipping */}
             <Card style={{ marginBottom: 16 }}>
               <div style={{ padding: 16 }}>
@@ -233,92 +247,94 @@ export default function CompletedPage({ session }) {
           </>
         )}
 
-        {/* ── TEACHER LAYOUT ─────────────────────────────── */}
-        {!isLearner && (
+        {/* ── COLLAB LAYOUT ──────────────────────────────── */}
+        {isCollab && (
           <>
+            <Button
+              onClick={() => {
+                if (session._parentSession) { setActiveSession(session._parentSession); setActiveView("waitingRoom"); setTab("session"); return; }
+                const source = mySessions.find(s => s.id === session._sourceId || s._baseId === session._sourceId);
+                if (source) { setActiveSession(source); setActiveView("waitingRoom"); setTab("session"); }
+                else setTab("mySessions");
+              }}
+              style={{ marginBottom: 16, width: "100%" }}
+            >View Session</Button>
+
             {/* Photo */}
             <Card style={{ marginBottom: 16 }}>
               <div style={{ padding: 16 }}>
                 <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
                   📸 Group Photo
                 </div>
-                <div
-                  style={{
-                    background: T.purpleFaint, borderRadius: 14, height: 140,
-                    display: "flex", flexDirection: "column", alignItems: "center",
-                    justifyContent: "center", cursor: "pointer",
-                    border: `1.5px dashed ${T.border}`,
-                  }}
-                >
-                  <span style={{ fontSize: 36, marginBottom: 8 }}>🖼️</span>
-                  <span style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>Tap to upload group photo</span>
-                </div>
+                {session.groupPhoto ? (
+                  <img src={session.groupPhoto} alt="Group photo" style={{ width: "100%", borderRadius: 14, display: "block", objectFit: "cover", height: 160 }} />
+                ) : (
+                  <div style={{ background: T.purpleFaint, borderRadius: 14, height: 140, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", border: `1.5px dashed ${T.border}` }}>
+                    <span style={{ fontSize: 36, marginBottom: 8 }}>🖼️</span>
+                    <span style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>Tap to upload group photo</span>
+                  </div>
+                )}
               </div>
             </Card>
 
-            {/* Attendance */}
             <Section title="Attendance">
-              {[profile, ...participants].map(u => (
-                <Card
-                  key={u.id}
-                  style={{ marginBottom: 8, cursor: u.id !== "me" ? "pointer" : "default" }}
-                  onClick={u.id !== "me" ? () => setViewingUser(u) : undefined}
-                >
+              {(session.attended || participants).map(u => (
+                <Card key={u.id} style={{ marginBottom: 8, cursor: u.id !== "me" ? "pointer" : "default" }} onClick={u.id !== "me" ? () => setViewingUser(u) : undefined}>
                   <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
                     <Avatar user={u} size={38} />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, fontSize: 14, color: T.text, display: "flex", alignItems: "center", gap: 5 }}>
-                        {u.name}
-                        {u.id === "me" && <Badge color={T.purple} bg={T.purpleLight}>You</Badge>}
+                        {u.name}{u.id === "me" && <Badge color={T.purple} bg={T.purpleLight}>You</Badge>}
                       </div>
-                      {u.year && (
-                        <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>
-                          {u.year}
-                        </div>
-                      )}
+                      {u.year && <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{u.year}</div>}
                     </div>
                     <Badge color={T.success} bg={T.successBg}>✓ Attended</Badge>
                   </div>
                 </Card>
               ))}
             </Section>
+          </>
+        )}
 
-            {/* Rating */}
-            <Card style={{ marginBottom: 16 }}>
-              <div style={{ padding: 16 }}>
-                <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
-                  Rate this session
-                </div>
-                {!ratingDone ? (
-                  <>
-                    <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
-                      {[1, 2, 3, 4, 5].map(n => (
-                        <button
-                          key={n}
-                          onClick={() => setRating(n)}
-                          onMouseEnter={() => setHoverRating(n)}
-                          onMouseLeave={() => setHoverRating(0)}
-                          style={{
-                            background: "none", border: "none", fontSize: 30,
-                            cursor: "pointer",
-                            color: n <= (hoverRating || rating) ? "#f59e0b" : T.border,
-                          }}
-                        >★</button>
-                      ))}
-                    </div>
-                    <Button small onClick={() => { if (rating > 0) { setRatingDone(true); persistRating(rating); } }}>
-                      Submit Rating
-                    </Button>
-                  </>
-                ) : (
-                  <div style={{ color: T.success, fontWeight: 700, fontSize: 14 }}>
-                    ✓ Rating submitted — thanks!
-                  </div>
-                )}
+        {/* ── TEACHER LAYOUT ─────────────────────────────── */}
+        {!isLearner && !isCollab && (
+          <>
+            <Button
+              disabled={repeated}
+              onClick={() => {
+                if (repeated) return;
+                const attended = session.attended || session.participants || [];
+                const newSession = {
+                  id: `repeat-${session.id}-${Date.now()}`,
+                  type: "learn",
+                  skill: session.skill,
+                  level: session.level,
+                  description: session.description,
+                  minGroup: session.minGroup,
+                  maxGroup: session.maxGroup,
+                  tags: session.tags,
+                  activityLevel: session.activityLevel ?? "medium",
+                  teacher: profile,
+                  status: "waiting_room",
+                  myRole: "teacher",
+                  interested: attended.length,
+                  waitingRoom: attended,
+                  participants: [],
+                  messages: [],
+                };
+                setMySessions(prev => [...prev, newSession]);
+                setRepeated(true);
+                showToast("Repeat session generated! Check My Sessions.", "success");
+              }}
+              style={{ marginBottom: 16, opacity: repeated ? 0.45 : 1, cursor: repeated ? "default" : "pointer", width: "100%" }}
+            >{repeated ? "Repeat Session Generated" : "Repeat Session"}</Button>
+
+            {(session.repeatRequests ?? 0) > 0 && (
+              <div style={{ fontSize: 13, color: T.muted, fontWeight: 500, marginBottom: 28 }}>
+                {session.repeatRequests} {session.repeatRequests === 1 ? "learner has" : "learners have"} requested a repeat session
               </div>
-            </Card>
+            )}
 
-            {/* Tokens earned */}
             <Card style={{ marginBottom: 16, background: "#fffbeb", border: `1px solid #fde68a` }}>
               <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 14 }}>
                 <span style={{ fontSize: 32 }}>✦</span>
@@ -329,7 +345,45 @@ export default function CompletedPage({ session }) {
               </div>
             </Card>
 
-            <Button onClick={() => {}}>🔁 Repeat Session</Button>
+            <Card style={{ marginBottom: 16 }}>
+              <div style={{ padding: 16 }}>
+                <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 12 }}>
+                  📸 Group Photo
+                </div>
+                <div style={{ background: T.purpleFaint, borderRadius: 14, height: 140, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", border: `1.5px dashed ${T.border}` }}>
+                  <span style={{ fontSize: 36, marginBottom: 8 }}>🖼️</span>
+                  <span style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>Tap to upload group photo</span>
+                </div>
+              </div>
+            </Card>
+
+            <Section title="Teacher">
+              <Card style={{ marginBottom: 0 }}>
+                <div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+                  <Avatar user={profile} size={48} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 15, color: T.text, letterSpacing: "-0.02em" }}>{profile.name}</div>
+                    <div style={{ fontSize: 13, color: T.muted }}>{profile.year} · {profile.major}</div>
+                  </div>
+                  <Badge color={T.purple} bg={T.purpleLight}>You</Badge>
+                </div>
+              </Card>
+            </Section>
+
+            <Section title="Attendance">
+              {participants.map(u => (
+                <Card key={u.id} style={{ marginBottom: 8, cursor: "pointer" }} onClick={() => setViewingUser(u)}>
+                  <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                    <Avatar user={u} size={38} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: T.text }}>{u.name}</div>
+                      {u.year && <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{u.year}</div>}
+                    </div>
+                    <Badge color={T.success} bg={T.successBg}>✓ Attended</Badge>
+                  </div>
+                </Card>
+              ))}
+            </Section>
           </>
         )}
 
