@@ -112,7 +112,7 @@ export default function FeedCard({ session }) {
         <div style={{
           borderTop: `1px solid ${T.border}`,
           padding: "14px 16px 16px",
-          background: session.type === "collab" ? T.surfaceHover : "#FAFAFA",
+          background: session.type === "collab" ? T.surfaceHover : T.surface,
         }}>
           {/* Show teacher details whenever a teacher exists */}
           {hasTeacher && (

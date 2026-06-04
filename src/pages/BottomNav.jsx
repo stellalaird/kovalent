@@ -63,7 +63,7 @@ export default function BottomNav() {
   return (
     <div style={{
       flexShrink: 0,
-      background: "rgba(251,245,230,0.96)",
+      background: T.appBg + "f5",
       backdropFilter: "blur(24px)",
       WebkitBackdropFilter: "blur(24px)",
       borderTop: `1px solid ${T.border}`,

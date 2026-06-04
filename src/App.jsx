@@ -16,8 +16,6 @@ function AppInner() {
   const { tab, toast, viewingUser, darkMode } = useApp();
   // Reading darkMode here means AppInner re-renders when dark mode changes,
   // which causes all children to re-render and pick up new T values via the Proxy.
-  void darkMode;
-
   return (
     <div
       style={{
@@ -30,6 +28,7 @@ function AppInner() {
         flexDirection: "column",
         overflowX: "hidden",
         boxShadow: "0 0 0 1px rgba(180,140,40,0.1), 0 0 80px rgba(180,140,40,0.1), 0 0 160px rgba(0,0,0,0.3)",
+        colorScheme: darkMode ? "dark" : "light",
       }}
     >
       <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowX: "hidden" }}>

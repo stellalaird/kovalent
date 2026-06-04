@@ -163,7 +163,7 @@ export default function CreateSessionPage() {
       {/* Header */}
       <div style={{
         padding: "14px 18px 16px",
-        background: "rgba(251,245,230,0.96)",
+        background: T.headerBg,
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         borderBottom: `1px solid ${T.border}`,
@@ -202,7 +202,7 @@ export default function CreateSessionPage() {
                   padding: "10px 6px",
                   borderRadius: 12,
                   border: form.type === opt.id ? `1.5px solid ${T.cardBorderBright}` : `1px solid ${T.border}`,
-                  background: form.type === opt.id ? T.purpleLight : "#fff",
+                  background: form.type === opt.id ? T.purpleLight : T.card,
                   color: form.type === opt.id ? T.purpleDeep : T.muted,
                   fontWeight: form.type === opt.id ? 700 : 500,
                   fontSize: 13,
@@ -255,7 +255,7 @@ export default function CreateSessionPage() {
                     padding: "7px 14px",
                     borderRadius: 999,
                     border: form.level === l ? `1.5px solid ${T.cardBorderBright}` : `1px solid ${T.border}`,
-                    background: form.level === l ? T.purpleLight : "#fff",
+                    background: form.level === l ? T.purpleLight : T.card,
                     color: form.level === l ? T.purpleDeep : T.muted,
                     fontWeight: form.level === l ? 700 : 500,
                     fontSize: 13,
@@ -279,7 +279,7 @@ export default function CreateSessionPage() {
             overflowY: "auto",
             border: `1px solid ${T.border}`,
             borderRadius: 12,
-            background: "#fff",
+            background: T.card,
             padding: "6px 8px",
             display: "flex",
             flexWrap: "wrap",
@@ -321,7 +321,7 @@ export default function CreateSessionPage() {
         left: 0,
         right: 0,
         padding: "16px 18px 28px",
-        background: "linear-gradient(to top, rgba(251,245,230,1) 70%, rgba(251,245,230,0))",
+        background: `linear-gradient(to top, ${T.appBg} 70%, transparent)`,
         pointerEvents: "none",
       }}>
         <button

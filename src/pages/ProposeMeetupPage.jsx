@@ -100,7 +100,7 @@ export default function ProposeMeetupPage({ session }) {
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
       <div style={{
         padding: "14px 18px 16px",
-        background: "rgba(251,245,230,0.96)",
+        background: T.headerBg,
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         borderBottom: `1px solid ${T.border}`,
@@ -179,7 +179,7 @@ export default function ProposeMeetupPage({ session }) {
         position: "absolute",
         bottom: 0, left: 0, right: 0,
         padding: "16px 18px 28px",
-        background: "linear-gradient(to top, rgba(251,245,230,1) 70%, rgba(251,245,230,0))",
+        background: `linear-gradient(to top, ${T.appBg} 70%, transparent)`,
         pointerEvents: "none",
       }}>
         <button

@@ -27,7 +27,7 @@ export default function ChatroomPage({ session }) {
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: T.appBg }}>
       {/* Header */}
       <div style={{
-        background: "rgba(251,245,230,0.96)", backdropFilter: "blur(24px)",
+        background: T.headerBg, backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         padding: "14px 18px", flexShrink: 0,
         borderBottom: `1px solid ${T.border}`,

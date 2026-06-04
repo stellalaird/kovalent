@@ -16,7 +16,7 @@ export default function UserProfilePage({ user }) {
     <div style={{ position: "absolute", inset: 0, background: T.appBg, zIndex: 50, overflowY: "auto", animation: "fadeIn 0.15s ease" }}>
       {/* Back bar */}
       <div style={{
-        padding: "14px 18px", background: "rgba(251,245,230,0.96)",
+        padding: "14px 18px", background: T.headerBg,
         backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
         borderBottom: `1px solid ${T.border}`, position: "sticky", top: 0, zIndex: 10,
       }}>

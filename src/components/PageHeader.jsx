@@ -6,7 +6,7 @@ export default function PageHeader({ children }) {
     <div
       style={{
         padding: "16px 18px 0",
-        background: "rgba(251,245,230,0.94)",
+        background: T.appBg + "f0",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         borderBottom: `1px solid ${T.border}`,
