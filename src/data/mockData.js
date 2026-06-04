@@ -131,7 +131,7 @@ const MOCK_USERS = [
 const CURRENT_USER = {
   id: "me", name: "Alex Chen", year: "3rd Year", major: "Computer Science",
   gender: "He/Him", avatar: "AC", color: "#6c4fc2", photo: "https://api.dicebear.com/9.x/avataaars/svg?seed=AlexChen",
-  tokens: 20, taught: 2, learned: 4, meetups: 3,
+  tokens: 20, taught: 2, learned: 4, meetups: 3, rating: 4.5,
   contact: "alexchen@northwestern.edu",
   bio: "CS junior interested in music, chess, and building cool things. Always looking for people to learn from and teach.",
 };
@@ -239,9 +239,9 @@ const MOCK_SESSIONS = [
     description: "Casual chess games, any skill level welcome. We meet at Norris weekly and do blitz + analysis.",
     tags: ["games", "strategy"],
     proposals: [
-      { id: "prop-s8-1", proposer: MOCK_USERS[0], time: "Saturday, June 7 · 2:00 PM", location: "Norris Game Room",      note: "Works perfectly for weekly games!",         interested: 5, registrations: 2 },
-      { id: "prop-s8-2", proposer: MOCK_USERS[1], time: "Friday, June 6 · 5:00 PM",   location: "Tech Atrium",           note: "Right after classes, easy for everyone",   interested: 4, registrations: 1 },
-      { id: "prop-s8-3", proposer: MOCK_USERS[4], time: "Sunday, June 8 · 1:00 PM",   location: "Norris Student Center", note: "Sunday afternoons are chill",               interested: 3, registrations: 0 },
+      { id: "prop-s8-1", proposer: MOCK_USERS[0], time: "Saturday, June 7 · 2:00 PM", location: "Norris Game Room",      note: "Works perfectly for weekly games!",         interested: 5, registrations: 2, messages: [] },
+      { id: "prop-s8-2", proposer: MOCK_USERS[1], time: "Friday, June 6 · 5:00 PM",   location: "Tech Atrium",           note: "Right after classes, easy for everyone",   interested: 4, registrations: 1, messages: [] },
+      { id: "prop-s8-3", proposer: MOCK_USERS[4], time: "Sunday, June 8 · 1:00 PM",   location: "Norris Student Center", note: "Sunday afternoons are chill",               interested: 3, registrations: 0, messages: [] },
     ],
     messages: [
       { user: MOCK_USERS[0], text: "Anyone up for a blitz tourney this weekend?", time: "1:15 PM" },
@@ -255,8 +255,8 @@ const MOCK_SESSIONS = [
     description: "5K loops around the lakefront, Tues/Thurs 7am. All paces welcome, we stick together.",
     tags: ["fitness", "outdoors"],
     proposals: [
-      { id: "prop-s9-1", proposer: MOCK_USERS[2],  time: "Tuesday, June 10 · 7:00 AM", location: "Lakefront Trail, Foster Beach start", note: "Classic Tues/Thurs schedule 🏃",               interested: 3, registrations: 2 },
-      { id: "prop-s9-2", proposer: MOCK_USERS[15], time: "Saturday, June 7 · 8:00 AM", location: "Sheridan Rd start point",             note: "Weekend run for those who can't do weekdays", interested: 2, registrations: 1 },
+      { id: "prop-s9-1", proposer: MOCK_USERS[2],  time: "Tuesday, June 10 · 7:00 AM", location: "Lakefront Trail, Foster Beach start", note: "Classic Tues/Thurs schedule 🏃",               interested: 3, registrations: 2, messages: [] },
+      { id: "prop-s9-2", proposer: MOCK_USERS[15], time: "Saturday, June 7 · 8:00 AM", location: "Sheridan Rd start point",             note: "Weekend run for those who can't do weekdays", interested: 2, registrations: 1, messages: [] },
     ],
     messages: [],
   },
@@ -362,8 +362,8 @@ const MOCK_SESSIONS = [
     description: "Open study sessions at Mudd library during finals week. Any major welcome — bring your work and good vibes.",
     tags: ["strategy", "social"],
     proposals: [
-      { id: "prop-s18-1", proposer: MOCK_USERS[16], time: "Sunday, June 8 · 2:00 PM",  location: "Mudd Library, 2nd Floor",      note: "Sunday works for most of us!",        interested: 6, registrations: 3 },
-      { id: "prop-s18-2", proposer: MOCK_USERS[13], time: "Monday, June 9 · 7:00 PM",  location: "Mudd Library, Group Room 2",  note: "Weeknight session before exams start", interested: 4, registrations: 2 },
+      { id: "prop-s18-1", proposer: MOCK_USERS[16], time: "Sunday, June 8 · 2:00 PM",  location: "Mudd Library, 2nd Floor",      note: "Sunday works for most of us!",        interested: 6, registrations: 3, messages: [] },
+      { id: "prop-s18-2", proposer: MOCK_USERS[13], time: "Monday, June 9 · 7:00 PM",  location: "Mudd Library, Group Room 2",  note: "Weeknight session before exams start", interested: 4, registrations: 2, messages: [] },
     ],
     messages: [],
   },
@@ -382,8 +382,8 @@ const MOCK_SESSIONS = [
     description: "Casual walk around campus and the lakefront to shoot. Film and digital both welcome. Share and critique each other's shots after.",
     tags: ["photography", "art"],
     proposals: [
-      { id: "prop-s20-1", proposer: MOCK_USERS[2],  time: "Saturday, June 7 · 9:00 AM",  location: "Meet at Deering Library steps", note: "Golden hour light in the morning 📷",  interested: 5, registrations: 2 },
-      { id: "prop-s20-2", proposer: MOCK_USERS[5],  time: "Sunday, June 8 · 4:00 PM",    location: "Lakefront near SPAC",           note: "Afternoon light is great for portraits", interested: 4, registrations: 1 },
+      { id: "prop-s20-1", proposer: MOCK_USERS[2],  time: "Saturday, June 7 · 9:00 AM",  location: "Meet at Deering Library steps", note: "Golden hour light in the morning 📷",  interested: 5, registrations: 2, messages: [] },
+      { id: "prop-s20-2", proposer: MOCK_USERS[5],  time: "Sunday, June 8 · 4:00 PM",    location: "Lakefront near SPAC",           note: "Afternoon light is great for portraits", interested: 4, registrations: 1, messages: [] },
     ],
     messages: [],
   },

@@ -22,6 +22,7 @@ function AppProvider({ children }) {
   const [toast, setToast] = useState(null);
   const [modal, setModal] = useState(null);
   const [viewingUser, setViewingUser] = useState(null);
+  const [activeProposal, setActiveProposal] = useState(null);
 
   function showToast(msg, type = "success") {
     setToast({ msg, type });
@@ -58,6 +59,7 @@ function AppProvider({ children }) {
       toast, showToast,
       modal, setModal,
       viewingUser, setViewingUser,
+      activeProposal, setActiveProposal,
       joinSession, openSession,
     }}>
       {children}

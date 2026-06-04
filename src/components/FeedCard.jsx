@@ -149,18 +149,9 @@ export default function FeedCard({ session }) {
               </Button>
             )}
             {session.type === "teach" && !assignedTeacher && (
-              <>
-                <Button small onClick={() => {
-                  setTeacherOverrides(prev => ({ ...prev, [session.id]: profile }));
-                  joinSession(session, "teacher");
-                  openSession({ ...session, myRole: "teacher" }, "waitingRoom");
-                }}>
-                  🎓 Offer to Teach
-                </Button>
-                <Button variant="secondary" small onClick={() => openSession(session, "waitingRoom")}>
-                  View Waiting Room
-                </Button>
-              </>
+              <Button small onClick={() => openSession(session, "waitingRoom")}>
+                View Waiting Room
+              </Button>
             )}
             {session.type === "teach" && weAreTeacher && (
               <Button small onClick={() => openSession(session, "waitingRoom")}>

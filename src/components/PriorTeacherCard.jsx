@@ -1,4 +1,4 @@
 import FeedCard from "./FeedCard";
-export default function TeachCard({ session }) {
+export default function PriorTeacherCard({ session }) {
   return <FeedCard session={session} />;
 }

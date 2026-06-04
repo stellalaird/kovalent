@@ -14,7 +14,7 @@ export default function ProfilePage() {
 
   function save() { setProfile(form); setEditing(false); }
 
-  const rating = profile.rating ?? 4.5;
+  const rating = profile.rating;
 
   const stats = [
     { icon: "🎓", label: "Taught",  value: profile.taught  },

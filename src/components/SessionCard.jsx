@@ -1,9 +1,17 @@
-import LearnCard from "../components/LearnCard";
-import TeachCard from "../components/TeachCard";
-import CollabCard from "../components/CollabCard";
+import { useApp } from "../context/AppContext";
+import HasTeacherCard from "./HasTeacherCard";
+import PriorTeacherCard from "./PriorTeacherCard";
+import CollabCard from "./CollabCard";
 
 export default function SessionCard({ session }) {
-  if (session.type === "learn")  return <LearnCard  session={session} />;
-  if (session.type === "teach")  return <TeachCard  session={session} />;
-  return <CollabCard session={session} />;
+  const { teacherOverrides } = useApp();
+
+  if (session.type === "collab") return <CollabCard session={session} />;
+  if (session.type === "learn")  return <HasTeacherCard session={session} />;
+
+  // type === "teach": has a teacher → HasTeacherCard, otherwise → PriorTeacherCard
+  const hasTeacher = !!teacherOverrides[session.id];
+  return hasTeacher
+    ? <HasTeacherCard session={session} />
+    : <PriorTeacherCard session={session} />;
 }

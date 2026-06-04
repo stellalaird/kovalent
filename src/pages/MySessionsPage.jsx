@@ -5,7 +5,6 @@ import Avatar from "../components/Avatar";
 import AvatarRow from "../components/AvatarRow";
 import Badge from "../components/Badge";
 import PageHeader from "../components/PageHeader";
-import Pill from "../components/Pill";
 import Section from "../components/Section";
 
 export default function MySessionsPage() {
@@ -43,8 +42,14 @@ export default function MySessionsPage() {
     });
   }
 
+  const registeredCollabIds = new Set(
+    mySessions.filter(s => s._baseId).map(s => s._baseId)
+  );
+
   const grouped = {
-    waiting_room: sortChronological(filtered.filter(s => s.status === "waiting_room")),
+    waiting_room: sortChronological(filtered.filter(s =>
+      s.status === "waiting_room" && !(s.type === "collab" && registeredCollabIds.has(s.id))
+    )),
     scheduled: sortChronological(filtered.filter(s => s.status === "scheduled")),
     completed: sortChronological(filtered.filter(s => s.status === "completed")),
   };
@@ -124,21 +129,39 @@ export default function MySessionsPage() {
         </div>
         <div style={{ display: "flex", gap: 6, paddingBottom: 14, overflowX: "auto" }}>
           {[
-            { id: "all",    label: "All" },
-            { id: "teach",  label: "Teach" },
-            { id: "learn",  label: "Learn" },
-            { id: "collab", label: "Meetups" },
-          ].map(({ id, label }) => (
-            <Pill key={id} active={filter === id} onClick={() => setFilter(id)}>
+            { id: "all",    label: "All",     color: T.purple },
+            { id: "teach",  label: "Teach",   color: T.sessionTypes.teach.badge },
+            { id: "learn",  label: "Learn",   color: T.sessionTypes.learn.badge },
+            { id: "collab", label: "Meetups", color: T.purple },
+          ].map(({ id, label, color }) => (
+            <button
+              key={id}
+              onClick={() => setFilter(id)}
+              style={{
+                padding: "4px 12px",
+                borderRadius: 6,
+                border: filter === id ? `1px solid ${color}55` : `1px solid ${T.border}`,
+                background: filter === id ? `${color}18` : "transparent",
+                color: filter === id ? color : T.muted,
+                fontWeight: filter === id ? 600 : 500,
+                fontFamily: T.fontBody,
+                fontSize: 12,
+                cursor: "pointer",
+                letterSpacing: "0.01em",
+                transition: "all 0.15s",
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
               {label}
-            </Pill>
+            </button>
           ))}
         </div>
       </PageHeader>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "18px 16px", background: T.appBg }}>
         {grouped.waiting_room.length > 0 && (
-          <Section title={`Waiting Rooms (${grouped.waiting_room.length})`}>
+          <Section title={`Interested (${grouped.waiting_room.length})`}>
             {grouped.waiting_room.map(s => <SessionMiniCard key={s.id} s={s} />)}
           </Section>
         )}

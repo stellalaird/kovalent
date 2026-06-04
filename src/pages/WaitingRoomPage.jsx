@@ -8,12 +8,14 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
-  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides } = useApp();
+  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal } = useApp();
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
 
-  // Are we the teacher of a teach-type session?
-  const weAreTeacher = session.type === "teach" && teacherOverrides[session.id]?.id === profile?.id;
+  // Are we the teacher of this session?
+  const weAreTeacher =
+    (session.type === "teach" && teacherOverrides[session.id]?.id === profile?.id) ||
+    (session.type === "learn" && session.teacher?.id === profile?.id);
 
   const isTeach = session.type === "learn" || weAreTeacher;
   const isMeetup = session.type === "collab";
@@ -24,7 +26,7 @@ export default function WaitingRoomPage({ session }) {
   const registeredList = isTeach ? (session.participants || []) : [];
   const registeredIds = new Set(registeredList.map((u) => u.id));
   const knownInterested = [
-    ...(alreadyJoined ? [profile] : []),
+    ...(alreadyJoined && !weAreTeacher ? [profile] : []),
     ...(session.waitingRoom || []),
     ...(!isTeach ? (session.participants || []) : []),
   ].filter((u, i, arr) => arr.findIndex((x) => x.id === u.id) === i).filter((u) => !registeredIds.has(u.id));
@@ -112,19 +114,21 @@ export default function WaitingRoomPage({ session }) {
         {/* Actions */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
           {!alreadyJoined && !weAreTeacher && <Button onClick={() => joinSession(session)}>✓ Join</Button>}
-          {alreadyJoined && isTeach && session.scheduledTime && !alreadyRegistered && (
-            <Button onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s))}>
-              {weAreTeacher ? "Set Meeting Time" : "✓ Register"}
+          {alreadyJoined && weAreTeacher && (
+            <Button onClick={() => setActiveView("setMeetingTime")}>
+              {session.scheduledTime ? "Edit Meeting Time" : "Set Meeting Time"}
             </Button>
           )}
-          {alreadyJoined && weAreTeacher && !session.scheduledTime && (
-            <Button onClick={() => {}}>Set Meeting Time</Button>
+          {alreadyJoined && isTeach && !weAreTeacher && session.scheduledTime && !alreadyRegistered && (
+            <Button onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s))}>
+              ✓ Register
+            </Button>
           )}
           {alreadyRegistered && isTeach && (
             <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>✓ Registered</Button>
           )}
           {alreadyJoined && isMeetup && (
-            <Button onClick={() => {}}>📅 Propose Meetup</Button>
+            <Button onClick={() => setActiveView("proposeMeetup")}>📅 Propose Meetup</Button>
           )}
           {alreadyJoined && (isTeach || isMeetup) && (
             <Button variant="secondary" onClick={() => setActiveView("chatroom")}>Group Chat</Button>
@@ -137,7 +141,8 @@ export default function WaitingRoomPage({ session }) {
           {alreadyJoined && session.type === "teach" && !teacherOverrides[session.id] && (
             <Button variant="primary" onClick={() => {
               setTeacherOverrides(prev => ({ ...prev, [session.id]: profile }));
-              setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, myRole: "teacher" } : s));
+              setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, myRole: "teacher", scheduledTime: null, location: null } : s));
+              setActiveSession(prev => ({ ...prev, scheduledTime: null, location: null }));
             }}>
               🎓 Offer to Teach
             </Button>
@@ -189,7 +194,9 @@ export default function WaitingRoomPage({ session }) {
                   <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{host.year} · {host.major}</div>
                   <div style={{ fontSize: 12, color: T.muted, marginTop: 3 }}>{host.taught} sessions taught</div>
                 </div>
-                <Badge color={T.purple} bg={T.purpleLight}>Host</Badge>
+                {host.rating != null && (
+                  <Badge color={T.purple} bg={T.purpleLight}>★ {host.rating}</Badge>
+                )}
               </div>
             </Card>
           </Section>
@@ -198,7 +205,8 @@ export default function WaitingRoomPage({ session }) {
         {isMeetup && session.proposals?.length > 0 && (
           <Section title={`Proposed Meetups (${session.proposals.length})`}>
             {session.proposals.map(p => {
-              const propId = `${session.id}__${p.id}`;
+              const baseId = session._baseId || session.id;
+              const propId = `${baseId}__${p.id}`;
               const registeredForThis = mySessions.some(s => s.id === propId);
               return (
                 <Card key={p.id} style={{ marginBottom: 10 }}>
@@ -214,7 +222,7 @@ export default function WaitingRoomPage({ session }) {
                     <div style={{ display: "flex", gap: 8 }}>
                       {!alreadyJoined
                         ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default", flex: 1 }} onClick={() => {}}>Meetup Chat</Button>
-                        : <Button variant="secondary" style={{ flex: 1 }} onClick={() => {}}>Meetup Chat</Button>
+                        : <Button variant="secondary" style={{ flex: 1 }} onClick={() => { setActiveProposal(p); setActiveView("proposalChat"); }}>Meetup Chat</Button>
                       }
                       {!alreadyJoined
                         ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default", flex: 1 }} onClick={() => {}}>Join to Register</Button>
@@ -222,7 +230,7 @@ export default function WaitingRoomPage({ session }) {
                           ? <Button variant="success" style={{ cursor: "default", flex: 1 }} onClick={() => {}}>✓ Registered</Button>
                           : <Button style={{ flex: 1 }} onClick={() => setMySessions(prev => {
                               if (prev.some(s => s.id === propId)) return prev;
-                              return [...prev, { ...session, id: propId, status: "scheduled", scheduledTime: p.time, location: p.location, myRole: "participant" }];
+                              return [...prev, { ...session, id: propId, _baseId: session.id, status: "scheduled", scheduledTime: p.time, location: p.location, myRole: "participant" }];
                             })}>Register</Button>
                       }
                     </div>
@@ -233,7 +241,7 @@ export default function WaitingRoomPage({ session }) {
           </Section>
         )}
 
-        <Section title={`Participants (${totalCount})`}>
+        <Section title={`Interested (${totalCount})`}>
           {allParticipants.map((u) => (
             <Card key={u.id} style={{ marginBottom: 8, cursor: u.id !== "me" ? "pointer" : "default" }} onClick={u.id !== "me" ? () => setViewingUser(u) : undefined}>
               <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>

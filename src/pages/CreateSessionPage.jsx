@@ -48,7 +48,7 @@ function Field({ label, children }) {
 }
 
 export default function CreateSessionPage() {
-  const { setTab, profile, setCustomSessions, showToast } = useApp();
+  const { setTab, profile, setCustomSessions, joinSession, showToast } = useApp();
   const [form, setForm] = useState({
     type: "learn",
     title: "",
@@ -114,8 +114,9 @@ export default function CreateSessionPage() {
     }
 
     setCustomSessions(prev => [session, ...prev]);
+    if (form.type === "teach") joinSession(session, "teacher");
     showToast("Session posted to the feed!");
-    setTab("feed");
+    setTab(form.type === "teach" ? "mySessions" : "feed");
   }
 
   function toggleTag(tag) {

@@ -13,9 +13,8 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 // ─── FEED CARD COMPONENTS ────────────────────────────────────
-import LearnCard from "../components/LearnCard";
 import MeetupCard from "../components/MeetupCard";
-import TeachCard from "../components/TeachCard";
+import SessionCard from "../components/SessionCard";
 
 // ── Per-topic accent colors ──────────────────────────────────
 const TOPIC_ACCENT = {
@@ -136,9 +135,8 @@ function TopicDetailPage({ tag, onBack }) {
         {upcoming.length > 0 && (
           <Section title={`Upcoming (${upcoming.length})`}>
             {upcoming.map((session) => {
-              if (session.type === "learn") return <LearnCard key={session.id} session={session} />;
-              if (session.type === "teach") return <TeachCard key={session.id} session={session} />;
-              return <MeetupCard key={session.id} session={session} />;
+              if (session.type === "collab") return <MeetupCard key={session.id} session={session} />;
+              return <SessionCard key={session.id} session={session} />;
             })}
           </Section>
         )}
