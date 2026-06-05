@@ -194,10 +194,12 @@ export default function FeedPage() {
       {header}
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 80px", background: T.appBg, position: "relative" }}>
         {sorted.length === 0 && (
-          <div style={{ textAlign: "center", padding: "48px 20px" }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>🏘️</div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: T.text, marginBottom: 4 }}>Nothing here yet</div>
-            <div style={{ fontSize: 13, color: T.muted }}>Join communities to view their sessions</div>
+          <div style={{ textAlign: "center", padding: "60px 20px" }}>
+            <div style={{ fontSize: 48, marginBottom: 14 }}>🏘️</div>
+            <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 18, color: T.text, marginBottom: 6, letterSpacing: "-0.02em" }}>
+              Nothing here yet
+            </div>
+            <div style={{ fontSize: 14, color: T.muted, lineHeight: 1.6 }}>Join communities to view their sessions</div>
           </div>
         )}
         {sorted.map((session) => (

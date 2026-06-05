@@ -198,7 +198,7 @@ export default function MySessionsPage() {
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
             <div style={{ fontSize: 48, marginBottom: 14 }}>📭</div>
             <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 18, color: T.text, marginBottom: 6, letterSpacing: "-0.02em" }}>
-              No sessions yet
+              Nothing here yet
             </div>
             <div style={{ fontSize: 14, color: T.muted, lineHeight: 1.6 }}>Join a session from the feed to get started!</div>
           </div>
