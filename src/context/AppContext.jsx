@@ -8,6 +8,7 @@ const AppCtx = createContext(null);
 function useApp() { return useContext(AppCtx); }
 
 function AppProvider({ children }) {
+  const [loggedIn, setLoggedIn] = useState(false);
   const [tab, setTab] = useState("feed");
   const [feedView, setFeedView] = useState("sessions");
   const [sessionTypeFilter, setSessionTypeFilter] = useState("all");
@@ -15,7 +16,7 @@ function AppProvider({ children }) {
   const [expandedCard, setExpandedCard] = useState(null);
   const [activeSession, setActiveSession] = useState(null);
   const [activeView, setActiveView] = useState(null); // "waitingRoom"|"chatroom"|"scheduled"|"completed"
-  const [mySessions, setMySessions] = useState(MY_SESSIONS);
+  const [mySessions, setMySessions] = useState([]);
   const [customSessions, setCustomSessions] = useState([]);
   const [teacherOverrides, setTeacherOverrides] = useState({});
   const [profile, setProfile] = useState(CURRENT_USER);
@@ -35,6 +36,36 @@ function AppProvider({ children }) {
   const [customCommunities, setCustomCommunities] = useState([]);
   const [communityFilter, setCommunityFilter] = useState("all");
   const [communitySort,   setCommunitySort]   = useState("alpha");
+
+  function loginAsMJ() {
+    setProfile(CURRENT_USER);
+    setMySessions(MY_SESSIONS);
+    setJoinedCommunities([]);
+    setCustomCommunities([]);
+    setCustomSessions([]);
+    setLoggedIn(true);
+    setTab("feed");
+  }
+
+  function signUp(profileData) {
+    const seed = (profileData.name || "user").replace(/\s+/g, "");
+    setProfile({
+      ...profileData,
+      id: "me",
+      avatar: profileData.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2),
+      color: "#6c4fc2",
+      photo: `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}`,
+      tokens: 3,
+      taught: 0, learned: 0, collabs: 0,
+      rating: null,
+    });
+    setMySessions([]);
+    setJoinedCommunities([]);
+    setCustomCommunities([]);
+    setCustomSessions([]);
+    setLoggedIn(true);
+    setTab("feed");
+  }
 
   function showToast(msg, type = "success") {
     setToast({ msg, type });
@@ -92,6 +123,7 @@ function AppProvider({ children }) {
       notifs, setNotifs,
       privacy, setPrivacy,
       joinSession, openSession,
+      loggedIn, loginAsMJ, signUp,
     }}>
       {children}
     </AppCtx.Provider>

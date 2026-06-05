@@ -11,11 +11,12 @@ import SettingsPage from "./pages/SettingsPage";
 import CreateSessionPage from "./pages/CreateSessionPage";
 import CreateCommunityPage from "./pages/CreateCommunityPage";
 import CommunitiesPage from "./pages/CommunitiesPage";
+import WelcomeScreen from "./pages/WelcomeScreen";
 
 // ─── ROOT APP ─────────────────────────────────────────────────
 
 function AppInner() {
-  const { tab, toast, viewingUser, darkMode } = useApp();
+  const { tab, toast, viewingUser, darkMode, loggedIn } = useApp();
   // Reading darkMode here means AppInner re-renders when dark mode changes,
   // which causes all children to re-render and pick up new T values via the Proxy.
   return (
@@ -34,17 +35,21 @@ function AppInner() {
       }}
     >
       <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowX: "hidden" }}>
-        {tab === "feed" && <FeedPage />}
-        {tab === "mySessions" && <MySessionsPage />}
-        {tab === "session" && <SessionPage />}
-        {tab === "communities" && <CommunitiesPage />}
-        {tab === "profile" && <ProfilePage />}
-        {tab === "settings" && <SettingsPage />}
-        {tab === "createSession" && <CreateSessionPage />}
-        {tab === "createCommunity" && <CreateCommunityPage />}
+        {!loggedIn ? <WelcomeScreen /> : (
+          <>
+            {tab === "feed" && <FeedPage />}
+            {tab === "mySessions" && <MySessionsPage />}
+            {tab === "session" && <SessionPage />}
+            {tab === "communities" && <CommunitiesPage />}
+            {tab === "profile" && <ProfilePage />}
+            {tab === "settings" && <SettingsPage />}
+            {tab === "createSession" && <CreateSessionPage />}
+            {tab === "createCommunity" && <CreateCommunityPage />}
+          </>
+        )}
       </div>
 
-      {tab !== "session" && tab !== "createSession" && tab !== "createCommunity" && <BottomNav />}
+      {loggedIn && tab !== "session" && tab !== "createSession" && tab !== "createCommunity" && <BottomNav />}
       {toast && <Toast msg={toast.msg} type={toast.type} />}
       {viewingUser && <UserProfilePage user={viewingUser} />}
     </div>

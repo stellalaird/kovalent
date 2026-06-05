@@ -136,6 +136,15 @@ const CURRENT_USER = {
   bio: "CS junior interested in music, chess, and building cool things. Always looking for people to learn from and teach.",
 };
 
+// MJ as a feed-visible mock user (same data, separate id so new users can see his sessions)
+const MJ_MOCK_USER = {
+  id: "mj", name: "Michael Jackson", year: "3rd Year", major: "Computer Science",
+  gender: "He/Him", avatar: "MJ", color: "#6c4fc2", photo: "https://api.dicebear.com/9.x/avataaars/svg?seed=MichaelJackson",
+  tokens: 10, taught: 2, learned: 4, collabs: 3, rating: 4.5,
+  contact: "michaeljackson@northwestern.edu", phone: "(000) 000-0000",
+  bio: "CS junior interested in music, chess, and building cool things. Always looking for people to learn from and teach.",
+};
+
 // ─── MOCK SESSIONS ───────────────────────────────────────────
 const MOCK_SESSIONS = [
   {
@@ -467,6 +476,28 @@ const MOCK_SESSIONS = [
     interested: 4, activityLevel: "high", messages: [],
   },
 
+  // ── MJ's sessions (visible in feed for all users) ────────────
+  {
+    id: "mj-teach1", type: "learn", skill: "Chess Strategy", teacher: MJ_MOCK_USER,
+    level: "Intermediate", interested: 5, minGroup: 2, maxGroup: 6, taught: 2,
+    description: "We'll cover opening principles, middlegame planning, and basic endgame technique.",
+    activityLevel: "medium", status: "feed", tags: ["games", "strategy"],
+    scheduledTime: "Saturday, June 7 · 3:00 PM", location: "Norris Game Room",
+    materials: "Bring a chess set if you have one.",
+    waitingRoom: [MOCK_USERS[3], MOCK_USERS[6], MOCK_USERS[13]],
+    messages: [],
+  },
+  {
+    id: "mj-teach2", type: "learn", skill: "Intro to React", teacher: MJ_MOCK_USER,
+    level: "Beginner", interested: 6, minGroup: 2, maxGroup: 8, taught: 2,
+    description: "Hands-on intro to React — components, state, and hooks. We'll build a small app together.",
+    activityLevel: "high", status: "feed", tags: ["coding", "tech"],
+    location: "Tech LG52",
+    materials: "Bring a laptop with Node.js installed.",
+    waitingRoom: [MOCK_USERS[8], MOCK_USERS[11], MOCK_USERS[17], MOCK_USERS[13]],
+    messages: [],
+  },
+
   {
     id: "s10", type: "collab", activity: "Board Game Night",
     activityLevel: "high", status: "scheduled",
@@ -585,4 +616,4 @@ const MY_SESSIONS = [
   },
 ];
 
-export { MOCK_USERS, CURRENT_USER, MOCK_SESSIONS, MY_SESSIONS };
+export { MOCK_USERS, CURRENT_USER, MJ_MOCK_USER, MOCK_SESSIONS, MY_SESSIONS };
