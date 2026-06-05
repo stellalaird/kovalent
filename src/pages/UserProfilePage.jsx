@@ -1,15 +1,36 @@
 import { T } from "../styles/theme";
 import { useApp } from "../context/AppContext";
+import { MOCK_SESSIONS, MY_SESSIONS } from "../data/mockData";
 import Avatar from "../components/Avatar";
 import Card from "../components/Card";
 
+// Returns the set of community tags a user participates in, derived from all sessions.
+function getUserCommunities(userId) {
+  const allSessions = [...MOCK_SESSIONS, ...MY_SESSIONS];
+  const tags = new Set();
+  for (const s of allSessions) {
+    const inSession =
+      s.teacher?.id === userId ||
+      s.requester?.id === userId ||
+      (s.participants || []).some(u => u.id === userId) ||
+      (s.waitingRoom || []).some(u => u.id === userId);
+    if (inSession && s.tags) s.tags.forEach(t => tags.add(t));
+  }
+  return tags;
+}
+
 export default function UserProfilePage({ user }) {
-  const { setViewingUser, profile, privacy } = useApp();
+  const { setViewingUser, profile, privacy, mySessions, joinedCommunities } = useApp();
+
+  const myTags = new Set(joinedCommunities);
+  const theirTags = getUserCommunities(user.id);
+  const sharedCommunity = [...myTags].some(t => theirTags.has(t));
+  const canSeeContact = sharedCommunity;
 
   const stats = [
     { icon: "🎓", label: "Taught",  value: user.taught  ?? 0 },
     { icon: "📖", label: "Learned", value: user.learned ?? 0 },
-    { icon: "🤝", label: "Meetups", value: user.meetups ?? 0 },
+    { icon: "🤝", label: "Collabs", value: user.collabs ?? 0 },
   ];
 
   return (
@@ -82,14 +103,19 @@ export default function UserProfilePage({ user }) {
             <div style={{ fontFamily: T.fontDisplay, fontWeight: 800, fontSize: 16, color: T.text, letterSpacing: "-0.02em", marginBottom: 18 }}>
               About
             </div>
-            {[["Year", user.year], ["Major", user.major], ["Bio", user.bio], ["Contact", user.contact]]
-              .filter(([, v]) => v)
-              .map(([label, value]) => (
-                <div key={label} style={{ marginBottom: 16 }}>
+            {(() => {
+              const fields = [
+                ["Year", user.year], ["Major", user.major], ["Bio", user.bio],
+                ...(canSeeContact && user.contact ? [["Email", user.contact]] : []),
+                ...(canSeeContact && user.phone   ? [["Phone", user.phone]]   : []),
+              ].filter(([, v]) => v);
+              return fields.map(([label, value], i) => (
+                <div key={label} style={{ marginBottom: i < fields.length - 1 ? 16 : 0 }}>
                   <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 5 }}>{label}</div>
                   <div style={{ fontSize: 14, color: T.text, lineHeight: 1.6, letterSpacing: "-0.01em" }}>{value}</div>
                 </div>
-              ))}
+              ));
+            })()}
           </div>
         </Card>
       </div>

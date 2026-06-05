@@ -135,7 +135,7 @@ export default function FeedPage() {
       </div>
 
       {!activeTopic && (
-        <div style={{ display: "flex", gap: 0, background: "rgba(180,140,40,0.1)", borderRadius: 12, padding: 4, marginBottom: feedView === "sessions" ? 10 : 14 }}>
+        <div style={{ display: "flex", gap: 0, background: "rgba(180,140,40,0.1)", borderRadius: 12, padding: 4, marginBottom: 10 }}>
           {[
             { id: "sessions", label: "Sessions" },
             { id: "topics", label: "Communities" },
@@ -193,7 +193,7 @@ export default function FeedPage() {
             { id: "all",    label: "All",    color: T.purple },
             { id: "learn",  label: "Learn",  color: T.sessionTypes.learn.badge },
             { id: "teach",  label: "Teach",  color: T.sessionTypes.teach.badge },
-            { id: "groups", label: "Meetups", color: T.purple },
+            { id: "groups", label: "Collabs", color: T.purple },
           ].map(({ id, label, color }) => (
             <button
               key={id}

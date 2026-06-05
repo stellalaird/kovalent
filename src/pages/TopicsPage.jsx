@@ -16,7 +16,7 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 // ─── FEED CARD COMPONENTS ────────────────────────────────────
-import MeetupCard from "../components/MeetupCard";
+import CollabCard from "../components/CollabCard";
 import SessionCard from "../components/SessionCard";
 
 // ── Per-topic accent colors ──────────────────────────────────
@@ -175,7 +175,7 @@ function TopicDetailPage({ tag, onBack }) {
             backdropFilter: "blur(6px)",
           }}
         >
-          ← Topics
+          ← Back
         </button>
 
         <div style={{ display: "flex", alignItems: "flex-end", gap: 14 }}>
@@ -254,7 +254,7 @@ function TopicDetailPage({ tag, onBack }) {
             {upcoming.length > 0 && (
               <Section title={`Upcoming (${upcoming.length})`}>
                 {upcoming.map((session) => {
-                  if (session.type === "collab") return <MeetupCard key={session.id} session={withTag(session)} />;
+                  if (session.type === "collab") return <CollabCard key={session.id} session={withTag(session)} />;
                   return <SessionCard key={session.id} session={withTag(session)} />;
                 })}
               </Section>

@@ -56,7 +56,7 @@ export default function ProposalChatroomPage({ session }) {
         <div style={{ fontFamily: T.fontDisplay, color: T.text, fontWeight: 900, fontSize: 17, letterSpacing: "-0.03em" }}>
           {session.activity}
         </div>
-        <div style={{ color: T.muted, fontSize: 12, marginTop: 2, fontWeight: 500 }}>Meetup Chat</div>
+        <div style={{ color: T.muted, fontSize: 12, marginTop: 2, fontWeight: 500 }}>Collab Chat</div>
       </div>
 
       {/* Pinned proposal details */}
@@ -64,7 +64,7 @@ export default function ProposalChatroomPage({ session }) {
         background: T.cardElevated, borderBottom: `1px solid ${T.border}`,
         padding: "12px 16px", flexShrink: 0,
       }}>
-        <div style={{ fontWeight: 700, fontSize: 12, color: T.gold, marginBottom: 6 }}>📌 Proposed Meetup</div>
+        <div style={{ fontWeight: 700, fontSize: 12, color: T.gold, marginBottom: 6 }}>📌 Proposed Collab</div>
         <div style={{ fontSize: 13, color: T.textMid, display: "flex", flexDirection: "column", gap: 3, lineHeight: 1.5 }}>
           <span>🕐 {p?.time || "TBD"}</span>
           <span>📍 {p?.location || "TBD"}</span>
@@ -116,7 +116,7 @@ export default function ProposalChatroomPage({ session }) {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === "Enter" && send()}
-          placeholder="Message this meetup group..."
+          placeholder="Message this collab group..."
           style={{
             flex: 1, borderRadius: 999, border: `1px solid ${T.border}`,
             padding: "10px 16px", fontSize: 14, outline: "none",

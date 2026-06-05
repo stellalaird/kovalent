@@ -44,7 +44,7 @@ function formatTime(dateVal, timeVal) {
   return `${weekday}, ${monthName} ${day} · ${h12}:${minStr} ${ampm}`;
 }
 
-export default function ProposeMeetupPage({ session }) {
+export default function ProposeCollabPage({ session }) {
   const { setActiveView, setActiveSession, setMySessions, profile } = useApp();
   const fieldStyle = {
     width: "100%",
@@ -120,7 +120,7 @@ export default function ProposeMeetupPage({ session }) {
           fontFamily: T.fontDisplay, fontSize: 24, fontWeight: 900,
           color: T.text, letterSpacing: "-0.04em",
         }}>
-          Propose Meetup
+          Propose Collab
         </div>
         <div style={{ fontSize: 13, color: T.muted, marginTop: 4 }}>
           {session.activity}
@@ -202,7 +202,7 @@ export default function ProposeMeetupPage({ session }) {
             transition: "all 0.15s",
           }}
         >
-          Propose Meetup
+          Propose Collab
         </button>
       </div>
     </div>

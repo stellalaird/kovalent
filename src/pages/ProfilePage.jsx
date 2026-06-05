@@ -23,12 +23,12 @@ export default function ProfilePage() {
   const completed = mySessions.filter(s => s.status === "completed");
   const taughtCount  = completed.filter(s => s.myRole === "teacher").length;
   const learnedCount = completed.filter(s => s.type !== "collab" && s.myRole !== "teacher").length;
-  const meetupsCount = completed.filter(s => s.type === "collab").length;
+  const collabsCount = completed.filter(s => s.type === "collab").length;
 
   const stats = [
     { icon: "🎓", label: "Taught",  value: taughtCount  },
     { icon: "📖", label: "Learned", value: learnedCount },
-    { icon: "🤝", label: "Meetups", value: meetupsCount },
+    { icon: "🤝", label: "Collabs", value: collabsCount },
   ];
 
   return (
@@ -110,7 +110,7 @@ export default function ProfilePage() {
                 {editing ? "Save" : "Edit"}
               </button>
             </div>
-            {[["Name","name"],["Gender","gender"],["Year","year"],["Major","major"],["Bio","bio"],["Contact","contact"]].map(([label, key], i, arr) => (
+            {[["Name","name"],["Gender","gender"],["Year","year"],["Major","major"],["Bio","bio"],["Email","contact"],["Phone","phone"]].map(([label, key], i, arr) => (
               <div key={key} style={{ marginBottom: i === arr.length - 1 ? 0 : 16 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 5 }}>
                   {label}

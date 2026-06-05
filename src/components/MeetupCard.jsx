@@ -1,4 +1,4 @@
 import FeedCard from "./FeedCard";
-export default function MeetupCard({ session }) {
+export default function CollabCard({ session }) {
   return <FeedCard session={session} />;
 }

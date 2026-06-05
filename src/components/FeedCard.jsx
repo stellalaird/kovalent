@@ -138,9 +138,12 @@ export default function FeedCard({ session }) {
             </p>
           )}
 
-          {session.tags && session.tags.length > 0 && (
+          {(session.level || (session.tags && session.tags.length > 0)) && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 14 }}>
-              {session.tags.map((tag) => (
+              {session.level && session.type !== "collab" && (
+                <Badge color={T.muted} bg={T.surface}>{session.level.toLowerCase()}</Badge>
+              )}
+              {session.tags && session.tags.map((tag) => (
                 <Badge key={tag} color={T.purple} bg={T.purpleLight}>#{tag}</Badge>
               ))}
             </div>

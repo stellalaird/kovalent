@@ -57,9 +57,14 @@ export default function CompletedPage({ session }) {
           ← Back
         </button>
         <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 8, fontFamily: T.fontBody, position: "relative" }}>
-          {session.type === "collab" ? "Group Collab" : session.myRole === "learner" ? "Learning Session" : "Teaching Session"}
+          {session.type === "collab" ? "Collab Session" : session.myRole === "learner" ? "Learning Session" : "Teaching Session"}
         </div>
-        <div style={{ fontFamily: T.fontDisplay, fontSize: 28, fontWeight: 900, color: T.text, letterSpacing: "-0.035em", lineHeight: 1.15, marginBottom: 16, position: "relative" }}>{label}</div>
+        <div style={{ fontFamily: T.fontDisplay, fontSize: 28, fontWeight: 900, color: T.text, letterSpacing: "-0.035em", lineHeight: 1.15, marginBottom: session.description ? 12 : 16, position: "relative" }}>{label}</div>
+        {session.description && (
+          <p style={{ fontSize: 14, color: T.textMid, lineHeight: 1.65, margin: "0 0 16px", letterSpacing: "-0.01em", position: "relative" }}>
+            {session.description}
+          </p>
+        )}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: T.successBg, border: `1px solid ${T.successBorder}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.success, fontWeight: 600 }}>
             ✓ Completed
@@ -73,7 +78,6 @@ export default function CompletedPage({ session }) {
       </div>
 
       <div style={{ padding: 16 }}>
-
         {/* ── OBSERVER LAYOUT (session we didn't attend) ── */}
         {!weParticipated && (
           <>
@@ -161,7 +165,7 @@ export default function CompletedPage({ session }) {
                   <span style={{ fontSize: 13, fontWeight: 600, color: T.success }}>
                     {tipSent
                       ? `${1 + extraTip} tokens sent to ${host?.name || "teacher"} ✓`
-                      : `1 token sent to ${host?.name || "teacher"} ✓`}
+                      : `1 token sent to ${host?.name || "teacher"} upon registration ✓`}
                   </span>
                 </div>
 

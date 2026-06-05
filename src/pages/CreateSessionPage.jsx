@@ -3,19 +3,19 @@ import { useState } from "react";
 import { useApp } from "../context/AppContext";
 
 const TOPICS = [
-  { tag: "music",       label: "Music",       emoji: "🎵" },
-  { tag: "guitar",      label: "Guitar",      emoji: "🎸" },
   { tag: "art",         label: "Art",         emoji: "🎨" },
-  { tag: "creative",    label: "Creative",    emoji: "✏️" },
   { tag: "coding",      label: "Coding",      emoji: "💻" },
-  { tag: "tech",        label: "Tech",        emoji: "🔧" },
-  { tag: "language",    label: "Language",    emoji: "🌐" },
-  { tag: "photography", label: "Photography", emoji: "📷" },
-  { tag: "games",       label: "Games",       emoji: "🎲" },
-  { tag: "strategy",    label: "Strategy",    emoji: "♟️" },
+  { tag: "creative",    label: "Creative",    emoji: "✏️" },
   { tag: "fitness",     label: "Fitness",     emoji: "🏃" },
+  { tag: "games",       label: "Games",       emoji: "🎲" },
+  { tag: "guitar",      label: "Guitar",      emoji: "🎸" },
+  { tag: "language",    label: "Language",    emoji: "🌐" },
+  { tag: "music",       label: "Music",       emoji: "🎵" },
   { tag: "outdoors",    label: "Outdoors",    emoji: "🌿" },
+  { tag: "photography", label: "Photography", emoji: "📷" },
   { tag: "social",      label: "Social",      emoji: "🤝" },
+  { tag: "strategy",    label: "Strategy",    emoji: "♟️" },
+  { tag: "tech",        label: "Tech",        emoji: "🔧" },
 ];
 
 const fieldStyle = {
@@ -48,7 +48,9 @@ function Field({ label, children }) {
 }
 
 export default function CreateSessionPage() {
-  const { setTab, profile, setCustomSessions, joinSession, showToast } = useApp();
+  const { setTab, profile, setCustomSessions, joinSession, showToast, joinedCommunities, offerToTeachSession, setOfferToTeachSession, setTeacherOverrides, setMySessions, setActiveSession, openSession } = useApp();
+  const isOfferToTeach = !!offerToTeachSession;
+  const [joinedFilter, setJoinedFilter] = useState(false);
   const fieldStyle = {
     width: "100%",
     borderRadius: 12,
@@ -63,18 +65,51 @@ export default function CreateSessionPage() {
     letterSpacing: "-0.01em",
     transition: "border-color 0.15s",
   };
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(() => isOfferToTeach ? {
+    type: "teach",
+    title: offerToTeachSession.skill || "",
+    description: offerToTeachSession.description || "",
+    level: offerToTeachSession.level === "All Levels" ? "All" : (offerToTeachSession.level || "All"),
+    selectedTags: offerToTeachSession.tags || [],
+    minCapacity: offerToTeachSession.minGroup ?? 2,
+    maxCapacity: offerToTeachSession.maxGroup ?? null,
+  } : {
     type: "learn",
     title: "",
     description: "",
-    level: "All Levels",
+    level: "All",
     selectedTags: [],
+    minCapacity: 2,
+    maxCapacity: null,
   });
 
   function set(key, val) { setForm(f => ({ ...f, [key]: val })); }
 
   function handleCreate() {
     if (!form.title.trim()) return;
+    const level = form.level === "All" ? "All Levels" : form.level;
+
+    if (isOfferToTeach) {
+      const src = offerToTeachSession;
+      const updated = {
+        ...src,
+        skill: form.title,
+        description: form.description,
+        level,
+        tags: form.selectedTags,
+        minGroup: form.minCapacity,
+        maxGroup: form.maxCapacity ?? null,
+        myRole: "teacher",
+        scheduledTime: null,
+        location: null,
+      };
+      setTeacherOverrides(prev => ({ ...prev, [src.id]: profile }));
+      setMySessions(prev => prev.map(s => s.id === src.id ? updated : s));
+      setOfferToTeachSession(null);
+      openSession(updated, "waitingRoom");
+      return;
+    }
+
     const id = `custom-${Date.now()}`;
     const tags = form.selectedTags;
 
@@ -85,13 +120,13 @@ export default function CreateSessionPage() {
         id, type: "learn",
         skill: form.title,
         teacher: profile,
-        level: form.level,
+        level,
         description: form.description,
         tags,
         status: "feed",
         activityLevel: "low",
         interested: 0,
-        minGroup: 2, maxGroup: 8,
+        minGroup: form.minCapacity, maxGroup: form.maxCapacity ?? null,
         taught: profile.taught ?? 0,
         waitingRoom: [],
         messages: [],
@@ -102,7 +137,7 @@ export default function CreateSessionPage() {
         id, type: "teach",
         skill: form.title,
         requester: profile,
-        level: form.level,
+        level,
         description: form.description,
         tags,
         status: "feed",
@@ -111,7 +146,7 @@ export default function CreateSessionPage() {
         waitingRoom: [],
       };
     } else {
-      // Meetup / collab
+      // Collab / collab
       session = {
         id, type: "collab",
         activity: form.title,
@@ -147,16 +182,16 @@ export default function CreateSessionPage() {
   const typeOptions = [
     { id: "learn", label: "Learn" },
     { id: "teach", label: "Teach" },
-    { id: "collab", label: "Meetup" },
+    { id: "collab", label: "Collab" },
   ];
 
-  const levels = ["All Levels", "Beginner", "Intermediate", "Advanced"];
+  const levels = ["All", "Beginner", "Intermediate", "Advanced"];
 
   const descPlaceholder = form.type === "learn"
     ? "What do you want to learn? What will this session cover?"
     : form.type === "teach"
       ? "What will this session cover? What should people expect?"
-      : "What will this meetup be about? What should people expect?";
+      : "What will this collab be about? What should people expect?";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
@@ -170,7 +205,10 @@ export default function CreateSessionPage() {
         flexShrink: 0,
       }}>
         <button
-          onClick={() => setTab("feed")}
+          onClick={() => {
+            if (isOfferToTeach) { setOfferToTeachSession(null); setTab("session"); }
+            else setTab("feed");
+          }}
           style={{
             background: "none", border: "none", color: T.purple,
             fontWeight: 700, fontSize: 14, cursor: "pointer", padding: 0,
@@ -183,7 +221,7 @@ export default function CreateSessionPage() {
           fontFamily: T.fontDisplay, fontSize: 24, fontWeight: 900,
           color: T.text, letterSpacing: "-0.04em",
         }}>
-          New Session
+          {isOfferToTeach ? "Offer to Teach" : "New Session"}
         </div>
       </div>
 
@@ -191,32 +229,34 @@ export default function CreateSessionPage() {
       <div style={{ flex: 1, overflowY: "auto", padding: "22px 18px 120px", background: T.appBg }}>
 
         {/* Session type */}
-        <Field label="Session Type">
-          <div style={{ display: "flex", gap: 8 }}>
-            {typeOptions.map(opt => (
-              <button
-                key={opt.id}
-                onClick={() => set("type", opt.id)}
-                style={{
-                  flex: 1,
-                  padding: "10px 6px",
-                  borderRadius: 12,
-                  border: form.type === opt.id ? `1.5px solid ${T.cardBorderBright}` : `1px solid ${T.border}`,
-                  background: form.type === opt.id ? T.purpleLight : T.card,
-                  color: form.type === opt.id ? T.purpleDeep : T.muted,
-                  fontWeight: form.type === opt.id ? 700 : 500,
-                  fontSize: 13,
-                  cursor: "pointer",
-                  fontFamily: T.fontBody,
-                  transition: "all 0.15s",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </Field>
+        {!isOfferToTeach && (
+          <Field label="Session Type">
+            <div style={{ display: "flex", gap: 8 }}>
+              {typeOptions.map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => set("type", opt.id)}
+                  style={{
+                    flex: 1,
+                    padding: "10px 6px",
+                    borderRadius: 12,
+                    border: form.type === opt.id ? `1.5px solid ${T.cardBorderBright}` : `1px solid ${T.border}`,
+                    background: form.type === opt.id ? T.purpleLight : T.card,
+                    color: form.type === opt.id ? T.purpleDeep : T.muted,
+                    fontWeight: form.type === opt.id ? 700 : 500,
+                    fontSize: 13,
+                    cursor: "pointer",
+                    fontFamily: T.fontBody,
+                    transition: "all 0.15s",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </Field>
+        )}
 
         {/* Title */}
         <Field label={form.type === "collab" ? "Activity Name" : "Skill / Topic"}>
@@ -242,6 +282,109 @@ export default function CreateSessionPage() {
             onBlur={e => e.target.style.borderColor = T.border}
           />
         </Field>
+
+        {/* Capacity — only for teach sessions */}
+        {form.type === "teach" && (
+          <Field label="Capacity">
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* Min — fixed */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: T.textMid, letterSpacing: "-0.01em" }}>Minimum</div>
+                  <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>Can't go below 2 (no 1-on-1s)</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <button
+                    onClick={() => set("minCapacity", Math.max(2, form.minCapacity - 1))}
+                    style={{
+                      width: 28, height: 28, borderRadius: 7,
+                      border: `1px solid ${T.border}`, background: T.surface,
+                      color: T.muted, fontSize: 15, fontWeight: 700,
+                      cursor: form.minCapacity <= 2 ? "default" : "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      opacity: form.minCapacity <= 2 ? 0.4 : 1,
+                    }}
+                  >−</button>
+                  <div style={{
+                    background: T.surface, border: `1px solid ${T.border}`,
+                    borderRadius: 8, padding: "5px 14px",
+                    fontSize: 14, fontWeight: 700, color: T.textMid,
+                    minWidth: 44, textAlign: "center",
+                  }}>{form.minCapacity}</div>
+                  <button
+                    onClick={() => {
+                      const next = form.minCapacity + 1;
+                      set("minCapacity", next);
+                      if (form.maxCapacity != null && form.maxCapacity < next) set("maxCapacity", next);
+                    }}
+                    style={{
+                      width: 28, height: 28, borderRadius: 7,
+                      border: `1px solid ${T.border}`, background: T.surface,
+                      color: T.muted, fontSize: 15, fontWeight: 700,
+                      cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >+</button>
+                </div>
+              </div>
+
+              {/* Max — optional stepper */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: T.textMid, letterSpacing: "-0.01em" }}>Maximum</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  {form.maxCapacity != null && (
+                    <>
+                      <button
+                        onClick={() => set("maxCapacity", Math.max(form.minCapacity, form.maxCapacity - 1))}
+                        style={{
+                          width: 28, height: 28, borderRadius: 7,
+                          border: `1px solid ${T.border}`, background: T.surface,
+                          color: T.muted, fontSize: 15, fontWeight: 700,
+                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >−</button>
+                      <div style={{
+                        background: T.surface, border: `1px solid ${T.border}`,
+                        borderRadius: 8, padding: "5px 14px",
+                        fontSize: 14, fontWeight: 700, color: T.textMid,
+                        minWidth: 44, textAlign: "center",
+                      }}>{form.maxCapacity}</div>
+                      <button
+                        onClick={() => set("maxCapacity", form.maxCapacity + 1)}
+                        style={{
+                          width: 28, height: 28, borderRadius: 7,
+                          border: `1px solid ${T.border}`, background: T.surface,
+                          color: T.muted, fontSize: 15, fontWeight: 700,
+                          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >+</button>
+                      <button
+                        onClick={() => set("maxCapacity", null)}
+                        style={{
+                          background: "none", border: "none",
+                          color: T.muted, fontSize: 11, cursor: "pointer",
+                          padding: 0, fontFamily: T.fontBody,
+                        }}
+                      >✕</button>
+                    </>
+                  )}
+                  {form.maxCapacity == null && (
+                    <button
+                      onClick={() => set("maxCapacity", 10)}
+                      style={{
+                        padding: "5px 12px", borderRadius: 7,
+                        border: `1px solid ${T.border}`, background: T.surface,
+                        color: T.muted, fontWeight: 600, fontSize: 12,
+                        cursor: "pointer", fontFamily: T.fontBody, letterSpacing: "-0.01em",
+                      }}
+                    >Add max</button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Field>
+        )}
 
         {/* Level — not shown for collab */}
         {form.type !== "collab" && (
@@ -273,7 +416,45 @@ export default function CreateSessionPage() {
         )}
 
         {/* Communities / Tags */}
-        <Field label="Communities">
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>
+            Community Tags
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              {[["All", false], ["Joined", true]].map(([lbl, val]) => (
+                <button
+                  key={lbl}
+                  onClick={() => setJoinedFilter(val)}
+                  style={{
+                    padding: "4px 12px", borderRadius: 6, fontSize: 12,
+                    border: joinedFilter === val ? `1px solid ${T.purple}55` : `1px solid ${T.border}`,
+                    background: joinedFilter === val ? `${T.purple}18` : "transparent",
+                    color: joinedFilter === val ? T.purple : T.muted,
+                    fontWeight: joinedFilter === val ? 600 : 500,
+                    fontFamily: T.fontBody, cursor: "pointer",
+                    letterSpacing: "0.01em", transition: "all 0.15s", whiteSpace: "nowrap",
+                  }}
+                >
+                  {lbl}{lbl === "Joined" && joinedCommunities.length > 0 ? ` (${joinedCommunities.length})` : ""}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => {/* TODO: create community flow */}}
+              style={{
+                padding: "4px 12px", borderRadius: 6, fontSize: 12,
+                border: `1px dashed ${T.purple}88`,
+                background: "transparent",
+                color: T.purple, fontWeight: 500,
+                fontFamily: T.fontBody, cursor: "pointer",
+                letterSpacing: "0.01em", transition: "all 0.15s", whiteSpace: "nowrap",
+              }}
+            >
+              + Create new community
+            </button>
+          </div>
+
           <div style={{
             maxHeight: 160,
             overflowY: "auto",
@@ -285,18 +466,18 @@ export default function CreateSessionPage() {
             flexWrap: "wrap",
             gap: 6,
           }}>
-            {TOPICS.map(({ tag, label, emoji }) => {
+            {TOPICS.filter(({ tag }) => !joinedFilter || joinedCommunities.includes(tag)).map(({ tag, label, emoji }) => {
               const selected = form.selectedTags.includes(tag);
               return (
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
                   style={{
-                    padding: "6px 12px",
+                    padding: "6px 14px",
                     borderRadius: 999,
-                    border: selected ? `1.5px solid ${T.cardBorderBright}` : `1px solid ${T.border}`,
-                    background: selected ? T.purpleLight : T.surface,
-                    color: selected ? T.purpleDeep : T.muted,
+                    border: selected ? `1.5px solid ${T.gold}` : `1px solid ${T.border}`,
+                    background: selected ? T.goldBg : T.surface,
+                    color: selected ? T.gold : T.muted,
                     fontWeight: selected ? 700 : 500,
                     fontSize: 13,
                     cursor: "pointer",
@@ -304,14 +485,21 @@ export default function CreateSessionPage() {
                     transition: "all 0.15s",
                     letterSpacing: "-0.01em",
                     whiteSpace: "nowrap",
+                    boxShadow: "none",
                   }}
                 >
                   {emoji} {label}
                 </button>
               );
             })}
+            {joinedFilter && joinedCommunities.length === 0 && (
+              <div style={{ fontSize: 13, color: T.muted, fontStyle: "italic", padding: "6px 4px" }}>
+                You haven't joined any communities yet.
+              </div>
+            )}
           </div>
-        </Field>
+
+        </div>
       </div>
 
       {/* Sticky Create button */}
@@ -342,7 +530,7 @@ export default function CreateSessionPage() {
             pointerEvents: "all",
           }}
         >
-          Create Session
+          {isOfferToTeach ? "Teach Session" : "Create Session"}
         </button>
       </div>
     </div>

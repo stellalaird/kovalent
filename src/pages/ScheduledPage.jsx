@@ -22,26 +22,49 @@ export default function ScheduledPage({ session }) {
           padding: "20px 16px 16px",
         }}
       >
-        <button
-          onClick={() => setTab("mySessions")}
-          style={{
-            background: "rgba(255,255,255,0.2)",
-            border: "none",
-            color: "#fff",
-            borderRadius: 8,
-            padding: "6px 12px",
-            fontWeight: 600,
-            cursor: "pointer",
-            fontSize: 13,
-            marginBottom: 14,
-          }}
-        >
-          ← Back
-        </button>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+          <button
+            onClick={() => setTab("mySessions")}
+            style={{
+              background: "rgba(255,255,255,0.2)",
+              border: "none",
+              color: "#fff",
+              borderRadius: 8,
+              padding: "6px 12px",
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 13,
+            }}
+          >
+            ← Back
+          </button>
+          <button
+            onClick={() => setActiveView("chatroom")}
+            style={{
+              background: "rgba(255,255,255,0.25)",
+              border: "1px solid rgba(255,255,255,0.4)",
+              color: "#fff",
+              borderRadius: 10,
+              padding: "6px 14px",
+              fontWeight: 700,
+              cursor: "pointer",
+              fontSize: 13,
+              letterSpacing: "-0.01em",
+              display: "flex", alignItems: "center", gap: 5,
+            }}
+          >
+            Group Chat 💬
+          </button>
+        </div>
         <Badge color="#fff" bg="rgba(255,255,255,0.2)">
           Scheduled ✓
         </Badge>
         <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", marginTop: 8 }}>{label}</div>
+        {session.description && (
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", lineHeight: 1.6, margin: "10px 0 0", letterSpacing: "-0.01em" }}>
+            {session.description}
+          </p>
+        )}
       </div>
 
       <div style={{ padding: 16 }}>
@@ -124,9 +147,6 @@ export default function ScheduledPage({ session }) {
         </Section>
 
         <div style={{ display: "flex", gap: 8 }}>
-          <Button onClick={() => setActiveView("chatroom")} style={{ flex: 1 }}>
-            💬 Group Chat
-          </Button>
           <Button variant="secondary" onClick={() => showToast("Calendar event added!")}>
             📅 Add to Calendar
           </Button>

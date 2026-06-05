@@ -6,6 +6,7 @@ import AvatarRow from "../components/AvatarRow";
 import Badge from "../components/Badge";
 import PageHeader from "../components/PageHeader";
 import Section from "../components/Section";
+import TokenBadge from "../components/TokenBadge";
 
 export default function MySessionsPage() {
   const { mySessions, openSession, profile } = useApp();
@@ -131,18 +132,21 @@ export default function MySessionsPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
       <PageHeader>
-        <div style={{
-          fontFamily: T.fontDisplay, fontSize: 24, fontWeight: 900,
-          color: T.text, letterSpacing: "-0.04em", marginBottom: 12,
-        }}>
-          My Sessions
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <div style={{
+            fontFamily: T.fontDisplay, fontSize: 24, fontWeight: 900,
+            color: T.text, letterSpacing: "-0.04em",
+          }}>
+            My Sessions
+          </div>
+          <TokenBadge count={profile.tokens} />
         </div>
         <div style={{ display: "flex", gap: 6, paddingBottom: 14, overflowX: "auto" }}>
           {[
             { id: "all",    label: "All",     color: T.purple },
             { id: "teach",  label: "Teach",   color: T.sessionTypes.teach.badge },
             { id: "learn",  label: "Learn",   color: T.sessionTypes.learn.badge },
-            { id: "collab", label: "Meetups", color: T.purple },
+            { id: "collab", label: "Collabs", color: T.purple },
           ].map(({ id, label, color }) => (
             <button
               key={id}

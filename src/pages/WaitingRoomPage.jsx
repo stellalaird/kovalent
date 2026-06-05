@@ -1,4 +1,5 @@
 import { T } from "../styles/theme";
+import { useState } from "react";
 import { MOCK_USERS } from "../data/mockData";
 import { useApp } from "../context/AppContext";
 import Avatar from "../components/Avatar";
@@ -9,7 +10,9 @@ import Card from "../components/Card";
 import Section from "../components/Section";
 
 export default function WaitingRoomPage({ session }) {
-  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal, openSession, setActiveTopic, setFeedView, privacy } = useApp();
+  const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, setProfile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal, openSession, setActiveTopic, setFeedView, privacy, setOfferToTeachSession } = useApp();
+  const [pendingRegister, setPendingRegister] = useState(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
 
@@ -19,16 +22,17 @@ export default function WaitingRoomPage({ session }) {
     (session.type === "learn" && session.teacher?.id === profile?.id);
 
   const isTeach = session.type === "learn" || weAreTeacher;
-  const isMeetup = session.type === "collab";
+  const isCollab = session.type === "collab";
   const alreadyRegistered = isTeach && mySession?.status === "scheduled";
   const label = session.skill || session.activity || "Session";
   const host = weAreTeacher ? profile : (session.teacher || null);
 
   const registeredList = isTeach ? (session.participants || []) : [];
   const registeredIds = new Set(registeredList.map((u) => u.id));
+  const teacherId = host?.id ?? null;
   const knownInterested = [
     ...(alreadyJoined && !weAreTeacher ? [profile] : []),
-    ...(session.waitingRoom || []),
+    ...(session.waitingRoom || []).filter(u => u.id !== teacherId),
     ...(!isTeach ? (session.participants || []) : []),
   ].filter((u, i, arr) => arr.findIndex((x) => x.id === u.id) === i).filter((u) => !registeredIds.has(u.id));
 
@@ -41,7 +45,12 @@ export default function WaitingRoomPage({ session }) {
   const totalCount = allParticipants.length;
 
   const tc = T.sessionTypes[session.type] ?? T.sessionTypes.learn;
-  const sessionKind = isMeetup ? "Group Collab" : session.myRole === "learner" ? "Learning Session" : "Teaching Session";
+  const bothBadges = session.type === "teach" && !teacherOverrides[session.id];
+  const sessionKind = isCollab
+    ? "Collab Session"
+    : bothBadges
+      ? null
+      : weAreTeacher ? "Teaching Session" : "Learning Session";
 
   return (
     <div>
@@ -61,29 +70,44 @@ export default function WaitingRoomPage({ session }) {
           pointerEvents: "none",
         }} />
 
-        <button
-          onClick={() => {
-            if (session._fromCommunity) { setActiveTopic(session._fromCommunity); setFeedView("topics"); setTab("feed"); return; }
-            setTab(alreadyJoined ? "mySessions" : "feed");
-          }}
-          style={{
-            background: T.surface, border: `1px solid ${T.border}`,
-            color: T.textMid, borderRadius: 10, padding: "6px 14px",
-            fontWeight: 600, cursor: "pointer", fontSize: 13,
-            marginBottom: 18, letterSpacing: "-0.01em",
-            position: "relative",
-          }}
-        >
-          ← Back
-        </button>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, position: "relative" }}>
+          <button
+            onClick={() => {
+              if (session._fromCommunity) { setActiveTopic(session._fromCommunity); setFeedView("topics"); setTab("feed"); return; }
+              setTab(alreadyJoined ? "mySessions" : "feed");
+            }}
+            style={{
+              background: T.surface, border: `1px solid ${T.border}`,
+              color: T.textMid, borderRadius: 10, padding: "6px 14px",
+              fontWeight: 600, cursor: "pointer", fontSize: 13,
+              letterSpacing: "-0.01em",
+            }}
+          >
+            ← Back
+          </button>
+          {alreadyJoined && (isTeach || isCollab) && (
+            <button
+              onClick={() => setActiveView("chatroom")}
+              style={{
+                background: T.purpleGradient, border: "none",
+                color: "#fff", borderRadius: 10, padding: "6px 14px",
+                fontWeight: 700, cursor: "pointer", fontSize: 13,
+                letterSpacing: "-0.01em", display: "flex", alignItems: "center", gap: 5,
+                boxShadow: T.btnPrimaryShadow,
+              }}
+            >
+              Group Chat 💬
+            </button>
+          )}
+        </div>
 
-        <div style={{
+        {sessionKind && <div style={{
           fontSize: 10, fontWeight: 700, color: T.muted,
           textTransform: "uppercase", letterSpacing: "0.14em",
           marginBottom: 8, fontFamily: T.fontBody, position: "relative",
         }}>
           {sessionKind}
-        </div>
+        </div>}
         <div style={{
           fontFamily: T.fontDisplay, fontSize: 28, fontWeight: 900,
           color: T.text, letterSpacing: "-0.035em", lineHeight: 1.15,
@@ -92,22 +116,28 @@ export default function WaitingRoomPage({ session }) {
           {label}
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative" }}>
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
-            background: T.successBg, border: `1px solid ${T.successBorder}`,
-            borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.success, fontWeight: 600,
+        {session.description && (
+          <p style={{
+            fontSize: 14, color: T.textMid, lineHeight: 1.65,
+            margin: "0 0 16px", letterSpacing: "-0.01em", position: "relative",
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.success, display: "inline-block", boxShadow: `0 0 6px ${T.success}` }} />
-            {totalCount} joined
-          </div>
-          {isTeach && session.minGroup && session.maxGroup && (
-            <div style={{ display: "inline-flex", alignItems: "center", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.textMid, fontWeight: 500 }}>
-              capacity: {session.minGroup}–{session.maxGroup}
+            {session.description}
+          </p>
+        )}
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative" }}>
+          {isTeach && session.level && (
+            <div style={{ display: "inline-flex", alignItems: "center", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.textMid, fontWeight: 500, textTransform: "lowercase" }}>
+              {session.level}
             </div>
           )}
-          {isTeach && registeredList.length > 0 && (
+          {isTeach && session.minGroup && (
             <div style={{ display: "inline-flex", alignItems: "center", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.textMid, fontWeight: 500 }}>
+              capacity: {session.minGroup}{session.maxGroup ? `–${session.maxGroup}` : "+"}
+            </div>
+          )}
+          {isTeach && (
+            <div style={{ display: "inline-flex", alignItems: "center", background: T.successBg, border: `1px solid ${T.successBorder}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.success, fontWeight: 600 }}>
               {registeredList.length} registered
             </div>
           )}
@@ -118,35 +148,39 @@ export default function WaitingRoomPage({ session }) {
         {/* Actions */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
           {!alreadyJoined && !weAreTeacher && <Button onClick={() => joinSession(session)}>✓ Join</Button>}
-          {alreadyJoined && weAreTeacher && (
-            <Button onClick={() => setActiveView("setMeetingTime")}>
-              {session.scheduledTime ? "Edit Meeting Time" : "Set Meeting Time"}
-            </Button>
-          )}
+          {alreadyJoined && weAreTeacher && (() => {
+            const need = session.minGroup ? Math.max(0, session.minGroup - totalCount) : 0;
+            const notEnough = need > 0;
+            return notEnough ? (
+              <Button variant="secondary" style={{ opacity: 0.5, cursor: "default" }} onClick={() => {}}>
+                Need {need} more interested users to schedule
+              </Button>
+            ) : (
+              <Button onClick={() => setActiveView("setMeetingTime")}>
+                {session.scheduledTime ? "Edit Meeting Time" : "Set Meeting Time"}
+              </Button>
+            );
+          })()}
           {alreadyJoined && isTeach && !weAreTeacher && session.scheduledTime && !alreadyRegistered && (
             session.maxGroup && registeredList.length >= session.maxGroup
               ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default" }} onClick={() => {}}>Session Full</Button>
-              : <Button onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s))}>✓ Register</Button>
+              : <Button onClick={() => setPendingRegister(() => () => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "scheduled" } : s)))}>✓ Register</Button>
           )}
           {alreadyRegistered && isTeach && !weAreTeacher && (
             <Button variant="success" style={{ cursor: "default" }} onClick={() => {}}>✓ Registered</Button>
           )}
-          {alreadyJoined && isMeetup && (
-            <Button onClick={() => setActiveView("proposeMeetup")}>📅 Propose Meetup</Button>
-          )}
-          {alreadyJoined && (isTeach || isMeetup) && (
-            <Button variant="secondary" onClick={() => setActiveView("chatroom")}>Group Chat</Button>
+          {alreadyJoined && isCollab && (
+            <Button onClick={() => setActiveView("proposeCollab")}>📅 Propose Collab</Button>
           )}
           {alreadyRegistered && !weAreTeacher && (
-            <Button variant="danger" onClick={() => setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s))}>
+            <Button variant="danger" onClick={() => setShowCancelConfirm(true)}>
               Cancel Registration
             </Button>
           )}
           {alreadyJoined && session.type === "teach" && !teacherOverrides[session.id] && (
             <Button variant="primary" onClick={() => {
-              setTeacherOverrides(prev => ({ ...prev, [session.id]: profile }));
-              setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, myRole: "teacher", scheduledTime: null, location: null } : s));
-              setActiveSession(prev => ({ ...prev, scheduledTime: null, location: null }));
+              setOfferToTeachSession(session);
+              setTab("createSession");
             }}>
               🎓 Offer to Teach
             </Button>
@@ -212,8 +246,8 @@ export default function WaitingRoomPage({ session }) {
           </Section>
         )}
 
-        {isMeetup && session.proposals?.length > 0 && (
-          <Section title={`Proposed Meetups (${session.proposals.length})`}>
+        {isCollab && session.proposals?.length > 0 && (
+          <Section title={`Proposed Collabs (${session.proposals.length})`}>
             {session.proposals.map(p => {
               const baseId = session._baseId || session.id;
               const propId = `${baseId}__${p.id}`;
@@ -228,8 +262,8 @@ export default function WaitingRoomPage({ session }) {
                     {p.note && <div style={{ fontSize: 13, color: T.textMid, marginBottom: 12, lineHeight: 1.6 }}>{p.note}</div>}
                     <div style={{ display: "flex", gap: 8 }}>
                       {!alreadyJoined
-                        ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default", flex: 1 }} onClick={() => {}}>Meetup Chat</Button>
-                        : <Button variant="secondary" style={{ flex: 1 }} onClick={() => { setActiveProposal(p); setActiveView("proposalChat"); }}>Meetup Chat</Button>
+                        ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default", flex: 1 }} onClick={() => {}}>Collab Chat</Button>
+                        : <Button variant="secondary" style={{ flex: 1 }} onClick={() => { setActiveProposal(p); setActiveView("proposalChat"); }}>Collab Chat</Button>
                       }
                       {!alreadyJoined
                         ? <Button variant="secondary" style={{ opacity: 0.5, cursor: "default", flex: 1 }} onClick={() => {}}>Join to Register</Button>
@@ -248,16 +282,16 @@ export default function WaitingRoomPage({ session }) {
           </Section>
         )}
 
-        {isMeetup && (() => {
+        {isCollab && (() => {
           const baseId = session._baseId || session.id;
-          const myPastMeetups = mySessions.filter(s => s.status === "completed" && s._sourceId === baseId);
-          const sessionPastMeetups = session.pastSessions || [];
-          const allPast = myPastMeetups.length > 0 ? myPastMeetups : sessionPastMeetups;
+          const myPastCollabs = mySessions.filter(s => s.status === "completed" && s._sourceId === baseId);
+          const sessionPastCollabs = session.pastSessions || [];
+          const allPast = myPastCollabs.length > 0 ? myPastCollabs : sessionPastCollabs;
           return allPast.length > 0 ? (
-            <Section title={`Past Meetups (${allPast.length})`}>
+            <Section title={`Past Collabs (${allPast.length})`}>
               {allPast.map(s => (
                 <Card key={s.id} style={{ marginBottom: 8, cursor: "pointer" }} onClick={() => {
-                  const sessionToOpen = myPastMeetups.length > 0 ? s : {
+                  const sessionToOpen = myPastCollabs.length > 0 ? s : {
                     id: s.id,
                     type: "collab",
                     activity: session.activity || session.skill,
@@ -304,6 +338,135 @@ export default function WaitingRoomPage({ session }) {
           ))}
         </Section>
       </div>
+
+      {/* Cancel registration confirmation modal */}
+      {showCancelConfirm && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "0 24px",
+        }}
+          onClick={() => setShowCancelConfirm(false)}
+        >
+          <div
+            style={{
+              background: T.card, borderRadius: 20, padding: "28px 24px 24px",
+              width: "100%", maxWidth: 340,
+              border: `1px solid ${T.cardBorder}`,
+              boxShadow: T.cardShadow,
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 36, textAlign: "center", marginBottom: 12 }}>⚠️</div>
+            <div style={{
+              fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 20,
+              color: T.text, textAlign: "center", letterSpacing: "-0.03em", marginBottom: 8,
+            }}>
+              Cancel Registration?
+            </div>
+            <p style={{
+              fontSize: 14, color: T.textMid, textAlign: "center",
+              lineHeight: 1.6, margin: "0 0 24px", letterSpacing: "-0.01em",
+            }}>
+              Are you sure? Your <strong style={{ color: T.text }}>1 token</strong> will <strong style={{ color: T.danger }}>not be refunded</strong>.
+            </p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setShowCancelConfirm(false)}
+                style={{
+                  flex: 1, padding: "13px 0", borderRadius: 12,
+                  border: `1px solid ${T.border}`, background: T.surface,
+                  color: T.textMid, fontWeight: 700, fontSize: 14,
+                  cursor: "pointer", fontFamily: T.fontBody, letterSpacing: "-0.01em",
+                }}
+              >
+                Keep It
+              </button>
+              <button
+                onClick={() => {
+                  setMySessions(prev => prev.map(s => s.id === session.id ? { ...s, status: "waiting_room" } : s));
+                  setShowCancelConfirm(false);
+                }}
+                style={{
+                  flex: 1, padding: "13px 0", borderRadius: 12,
+                  border: "none", background: T.danger,
+                  color: "#fff", fontWeight: 700, fontSize: 14,
+                  cursor: "pointer", fontFamily: T.fontBody,
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Token confirmation modal */}
+      {pendingRegister && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "0 24px",
+        }}
+          onClick={() => setPendingRegister(null)}
+        >
+          <div
+            style={{
+              background: T.card, borderRadius: 20, padding: "28px 24px 24px",
+              width: "100%", maxWidth: 340,
+              border: `1px solid ${T.cardBorder}`,
+              boxShadow: T.cardShadow,
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 36, textAlign: "center", marginBottom: 12 }}>🪙</div>
+            <div style={{
+              fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 20,
+              color: T.text, textAlign: "center", letterSpacing: "-0.03em", marginBottom: 8,
+            }}>
+              Use 1 Token?
+            </div>
+            <p style={{
+              fontSize: 14, color: T.textMid, textAlign: "center",
+              lineHeight: 1.6, margin: "0 0 24px", letterSpacing: "-0.01em",
+            }}>
+              Registering for this session will spend <strong style={{ color: T.text }}>1 token</strong> from your balance.
+            </p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setPendingRegister(null)}
+                style={{
+                  flex: 1, padding: "13px 0", borderRadius: 12,
+                  border: `1px solid ${T.border}`, background: T.surface,
+                  color: T.textMid, fontWeight: 700, fontSize: 14,
+                  cursor: "pointer", fontFamily: T.fontBody, letterSpacing: "-0.01em",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  pendingRegister();
+                  setProfile(p => ({ ...p, tokens: Math.max(0, (p.tokens ?? 0) - 1) }));
+                  setPendingRegister(null);
+                }}
+                style={{
+                  flex: 1, padding: "13px 0", borderRadius: 12,
+                  border: "none", background: T.purpleGradient,
+                  color: "#fff", fontWeight: 700, fontSize: 14,
+                  cursor: "pointer", fontFamily: T.fontBody,
+                  letterSpacing: "-0.01em", boxShadow: T.btnPrimaryShadow,
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
