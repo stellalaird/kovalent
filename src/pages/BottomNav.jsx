@@ -50,7 +50,7 @@ const icons = {
 };
 
 export default function BottomNav() {
-  const { tab, setTab, mySessions } = useApp();
+  const { tab, setTab, mySessions, setFeedView, setActiveTopic, setSessionTypeFilter, setCommunityFilter, setCommunitySort } = useApp();
   const waitingCount = mySessions.filter((s) => s.status === "waiting_room").length;
 
   const tabs = [
@@ -77,7 +77,16 @@ export default function BottomNav() {
         return (
           <button
             key={t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => {
+              setTab(t.id);
+              if (t.id === "feed") {
+                setFeedView("sessions");
+                setActiveTopic(null);
+                setSessionTypeFilter("all");
+                setCommunityFilter("all");
+                setCommunitySort("alpha");
+              }
+            }}
             style={{
               flex: 1, background: "none", border: "none",
               cursor: "pointer", padding: "10px 0 6px",

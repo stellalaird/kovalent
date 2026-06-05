@@ -48,9 +48,10 @@ function Field({ label, children }) {
 }
 
 export default function CreateSessionPage() {
-  const { setTab, profile, setCustomSessions, joinSession, showToast, joinedCommunities, offerToTeachSession, setOfferToTeachSession, setTeacherOverrides, setMySessions, setActiveSession, openSession } = useApp();
+  const { setTab, profile, setCustomSessions, joinSession, showToast, joinedCommunities, offerToTeachSession, setOfferToTeachSession, setTeacherOverrides, setMySessions, setActiveSession, openSession, customCommunities } = useApp();
   const isOfferToTeach = !!offerToTeachSession;
   const [joinedFilter, setJoinedFilter] = useState(false);
+  const [showCreateCommunityConfirm, setShowCreateCommunityConfirm] = useState(false);
   const fieldStyle = {
     width: "100%",
     borderRadius: 12,
@@ -441,7 +442,7 @@ export default function CreateSessionPage() {
               ))}
             </div>
             <button
-              onClick={() => {/* TODO: create community flow */}}
+              onClick={() => setShowCreateCommunityConfirm(true)}
               style={{
                 padding: "4px 12px", borderRadius: 6, fontSize: 12,
                 border: `1px dashed ${T.purple}88`,
@@ -466,7 +467,7 @@ export default function CreateSessionPage() {
             flexWrap: "wrap",
             gap: 6,
           }}>
-            {TOPICS.filter(({ tag }) => !joinedFilter || joinedCommunities.includes(tag)).map(({ tag, label, emoji }) => {
+            {[...TOPICS, ...(customCommunities || [])].filter(({ tag }) => !joinedFilter || joinedCommunities.includes(tag)).map(({ tag, label, emoji }) => {
               const selected = form.selectedTags.includes(tag);
               return (
                 <button
@@ -492,7 +493,7 @@ export default function CreateSessionPage() {
                 </button>
               );
             })}
-            {joinedFilter && joinedCommunities.length === 0 && (
+            {joinedFilter && [...TOPICS, ...(customCommunities || [])].filter(({ tag }) => joinedCommunities.includes(tag)).length === 0 && (
               <div style={{ fontSize: 13, color: T.muted, fontStyle: "italic", padding: "6px 4px" }}>
                 You haven't joined any communities yet.
               </div>
@@ -533,6 +534,68 @@ export default function CreateSessionPage() {
           {isOfferToTeach ? "Teach Session" : "Create Session"}
         </button>
       </div>
+
+      {/* Create Community confirmation modal */}
+      {showCreateCommunityConfirm && (
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "rgba(0,0,0,0.4)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 100, padding: "0 24px",
+        }}
+          onClick={() => setShowCreateCommunityConfirm(false)}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: T.card,
+              borderRadius: 20,
+              padding: "24px 20px",
+              width: "100%",
+              boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
+            }}
+          >
+            <div style={{
+              fontFamily: T.fontDisplay, fontSize: 18, fontWeight: 800,
+              color: T.text, letterSpacing: "-0.03em", marginBottom: 10,
+            }}>
+              Leave this form?
+            </div>
+            <div style={{ fontSize: 14, color: T.muted, lineHeight: 1.5, marginBottom: 24 }}>
+              Creating a community will take you to a new page. Your progress on this form will be lost and you'll need to fill it out again.
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setShowCreateCommunityConfirm(false)}
+                style={{
+                  flex: 1, padding: "12px 0", borderRadius: 12,
+                  border: `1px solid ${T.border}`, background: T.surface,
+                  color: T.muted, fontWeight: 600, fontSize: 14,
+                  cursor: "pointer", fontFamily: T.fontBody, letterSpacing: "-0.01em",
+                }}
+              >
+                Stay
+              </button>
+              <button
+                onClick={() => {
+                  setShowCreateCommunityConfirm(false);
+                  if (isOfferToTeach) setOfferToTeachSession(null);
+                  setTab("createCommunity");
+                }}
+                style={{
+                  flex: 1, padding: "12px 0", borderRadius: 12,
+                  border: "none", background: T.purpleGradient,
+                  color: "#fff", fontWeight: 700, fontSize: 14,
+                  cursor: "pointer", fontFamily: T.fontBody, letterSpacing: "-0.01em",
+                  boxShadow: T.btnPrimaryShadow,
+                }}
+              >
+                Create Community
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
