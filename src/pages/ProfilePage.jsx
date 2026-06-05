@@ -124,7 +124,7 @@ export default function ProfilePage() {
                 {editing ? "Save" : "Edit"}
               </button>
             </div>
-            {[["Name","name"],["Gender","gender"],["Year","year"],["Major","major"],["Bio","bio"],["Phone","phone"],["Email","contact"]].map(([label, key], i, arr) => (
+            {[["Name","name"],["Pronouns","gender"],["Year","year"],["Major","major"],["Bio","bio"],["Phone","phone"],["Email","contact"]].map(([label, key], i, arr) => (
               <div key={key} style={{ marginBottom: i === arr.length - 1 ? 0 : 16 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 5 }}>
                   {label}

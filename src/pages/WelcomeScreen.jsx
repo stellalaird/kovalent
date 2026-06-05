@@ -26,7 +26,6 @@ export default function WelcomeScreen() {
   function handleSignUp() {
     const e = {};
     if (!form.name.trim()) e.name = true;
-    if (!form.major.trim()) e.major = true;
     if (Object.keys(e).length) { setErrors(e); return; }
     setErrors({});
     signUp(form);
@@ -53,10 +52,7 @@ export default function WelcomeScreen() {
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {[
             { label: "Full Name *", key: "name", placeholder: "Your name" },
-            { label: "Major *", key: "major", placeholder: "e.g. Computer Science" },
-            { label: "Gender / Pronouns", key: "gender", placeholder: "e.g. She/Her" },
-            { label: "Email", key: "contact", placeholder: "you@northwestern.edu" },
-            { label: "Bio", key: "bio", placeholder: "Tell the community a little about yourself…", multiline: true },
+            { label: "Pronouns", key: "gender", placeholder: "e.g. She/Her" },
           ].map(({ label, key, placeholder, multiline }) => (
             <div key={key}>
               <div style={{ fontSize: 11, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
@@ -103,6 +99,20 @@ export default function WelcomeScreen() {
             >
               {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
+          </div>
+
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>
+              Major
+            </div>
+            <input
+              value={form.major}
+              onChange={e => set("major", e.target.value)}
+              placeholder="e.g. Computer Science"
+              style={{ ...inputStyle, borderColor: T.border }}
+              onFocus={e => e.target.style.borderColor = T.cardBorderBright}
+              onBlur={e => e.target.style.borderColor = T.border}
+            />
           </div>
         </div>
 
