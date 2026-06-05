@@ -13,6 +13,7 @@ export default function WaitingRoomPage({ session }) {
   const { setTab, setActiveView, mySessions, setMySessions, joinSession, setViewingUser, profile, setProfile, teacherOverrides, setTeacherOverrides, setActiveSession, setActiveProposal, openSession, setActiveTopic, setFeedView, privacy, setOfferToTeachSession } = useApp();
   const [pendingRegister, setPendingRegister] = useState(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [showCancelSessionConfirm, setShowCancelSessionConfirm] = useState(false);
   const mySession = mySessions.find((s) => s.id === session.id);
   const alreadyJoined = !!mySession;
 
@@ -190,10 +191,8 @@ export default function WaitingRoomPage({ session }) {
           )}
           {alreadyJoined && !alreadyRegistered && (
             <Button variant="danger" small onClick={() => {
-              // Remove this session and any registered proposals for it
+              if (weAreTeacher) { setShowCancelSessionConfirm(true); return; }
               setMySessions(prev => prev.filter(s => s.id !== session.id && s._baseId !== session.id));
-              // Clear teacher override if we were the teacher
-              if (weAreTeacher) setTeacherOverrides(prev => { const n = { ...prev }; delete n[session.id]; return n; });
               setTab("feed");
             }}>
               {weAreTeacher ? "Cancel Session" : "Leave"}
@@ -400,6 +399,71 @@ export default function WaitingRoomPage({ session }) {
                 }}
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel session confirmation modal */}
+      {showCancelSessionConfirm && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "0 24px",
+        }}
+          onClick={() => setShowCancelSessionConfirm(false)}
+        >
+          <div
+            style={{
+              background: T.card, borderRadius: 20, padding: "28px 24px 24px",
+              width: "100%", maxWidth: 340,
+              border: `1px solid ${T.cardBorder}`,
+              boxShadow: T.cardShadow,
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ fontSize: 36, textAlign: "center", marginBottom: 12 }}>⚠️</div>
+            <div style={{
+              fontFamily: T.fontDisplay, fontWeight: 900, fontSize: 20,
+              color: T.text, textAlign: "center", letterSpacing: "-0.03em", marginBottom: 8,
+            }}>
+              Cancel Session?
+            </div>
+            <p style={{
+              fontSize: 14, color: T.textMid, textAlign: "center",
+              lineHeight: 1.6, margin: "0 0 24px", letterSpacing: "-0.01em",
+            }}>
+              This will remove the session and notify interested learners.
+            </p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => setShowCancelSessionConfirm(false)}
+                style={{
+                  flex: 1, padding: "13px 0", borderRadius: 12,
+                  border: `1px solid ${T.border}`, background: T.surface,
+                  color: T.textMid, fontWeight: 700, fontSize: 14,
+                  cursor: "pointer", fontFamily: T.fontBody, letterSpacing: "-0.01em",
+                }}
+              >
+                Keep It
+              </button>
+              <button
+                onClick={() => {
+                  setMySessions(prev => prev.filter(s => s.id !== session.id && s._baseId !== session.id));
+                  setTeacherOverrides(prev => { const n = { ...prev }; delete n[session.id]; return n; });
+                  setShowCancelSessionConfirm(false);
+                  setTab("mySessions");
+                }}
+                style={{
+                  flex: 1, padding: "13px 0", borderRadius: 12,
+                  border: "none", background: T.danger,
+                  color: "#fff", fontWeight: 700, fontSize: 14,
+                  cursor: "pointer", fontFamily: T.fontBody, letterSpacing: "-0.01em",
+                }}
+              >
+                Cancel Session
               </button>
             </div>
           </div>

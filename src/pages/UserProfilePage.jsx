@@ -106,8 +106,8 @@ export default function UserProfilePage({ user }) {
             {(() => {
               const fields = [
                 ["Year", user.year], ["Major", user.major], ["Bio", user.bio],
-                ...(canSeeContact && user.contact ? [["Email", user.contact]] : []),
                 ...(canSeeContact && user.phone   ? [["Phone", user.phone]]   : []),
+                ...(canSeeContact && user.contact ? [["Email", user.contact]] : []),
               ].filter(([, v]) => v);
               return fields.map(([label, value], i) => (
                 <div key={label} style={{ marginBottom: i < fields.length - 1 ? 16 : 0 }}>

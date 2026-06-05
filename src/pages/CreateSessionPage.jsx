@@ -329,7 +329,7 @@ export default function CreateSessionPage() {
               </div>
 
               {/* Max — optional stepper */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: T.textMid, letterSpacing: "-0.01em" }}>Maximum</div>
                 </div>
@@ -418,10 +418,10 @@ export default function CreateSessionPage() {
 
         {/* Communities / Tags */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>
-            Community Tags
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 7 }}>
+            Tag Communities (optional)
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
             <div style={{ display: "flex", gap: 6 }}>
               {[["All", false], ["Joined", true]].map(([lbl, val]) => (
                 <button
@@ -437,7 +437,7 @@ export default function CreateSessionPage() {
                     letterSpacing: "0.01em", transition: "all 0.15s", whiteSpace: "nowrap",
                   }}
                 >
-                  {lbl}{lbl === "Joined" && joinedCommunities.length > 0 ? ` (${joinedCommunities.length})` : ""}
+                  {lbl}
                 </button>
               ))}
             </div>
@@ -462,10 +462,10 @@ export default function CreateSessionPage() {
             border: `1px solid ${T.border}`,
             borderRadius: 12,
             background: T.card,
-            padding: "6px 8px",
+            padding: "10px 12px",
             display: "flex",
             flexWrap: "wrap",
-            gap: 6,
+            gap: 8,
           }}>
             {[...TOPICS, ...(customCommunities || [])].filter(({ tag }) => !joinedFilter || joinedCommunities.includes(tag)).map(({ tag, label, emoji }) => {
               const selected = form.selectedTags.includes(tag);
@@ -525,9 +525,10 @@ export default function CreateSessionPage() {
             fontSize: 15,
             fontWeight: 700,
             fontFamily: T.fontBody,
-            cursor: "pointer",
+            cursor: form.title.trim() && form.description.trim() ? "pointer" : "default",
             letterSpacing: "-0.01em",
-            boxShadow: T.btnPrimaryShadow,
+            boxShadow: form.title.trim() && form.description.trim() ? T.btnPrimaryShadow : "none",
+            opacity: form.title.trim() && form.description.trim() ? 1 : 0.5,
             pointerEvents: "all",
           }}
         >
@@ -584,10 +585,9 @@ export default function CreateSessionPage() {
                 }}
                 style={{
                   flex: 1, padding: "12px 0", borderRadius: 12,
-                  border: "none", background: T.purpleGradient,
+                  border: "none", background: T.danger,
                   color: "#fff", fontWeight: 700, fontSize: 14,
                   cursor: "pointer", fontFamily: T.fontBody, letterSpacing: "-0.01em",
-                  boxShadow: T.btnPrimaryShadow,
                 }}
               >
                 Create Community
