@@ -34,7 +34,7 @@ function AppInner() {
         colorScheme: darkMode ? "dark" : "light",
       }}
     >
-      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowX: "hidden", overflowY: "auto" }}>
         {!loggedIn ? <WelcomeScreen /> : (
           <>
             {tab === "feed" && <FeedPage />}
