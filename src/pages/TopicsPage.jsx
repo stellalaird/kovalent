@@ -363,7 +363,7 @@ export default function TopicsPageContent() {
       {communityFilter === "joined" && visibleTopics.length === 0 && (
         <div style={{ textAlign: "center", padding: "48px 20px" }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>🏘️</div>
-          <div style={{ fontWeight: 700, fontSize: 15, color: T.text, marginBottom: 4 }}>No communities joined yet</div>
+          <div style={{ fontWeight: 700, fontSize: 15, color: T.text, marginBottom: 4 }}>Nothing here yet</div>
           <div style={{ fontSize: 13, color: T.muted }}>Open a community and tap Join!</div>
         </div>
       )}
@@ -410,7 +410,7 @@ export default function TopicsPageContent() {
                   {topic.label}
                 </div>
                 <div style={{ fontSize: 12, color: accent.color, fontWeight: 600, marginTop: 2, whiteSpace: "nowrap" }}>
-                  {count} upcoming
+                  {count} sessions
                 </div>
               </div>
 

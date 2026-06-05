@@ -6,7 +6,7 @@ import PageHeader from "../components/PageHeader";
 import Section from "../components/Section";
 
 export default function SettingsPage() {
-  const { darkMode, setDarkMode, notifs, setNotifs, privacy, setPrivacy, profile } = useApp();
+  const { darkMode, setDarkMode, notifs, setNotifs, privacy, setPrivacy, profile, setTab } = useApp();
 
   function Toggle({ on, onChange }) {
     return (
@@ -46,8 +46,14 @@ export default function SettingsPage() {
   return (
     <div>
       <PageHeader>
-        <div style={{ fontFamily: T.fontDisplay, fontSize: 24, fontWeight: 900, color: T.text, letterSpacing: "-0.04em", paddingBottom: 16 }}>
-          Settings
+        <div style={{ paddingBottom: 16 }}>
+          <button onClick={() => setTab("profile")} style={{
+            background: "none", border: "none", color: T.purple,
+            fontWeight: 700, fontSize: 14, cursor: "pointer", padding: 0,
+            letterSpacing: "-0.01em",
+          }}>
+            ← Back
+          </button>
         </div>
       </PageHeader>
 

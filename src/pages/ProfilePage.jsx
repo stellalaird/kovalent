@@ -8,7 +8,7 @@ import PageHeader from "../components/PageHeader";
 import TokenBadge from "../components/TokenBadge";
 
 export default function ProfilePage() {
-  const { profile, setProfile, mySessions, privacy } = useApp();
+  const { profile, setProfile, mySessions, privacy, setTab } = useApp();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(profile);
 
@@ -34,8 +34,22 @@ export default function ProfilePage() {
   return (
     <div>
       <PageHeader>
-        <div style={{ fontFamily: T.fontDisplay, fontSize: 24, fontWeight: 900, color: T.text, letterSpacing: "-0.04em", paddingBottom: 16 }}>
-          Profile
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 16 }}>
+          <div style={{ fontFamily: T.fontDisplay, fontSize: 24, fontWeight: 900, color: T.text, letterSpacing: "-0.04em" }}>
+            Profile
+          </div>
+          <button
+            onClick={() => setTab("settings")}
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              padding: 4, display: "flex", flexDirection: "column",
+              gap: 4, alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <span style={{ display: "block", width: 20, height: 2, borderRadius: 2, background: T.text }} />
+            <span style={{ display: "block", width: 20, height: 2, borderRadius: 2, background: T.text }} />
+            <span style={{ display: "block", width: 20, height: 2, borderRadius: 2, background: T.text }} />
+          </button>
         </div>
       </PageHeader>
 

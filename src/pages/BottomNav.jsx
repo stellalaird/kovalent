@@ -24,6 +24,25 @@ const icons = {
       <path d="M7 14h4M7 17.5h6" stroke={active ? T.appBg : T.muted} strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   ),
+  communities: (active) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <circle cx="9" cy="7" r="3"
+        fill={active ? T.purpleVibrant : "none"}
+        stroke={active ? T.purpleVibrant : T.muted}
+        strokeWidth="1.8" />
+      <circle cx="17" cy="9" r="2.5"
+        fill={active ? T.purpleVibrant : "none"}
+        stroke={active ? T.purpleVibrant : T.muted}
+        strokeWidth="1.8" />
+      <path d="M2 20c0-3.314 3.134-6 7-6s7 2.686 7 6"
+        fill={active ? T.purpleVibrant : "none"}
+        stroke={active ? T.purpleVibrant : T.muted}
+        strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M19 15c1.657 0 3 1.343 3 3"
+        stroke={active ? T.purpleVibrant : T.muted}
+        strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  ),
   profile: (active) => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="8" r="4"
@@ -36,17 +55,6 @@ const icons = {
         strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   ),
-  settings: (active) => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="3"
-        fill={active ? T.purpleVibrant : "none"}
-        stroke={active ? T.purpleVibrant : T.muted}
-        strokeWidth="1.8" />
-      <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
-        stroke={active ? T.purpleVibrant : T.muted}
-        strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  ),
 };
 
 export default function BottomNav() {
@@ -55,9 +63,9 @@ export default function BottomNav() {
 
   const tabs = [
     { id: "feed", label: "Feed" },
-    { id: "mySessions", label: "Sessions" },
+    { id: "mySessions", label: "My Sessions" },
+    { id: "communities", label: "Communities" },
     { id: "profile", label: "Profile" },
-    { id: "settings", label: "Settings" },
   ];
 
   return (

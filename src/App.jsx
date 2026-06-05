@@ -10,6 +10,7 @@ import SessionPage from "./pages/SessionPage";
 import SettingsPage from "./pages/SettingsPage";
 import CreateSessionPage from "./pages/CreateSessionPage";
 import CreateCommunityPage from "./pages/CreateCommunityPage";
+import CommunitiesPage from "./pages/CommunitiesPage";
 
 // ─── ROOT APP ─────────────────────────────────────────────────
 
@@ -36,6 +37,7 @@ function AppInner() {
         {tab === "feed" && <FeedPage />}
         {tab === "mySessions" && <MySessionsPage />}
         {tab === "session" && <SessionPage />}
+        {tab === "communities" && <CommunitiesPage />}
         {tab === "profile" && <ProfilePage />}
         {tab === "settings" && <SettingsPage />}
         {tab === "createSession" && <CreateSessionPage />}
