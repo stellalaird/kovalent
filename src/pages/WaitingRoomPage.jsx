@@ -129,6 +129,15 @@ export default function WaitingRoomPage({ session }) {
           </p>
         )}
 
+        {session.tags && session.tags.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative", marginBottom: 7 }}>
+            {session.tags.map(tag => (
+              <div key={tag} style={{ display: "inline-flex", alignItems: "center", background: T.purpleLight, border: `1px solid ${T.goldBorder}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.purple, fontWeight: 600 }}>
+                #{tag}
+              </div>
+            ))}
+          </div>
+        )}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative" }}>
           {isTeach && session.level && (
             <div style={{ display: "inline-flex", alignItems: "center", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.textMid, fontWeight: 500, textTransform: "lowercase" }}>
@@ -151,7 +160,7 @@ export default function WaitingRoomPage({ session }) {
       <div style={{ padding: "18px 16px" }}>
         {/* Actions */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
-          {!alreadyJoined && !weAreTeacher && <Button onClick={() => joinSession(session)}>✓ Join</Button>}
+          {!alreadyJoined && !weAreTeacher && <Button onClick={() => joinSession(session)}>Join Waiting Room</Button>}
           {alreadyJoined && weAreTeacher && (() => {
             const need = session.minGroup ? Math.max(0, session.minGroup - totalCount) : 0;
             const notEnough = need > 0;

@@ -65,6 +65,15 @@ export default function CompletedPage({ session }) {
             {session.description}
           </p>
         )}
+        {session.tags && session.tags.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative", marginBottom: 7 }}>
+            {session.tags.map(tag => (
+              <div key={tag} style={{ display: "inline-flex", alignItems: "center", background: T.purpleLight, border: `1px solid ${T.goldBorder}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.purple, fontWeight: 600 }}>
+                #{tag}
+              </div>
+            ))}
+          </div>
+        )}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 7, position: "relative" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: T.successBg, border: `1px solid ${T.successBorder}`, borderRadius: 999, padding: "5px 12px", fontSize: 12, color: T.success, fontWeight: 600 }}>
             ✓ Completed

@@ -25,7 +25,7 @@ function AppInner() {
         position: "relative",
         width: "100%",
         maxWidth: 430,
-        height: "100dvh",
+        height: "100%",
         background: T.appBg,
         display: "flex",
         flexDirection: "column",
@@ -59,7 +59,7 @@ function AppInner() {
 export default function App() {
   return (
     <AppProvider>
-      <div style={{ minHeight: "100vh", background: T.desktopBg, display: "flex", justifyContent: "center" }}>
+      <div style={{ height: "100%", background: T.desktopBg, display: "flex", justifyContent: "center", overflow: "hidden" }}>
         <AppInner />
       </div>
     </AppProvider>

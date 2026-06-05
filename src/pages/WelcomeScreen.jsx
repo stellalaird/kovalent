@@ -141,7 +141,7 @@ export default function WelcomeScreen() {
           background: T.purpleGradient,
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
         }}>
-          Kovalent
+          Kovalent!
         </div>
         <div style={{ fontSize: 13, color: T.muted, marginTop: 12, lineHeight: 1.6, fontWeight: 400 }}>
           Refresh this web-app at any point to return to this page

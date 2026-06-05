@@ -14,8 +14,15 @@ export default function FeedPage() {
 
   const activityRank = { high: 0, medium: 1, low: 2 };
   const joinedIds = new Set(mySessions.map((s) => s.id));
+  const myIds = new Set([profile.id, profile.mockId].filter(Boolean));
   const feedSessions = [
-    ...MOCK_SESSIONS.filter((s) => s.status === "feed" && !joinedIds.has(s.id)),
+    ...MOCK_SESSIONS.filter((s) => {
+      if (s.status !== "feed") return false;
+      if (joinedIds.has(s.id)) return false;
+      if (s.teacher && myIds.has(s.teacher.id)) return false;
+      if (s.requester && myIds.has(s.requester.id)) return false;
+      return true;
+    }),
     ...customSessions.filter((s) => !joinedIds.has(s.id)),
   ];
 

@@ -220,8 +220,7 @@ export default function CreateCommunityPage() {
             setJoinedCommunities(prev => [...prev, tag]);
             showToast("Community created!");
             setActiveTopic(tag);
-            setTab("feed");
-            setFeedView("topics");
+            setTab("communities");
           }}
           style={{
             width: "100%",

@@ -129,7 +129,7 @@ const MOCK_USERS = [
 ];
 
 const CURRENT_USER = {
-  id: "me", name: "Michael Jackson", year: "3rd Year", major: "Computer Science",
+  id: "me", mockId: "mj", name: "Michael Jackson", year: "3rd Year", major: "Computer Science",
   gender: "He/Him", avatar: "MJ", color: "#6c4fc2", photo: "https://api.dicebear.com/9.x/avataaars/svg?seed=MichaelJackson",
   tokens: 10, taught: 2, learned: 4, collabs: 3, rating: 4.5,
   contact: "michaeljackson@northwestern.edu", phone: "(000) 000-0000",

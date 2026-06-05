@@ -65,6 +65,15 @@ export default function ScheduledPage({ session }) {
             {session.description}
           </p>
         )}
+        {session.tags && session.tags.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
+            {session.tags.map(tag => (
+              <div key={tag} style={{ display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 999, padding: "4px 11px", fontSize: 12, color: "rgba(255,255,255,0.9)", fontWeight: 600 }}>
+                #{tag}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div style={{ padding: 16 }}>
