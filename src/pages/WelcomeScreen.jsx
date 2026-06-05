@@ -33,7 +33,7 @@ export default function WelcomeScreen() {
 
   if (view === "signup") {
     return (
-      <div style={{ flex: 1, overflowY: "auto", padding: "28px 20px 40px" }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "28px 20px 40px" }}>
         <button
           onClick={() => setView("home")}
           style={{ background: "none", border: "none", cursor: "pointer", padding: 0, marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}
@@ -134,7 +134,7 @@ export default function WelcomeScreen() {
 
   // Home view
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "48px 24px 40px", overflowY: "auto" }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", padding: "48px 24px 40px", overflow: "hidden" }}>
       {/* Logo / wordmark */}
       <div style={{ marginBottom: 40 }}>
         <div style={{
