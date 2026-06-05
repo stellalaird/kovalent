@@ -36,7 +36,8 @@ export default function CommunitiesPage() {
           <TokenBadge count={profile.tokens} />
         </div>
         {!activeTopic && (
-          <div style={{ display: "flex", gap: 6, paddingBottom: 12, overflowX: "auto", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 6, paddingBottom: 12, alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+            <div style={{ display: "flex", gap: 6 }}>
             {[
               { id: "all",    label: "All" },
               { id: "joined", label: "Joined" },
@@ -45,7 +46,8 @@ export default function CommunitiesPage() {
                 {label}
               </button>
             ))}
-            <div style={{ marginLeft: "auto", display: "flex", gap: 6, flexShrink: 0 }}>
+            </div>
+            <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
               <button onClick={() => setCommunitySort("alpha")} style={filterBtnStyle(communitySort === "alpha", T.purple)}>
                 A↑
               </button>
