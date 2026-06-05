@@ -359,7 +359,7 @@ export default function TopicsPageContent() {
   })();
 
   return (
-    <div style={{ padding: "16px 16px 8px" }}>
+    <div style={{ padding: "16px 12px 8px" }}>
       {communityFilter === "joined" && visibleTopics.length === 0 && (
         <div style={{ textAlign: "center", padding: "60px 20px" }}>
           <div style={{ fontSize: 48, marginBottom: 14 }}>🏘️</div>
@@ -370,7 +370,7 @@ export default function TopicsPageContent() {
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
         {visibleTopics.map((topic) => {
           const count = tagCounts[topic.tag] || 0; // upcoming only
           const accent = topic.accent || TOPIC_ACCENT[topic.tag] || { bg: T.purpleLight, color: T.purple };
@@ -384,11 +384,11 @@ export default function TopicsPageContent() {
                 borderRadius: T.cardRadius,
                 border: `1px solid ${T.cardBorder}`,
                 boxShadow: T.cardShadow,
-                padding: "14px 14px",
+                padding: "12px 10px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
+                gap: 10,
                 transition: "transform 0.12s, box-shadow 0.12s",
               }}
             >
