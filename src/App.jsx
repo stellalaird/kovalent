@@ -9,6 +9,7 @@ import ProfilePage from "./pages/ProfilePage";
 import SessionPage from "./pages/SessionPage";
 import SettingsPage from "./pages/SettingsPage";
 import CreateSessionPage from "./pages/CreateSessionPage";
+import CreateCommunityPage from "./pages/CreateCommunityPage";
 
 // ─── ROOT APP ─────────────────────────────────────────────────
 
@@ -38,9 +39,10 @@ function AppInner() {
         {tab === "profile" && <ProfilePage />}
         {tab === "settings" && <SettingsPage />}
         {tab === "createSession" && <CreateSessionPage />}
+        {tab === "createCommunity" && <CreateCommunityPage />}
       </div>
 
-      {tab !== "session" && tab !== "createSession" && <BottomNav />}
+      {tab !== "session" && tab !== "createSession" && tab !== "createCommunity" && <BottomNav />}
       {toast && <Toast msg={toast.msg} type={toast.type} />}
       {viewingUser && <UserProfilePage user={viewingUser} />}
     </div>

@@ -27,7 +27,10 @@ export default function WaitingRoomPage({ session }) {
   const label = session.skill || session.activity || "Session";
   const host = weAreTeacher ? profile : (session.teacher || null);
 
-  const registeredList = isTeach ? (session.participants || []) : [];
+  const baseParticipants = isTeach ? (session.participants || []) : [];
+  const registeredList = alreadyRegistered && !weAreTeacher && !baseParticipants.some(u => u.id === profile.id)
+    ? [...baseParticipants, profile]
+    : baseParticipants;
   const registeredIds = new Set(registeredList.map((u) => u.id));
   const teacherId = host?.id ?? null;
   const knownInterested = [
@@ -211,8 +214,8 @@ export default function WaitingRoomPage({ session }) {
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {[
                     ["🕐", "When", session.scheduledTime || "TBD"],
-                    ["📍", "Where", session.location || "TBD"],
-                    ["🎒", "Materials", session.materials || "TBD"],
+                    ["📍", "Where", session.scheduledTime ? (session.location || "TBD") : "TBD"],
+                    ["🎒", "Materials", session.scheduledTime ? (session.materials || "TBD") : "TBD"],
                   ].map(([icon, lbl, val]) => (
                     <div key={lbl} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                       <span style={{ fontSize: 17, lineHeight: 1, marginTop: 2 }}>{icon}</span>

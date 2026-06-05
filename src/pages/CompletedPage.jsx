@@ -323,7 +323,7 @@ export default function CompletedPage({ session }) {
                 else setTab("mySessions");
               }}
               style={{ marginBottom: 16, width: "100%" }}
-            >View Session</Button>
+            >View Parent Session</Button>
 
             {/* Photo */}
             <Card style={{ marginBottom: 16 }}>

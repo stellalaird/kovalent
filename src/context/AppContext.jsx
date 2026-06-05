@@ -32,6 +32,7 @@ function AppProvider({ children }) {
   const [activeProposal, setActiveProposal] = useState(null);
   const [offerToTeachSession, setOfferToTeachSession] = useState(null);
   const [joinedCommunities, setJoinedCommunities] = useState([]);
+  const [customCommunities, setCustomCommunities] = useState([]);
   const [communityFilter, setCommunityFilter] = useState("all");
   const [communitySort,   setCommunitySort]   = useState("alpha");
 
@@ -85,6 +86,7 @@ function AppProvider({ children }) {
       activeProposal, setActiveProposal,
       offerToTeachSession, setOfferToTeachSession,
       joinedCommunities, setJoinedCommunities,
+      customCommunities, setCustomCommunities,
       communityFilter, setCommunityFilter,
       communitySort, setCommunitySort,
       notifs, setNotifs,

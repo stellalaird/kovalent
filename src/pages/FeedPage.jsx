@@ -224,6 +224,33 @@ export default function FeedPage() {
         <div style={{ flex: 1, overflowY: "auto", background: T.appBg }}>
           <TopicsPageContent />
         </div>
+        {!activeTopic && (
+          <button
+            onClick={() => setTab("createCommunity")}
+            style={{
+              position: "absolute",
+              bottom: 90,
+              right: 20,
+              width: 56,
+              height: 56,
+              borderRadius: "50%",
+              background: T.purpleGradient,
+              border: "none",
+              color: "#fff",
+              fontSize: 28,
+              fontWeight: 300,
+              lineHeight: 1,
+              cursor: "pointer",
+              boxShadow: T.btnPrimaryShadow,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 10,
+            }}
+          >
+            +
+          </button>
+        )}
       </div>
     );
   }

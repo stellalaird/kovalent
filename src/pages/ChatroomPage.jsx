@@ -9,8 +9,8 @@ export default function ChatroomPage({ session }) {
   const [input, setInput] = useState("");
   const [logistics, setLogistics] = useState({
     time: session.scheduledTime || "TBD — vote below!",
-    location: session.location || "TBD",
-    materials: session.materials || "None listed yet",
+    location: session.scheduledTime ? (session.location || "TBD") : "TBD",
+    materials: session.scheduledTime ? (session.materials || "None listed yet") : "TBD",
   });
   const [editMode, setEditMode] = useState(false);
   const endRef = useRef(null);

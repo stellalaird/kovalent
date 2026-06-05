@@ -113,15 +113,16 @@ function CompletedSessionCard({ s }) {
 }
 
 function TopicDetailPage({ tag, onBack }) {
-  const { setActiveTopic, setFeedView, joinedCommunities, setJoinedCommunities, setViewingUser, profile } = useApp();
+  const { setActiveTopic, setFeedView, joinedCommunities, setJoinedCommunities, setViewingUser, profile, customCommunities } = useApp();
   const isJoined = joinedCommunities.includes(tag);
   const toggleJoin = () => setJoinedCommunities(prev =>
     prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
   );
   const [activeTab, setActiveTab] = useState("sessions");
 
-  const topicDef = TOPIC_DEFS.find((t) => t.tag === tag) || { label: tag, emoji: "🏷️" };
-  const accent = TOPIC_ACCENT[tag] || { bg: T.purpleLight, color: T.purple };
+  const customDef = (customCommunities || []).find(c => c.tag === tag);
+  const topicDef = TOPIC_DEFS.find((t) => t.tag === tag) || customDef || { label: tag, emoji: "🏷️" };
+  const accent = customDef?.accent || TOPIC_ACCENT[tag] || { bg: T.purpleLight, color: T.purple };
   const withTag = s => ({ ...s, _fromCommunity: tag });
 
   const tagged = ALL_SESSIONS.filter((session) => (session.tags || []).includes(tag));
@@ -309,7 +310,7 @@ function TopicDetailPage({ tag, onBack }) {
 }
 
 export default function TopicsPageContent() {
-  const { activeTopic, setActiveTopic, joinedCommunities, communityFilter, communitySort } = useApp();
+  const { activeTopic, setActiveTopic, joinedCommunities, communityFilter, communitySort, customCommunities } = useApp();
 
   if (activeTopic) {
     return <TopicDetailPage tag={activeTopic} onBack={() => setActiveTopic(null)} />;
@@ -344,7 +345,10 @@ export default function TopicsPageContent() {
     tagPeopleCounts[tag] = seen.size;
   });
 
-  const allTopics = TOPIC_DEFS.filter((topic) => anyTagCounts[topic.tag] > 0);
+  const allTopics = [
+    ...TOPIC_DEFS.filter((topic) => anyTagCounts[topic.tag] > 0),
+    ...(customCommunities || []),
+  ];
   const visibleTopics = (() => {
     let topics = communityFilter === "joined"
       ? allTopics.filter(t => joinedCommunities.includes(t.tag))
@@ -367,7 +371,7 @@ export default function TopicsPageContent() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {visibleTopics.map((topic) => {
           const count = tagCounts[topic.tag] || 0; // upcoming only
-          const accent = TOPIC_ACCENT[topic.tag] || { bg: T.purpleLight, color: T.purple };
+          const accent = topic.accent || TOPIC_ACCENT[topic.tag] || { bg: T.purpleLight, color: T.purple };
 
           return (
             <div
@@ -405,7 +409,7 @@ export default function TopicsPageContent() {
                 <div style={{ fontWeight: 700, fontSize: 14, color: T.text }}>
                   {topic.label}
                 </div>
-                <div style={{ fontSize: 12, color: accent.color, fontWeight: 600, marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: accent.color, fontWeight: 600, marginTop: 2, whiteSpace: "nowrap" }}>
                   {count} upcoming
                 </div>
               </div>
