@@ -126,7 +126,7 @@ export default function WelcomeScreen() {
             boxShadow: T.btnPrimaryShadow, fontFamily: T.fontDisplay,
           }}
         >
-          Join Kovalent
+          Join
         </button>
       </div>
     );
