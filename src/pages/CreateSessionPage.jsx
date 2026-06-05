@@ -23,7 +23,7 @@ const fieldStyle = {
   borderRadius: 12,
   border: `1px solid ${T.border}`,
   padding: "11px 14px",
-  fontSize: 14,
+  fontSize: 16,
   outline: "none",
   boxSizing: "border-box",
   color: T.text,

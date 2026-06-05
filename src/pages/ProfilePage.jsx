@@ -135,7 +135,7 @@ export default function ProfilePage() {
                     onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
                     style={{
                       width: "100%", borderRadius: 10, border: `1px solid ${T.border}`,
-                      padding: "9px 13px", fontSize: 14, outline: "none",
+                      padding: "9px 13px", fontSize: 16, outline: "none",
                       boxSizing: "border-box", color: T.text, background: T.surface,
                       letterSpacing: "-0.01em", appearance: "none",
                       backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                     onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
                     style={{
                       width: "100%", borderRadius: 10, border: `1px solid ${T.border}`,
-                      padding: "9px 13px", fontSize: 14, outline: "none",
+                      padding: "9px 13px", fontSize: 16, outline: "none",
                       boxSizing: "border-box", color: T.text, background: T.surface,
                       transition: "border-color 0.15s", letterSpacing: "-0.01em",
                     }}

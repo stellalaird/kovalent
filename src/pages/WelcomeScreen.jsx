@@ -9,7 +9,7 @@ const YEARS = ["1st Year", "2nd Year", "3rd Year", "4th Year", "Grad"];
 const inputStyle = {
   width: "100%", boxSizing: "border-box",
   borderRadius: 12, border: `1.5px solid ${T.border}`,
-  padding: "11px 14px", fontSize: 15, outline: "none",
+  padding: "11px 14px", fontSize: 16, outline: "none",
   color: T.text, background: T.surface,
   letterSpacing: "-0.01em", transition: "border-color 0.15s",
   fontFamily: "inherit",

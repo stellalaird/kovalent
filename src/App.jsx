@@ -59,7 +59,7 @@ function AppInner() {
 export default function App() {
   return (
     <AppProvider>
-      <div style={{ height: "100%", background: T.desktopBg, display: "flex", justifyContent: "center", overflow: "hidden" }}>
+      <div style={{ position: "fixed", inset: 0, background: T.desktopBg, display: "flex", justifyContent: "center", overflow: "hidden" }}>
         <AppInner />
       </div>
     </AppProvider>

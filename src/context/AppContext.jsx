@@ -38,6 +38,7 @@ function AppProvider({ children }) {
   const [communitySort,   setCommunitySort]   = useState("alpha");
 
   function loginAsMJ() {
+    window.scrollTo(0, 0);
     setProfile(CURRENT_USER);
     setMySessions(MY_SESSIONS);
     setJoinedCommunities([]);
@@ -48,6 +49,7 @@ function AppProvider({ children }) {
   }
 
   function signUp(profileData) {
+    window.scrollTo(0, 0);
     const seed = (profileData.name || "user").replace(/\s+/g, "");
     setProfile({
       ...profileData,
