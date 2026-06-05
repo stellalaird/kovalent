@@ -79,16 +79,14 @@ function AppProvider({ children }) {
     if (already) return;
     const myRole = roleOverride ?? (session.type === "collab" ? "participant" : "learner");
     let entry = { ...session, status: "waiting_room", myRole };
-    // For PriorTeacher sessions joined as learner, add us to waitingRoom and bump interested
-    if (session.type === "teach" && myRole === "learner") {
-      const alreadyInRoom = (session.waitingRoom || []).some(u => u.id === profile.id);
-      if (!alreadyInRoom) {
-        entry = {
-          ...entry,
-          waitingRoom: [...(session.waitingRoom || []), profile],
-          interested: (session.interested ?? 0) + 1,
-        };
-      }
+    // Always add the current user to the waitingRoom so their identity shows correctly
+    const alreadyInRoom = (session.waitingRoom || []).some(u => u.id === profile.id);
+    if (!alreadyInRoom) {
+      entry = {
+        ...entry,
+        waitingRoom: [...(session.waitingRoom || []), profile],
+        interested: (session.interested ?? 0) + 1,
+      };
     }
     setMySessions(prev => [...prev, entry]);
   }

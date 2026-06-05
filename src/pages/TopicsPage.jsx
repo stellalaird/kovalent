@@ -1,6 +1,6 @@
 import { T } from "../styles/theme";
 // ─── MOCK DATA ───────────────────────────────────────
-import { MOCK_USERS, MOCK_SESSIONS, MY_SESSIONS } from "../data/mockData";
+import { MOCK_USERS, MOCK_SESSIONS } from "../data/mockData";
 
 // ─── APP STATE CONTEXT ───────────────────────────────────────
 import { useState } from "react";
@@ -52,10 +52,13 @@ const TOPIC_DEFS = [
   { tag: "social",      label: "Social",      emoji: "🤝" },
 ];
 
-const ALL_SESSIONS = [
-  ...MOCK_SESSIONS,
-  ...MY_SESSIONS.filter(s => s.status === "completed"),
-];
+function useAllSessions() {
+  const { mySessions } = useApp();
+  return [
+    ...MOCK_SESSIONS,
+    ...mySessions.filter(s => s.status === "completed"),
+  ];
+}
 
 function CompletedSessionCard({ s }) {
   const { openSession, profile } = useApp();
@@ -114,6 +117,7 @@ function CompletedSessionCard({ s }) {
 
 function TopicDetailPage({ tag, onBack }) {
   const { setActiveTopic, setFeedView, joinedCommunities, setJoinedCommunities, setViewingUser, profile, customCommunities } = useApp();
+  const ALL_SESSIONS = useAllSessions();
   const isJoined = joinedCommunities.includes(tag);
   const toggleJoin = () => setJoinedCommunities(prev =>
     prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
@@ -311,6 +315,7 @@ function TopicDetailPage({ tag, onBack }) {
 
 export default function TopicsPageContent() {
   const { activeTopic, setActiveTopic, joinedCommunities, communityFilter, communitySort, customCommunities } = useApp();
+  const ALL_SESSIONS = useAllSessions();
 
   if (activeTopic) {
     return <TopicDetailPage tag={activeTopic} onBack={() => setActiveTopic(null)} />;
