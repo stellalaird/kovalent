@@ -101,12 +101,18 @@ export default function CreateSessionPage() {
         minGroup: form.minCapacity,
         maxGroup: form.maxCapacity ?? null,
         myRole: "teacher",
+        status: "waiting_room",
         scheduledTime: null,
         location: null,
       };
       setTeacherOverrides(prev => ({ ...prev, [src.id]: profile }));
-      setMySessions(prev => prev.map(s => s.id === src.id ? updated : s));
+      setMySessions(prev => {
+        const exists = prev.some(s => s.id === src.id);
+        if (exists) return prev.map(s => s.id === src.id ? updated : s);
+        return [...prev, updated];
+      });
       setOfferToTeachSession(null);
+      showToast("Offer posted!");
       openSession(updated, "waitingRoom");
       return;
     }

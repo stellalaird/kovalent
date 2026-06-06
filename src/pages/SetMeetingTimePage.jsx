@@ -78,6 +78,7 @@ export default function SetMeetingTimePage({ session }) {
     const scheduledTime = formatScheduledTime(form.dateVal, form.timeVal);
     const updates = {
       scheduledTime,
+      status: "scheduled",
       _dateVal: form.dateVal,
       _timeVal: form.timeVal,
       location: form.location.trim() || null,
