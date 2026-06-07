@@ -56,7 +56,7 @@ function AppProvider({ children }) {
       id: "me",
       avatar: profileData.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2),
       color: "#6c4fc2",
-      photo: `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}`,
+      photo: `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}&clothing[]=blazerAndShirt&clothing[]=blazerAndSweater&clothing[]=collarAndSweater&clothing[]=hoodie&clothing[]=overall&clothing[]=shirtCrewNeck&clothing[]=shirtScoopNeck&clothing[]=shirtVNeck&eyes[]=happy&eyes[]=surprised&eyes[]=winkWacky&eyes[]=wink&mouth[]=smile&mouth[]=tongue&mouth[]=twinkle`,
       tokens: 3,
       taught: 0, learned: 0, collabs: 0,
       rating: null,
